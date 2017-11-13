@@ -1,0 +1,7 @@
+coverage/
+scripts/
+test/
+.babelrc
+.eslintrc.json
+.travis.yml
+test.js
