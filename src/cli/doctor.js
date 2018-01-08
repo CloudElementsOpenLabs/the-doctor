@@ -1,9 +1,10 @@
 #!/usr/bin/env node
 'use strict';
 
-let doctor = require('commander');
+let commander = require('commander');
 
-doctor
+commander
     .version('1.0.0')
-    .command('save [object]', 'Save an entity locally. Valid values: objectDefinitions, transformations, formulas')
+    .command('save', 'save objects locally')
+    .command('migrate', 'migrate object from one environment to another')
     .parse(process.argv);
