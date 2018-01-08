@@ -1,9 +1,9 @@
 'use strict';
 
+const {curry} = require('ramda');
 const rp = require('request-promise');
 const authHeader = require('./authHeader');
 const baseUrl = require('./baseUrl');
-const {curry} = require('ramda');
 
 module.exports = curry(async (path, env) => {
   let options = {
@@ -12,11 +12,11 @@ module.exports = curry(async (path, env) => {
         Authorization: authHeader(env),
     },
     url: baseUrl(path, env),
-    method: "GET"
+    method: "DELETE"
   };
   try {
     return (await rp(options));
   } catch (err) {
-    throw new Error("Failed to get", err);
+    console.log(err);
   }
 });

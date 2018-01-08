@@ -12,9 +12,10 @@ const writeFile = curry(async (fileName, data) => {
   });
 });
 module.exports = curry(async (fileName, data) => {
+  console.log(fileName, data);
   try {
-    return await writeFile(fileName, data);
+    return await writeFile(fileName, await data);
   } catch (err) {
-    throw new Error("Failed to write to file", err);
+    console.log(err);
   }
 })

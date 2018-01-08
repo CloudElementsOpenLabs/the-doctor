@@ -1,17 +1,33 @@
-if (process.env.ENVIRONMENT != 'PROD') {
-  require('dotenv').config({ path: './config/props.env' });
-}
+require('dotenv').config({path: './config.env'});
+const {pipe, apply, curry, invoker, keys, __, map, prop, identity, repeat, toPairs} = require('ramda');
 
-const production = 'PRODUCTION';
-const staging = 'STAGING';
-const saveObjectDefinitionsToFile = require('./src/core/saveObjectDefinitionsToFile');
-const saveTransformationsToFile = require('./src/core/saveTransformationsToFile');
-const getObjectDefinitions = require('./src/core/getObjectDefinitions');
-const saveToFile = require('./src/core/saveToFile');
-const migrateODsWithBackup = require('./src/core/migrateObjectDefinitionsWithBackup');
-const migrateObjectDefinitions = require('./src/core/migrateObjectDefinitions');
+let transformations = {
+  sfdc: {
+    myContact: {
+      hello: "world"
+    }, 
+    one: {
+      field: "name"
+    }
+  },
+  quickbooks: {
+    yourContact: {
+      foo: "bar"
+    }
+  }
+};
 
-// saveObjectDefinitionsToFile(production, 'productionObjectDefinitions.json').catch(err => console.error(err));
-// saveTransformationsToFile(staging, ['sfdc', 'quickbooks']).then(r => console.log(r)).catch(err => console.error(err));
-// migrateODsWithBackup(staging, production).then(r => console.log(r)).catch(err => console.error(err));
-migrateObjectDefinitions(staging, production).then(r => console.log(r)).catch(err => console.error(err));
+
+const makePath = curry((key, objectName) => `organizations/elements/${key}/transformations/${objectName}`);
+
+const createTransformations = (env, body) => {
+  return paths = pipe(
+    keys, 
+    map(prop(__, body)),
+    map(keys), 
+  )(body)
+};
+
+
+console.log(createTransformations('staging' , transformations));
+
