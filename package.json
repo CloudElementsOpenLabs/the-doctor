@@ -6,11 +6,14 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "bin": {
+    "doctor": "src/cli/doctor.js"
+  },
   "author": "cgeene",
   "license": "ISC",
   "dependencies": {
+    "commander": "^2.12.2",
     "dotenv": "^4.0.0",
-    "fluture": "^7.2.2",
     "ramda": "^0.25.0",
     "request": "^2.83.0",
     "request-promise": "^4.2.2"
