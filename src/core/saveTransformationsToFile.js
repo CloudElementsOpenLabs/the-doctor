@@ -1,8 +1,8 @@
 'use strict';
 
-const getTransformations = require('./getTransformations');
-const saveToFile = require('./saveToFile');
-const isError = require('./isError');
+const getTransformations = require('../util/getTransformations');
+const saveToFile = require('../util/saveToFile');
+const isError = require('../util/isError');
 const {converge, call, prop, curry} = require('ramda');
 
 module.exports = converge(

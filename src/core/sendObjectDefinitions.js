@@ -1,8 +1,8 @@
 'use strict';
 
-const getObjectDefinitions = require('./getObjectDefinitions');
-const postObjectDefinitions = require('./postObjectDefinitions');
-const deleteObjectDefinitions = require('./deleteObjectDefinitions');
+const getObjectDefinitions = require('../util/getObjectDefinitions');
+const postObjectDefinitions = require('../util/postObjectDefinitions');
+const deleteObjectDefinitions = require('../util/deleteObjectDefinitions');
 const to = require('../lens/to');
 const from = require('../lens/from');
 const {curry, pipeP, composeP} = require('ramda');

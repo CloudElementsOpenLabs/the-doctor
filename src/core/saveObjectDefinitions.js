@@ -1,10 +1,13 @@
 'use strict';
 
-const getObjectDefinitions = require('./getObjectDefinitions');
-const saveToFile = require('./saveToFile');
-const {pipe, prop, converge} = require('ramda');
+const getObjectDefinitions = require('../util/getObjectDefinitions');
+const saveToFile = require('../util/saveToFile');
+const {pipeP, prop, converge} = require('ramda');
 
-module.exports = converge(saveToFile, [
-  prop('fileName'),
-  pipe(prop('from'), getObjectDefinitions)
-]);
+module.exports = (environment, fileName) => {
+  pipeP(
+    getObjectDefinitions,
+    saveToFile(fileName)
+  )(environment);
+}
+
