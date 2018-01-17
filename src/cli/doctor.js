@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 'use strict';
-
+require('dotenv').config({path: './config.env'});
 let commander = require('commander');
 
 commander

@@ -4,8 +4,7 @@ const commander = require('commander');
 const functions = {
     objectDefinitions: require('../core/saveObjectDefinitions'),
     transformations: require('../core/saveTransformations'),
-    formulas: require('../core/saveFormulas'),
-    element: require('../core/saveElement');
+    formulas: require('../core/saveFormulas')
 }
 
 const save = (object, environment, options) => {

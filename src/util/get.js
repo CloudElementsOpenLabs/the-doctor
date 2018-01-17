@@ -14,9 +14,5 @@ module.exports = curry(async (path, env) => {
     url: baseUrl(path, env),
     method: "GET"
   };
-  try {
-    return (await rp(options));
-  } catch (err) {
-    console.log(err);
-  }
+  return await rp(options);
 });
