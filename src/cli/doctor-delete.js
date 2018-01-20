@@ -7,13 +7,9 @@ const functions = {
     formulas: require('../core/saveFormulas')
 }
 
-const save = (object, environment, options) => {
+const remove = (object, environment, options) => {
     if (!functions[object]) {
         console.log('Command not found: %o', object);
-        process.exit(1);
-    }
-    if (!options.file) {
-        console.log('Please specify a file to save with -f');
         process.exit(1);
     }
     try {
@@ -27,7 +23,7 @@ commander
   .command('object [environment]', 'object')
   .option("-f, --file [file]", "location of file to save objects")
   .option("-k, --keys [...keys]", "elementKeys to save transformations for")
-  .action((object, environment, options) => save(object, environment, options))
+  .action((object, environment, options) => remove(object, environment, options))
   .on('--help', () => {
     console.log('  Examples:');
     console.log('');
