@@ -5,7 +5,7 @@ const functions = {
     objectDefinitions: require('../core/saveObjectDefinitions'),
     transformations: require('../core/saveTransformations'),
     formulas: require('../core/saveFormulas'),
-    element: require('../core/saveElement');
+    element: require('../core/saveElement'),
 }
 
 const save = (object, environment, options) => {
