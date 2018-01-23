@@ -5,11 +5,13 @@ const functions = {
     objectDefinitions: require('../core/saveObjectDefinitions'),
     transformations: require('../core/saveTransformations'),
     formulas: require('../core/saveFormulas'),
+    elements: require('../core/saveElements'),
     formulaInstances: require('../core/saveFormulaInstances'),
     all: require('../core/saveAll')
 }
 
 const save = (object, environment, options) => {
+    process.env.ENV = environment;
     if (!functions[object]) {
         console.log('Command not found: %o', object);
         process.exit(1);
@@ -19,7 +21,7 @@ const save = (object, environment, options) => {
         process.exit(1);
     }
     try {
-        functions[object](environment, options);
+        functions[object](options.file, environment);
     } catch (err) {
         console.log("Failed to complete operation: ", err);
     }

@@ -2,13 +2,12 @@
 
 const getObjectDefinitions = require('../util/getObjectDefinitions');
 const saveToFile = require('../util/saveToFile');
-const {pipeP, prop, converge} = require('ramda');
+const {pipeP, prop, converge, identity, useWith} = require('ramda');
 
-module.exports = async (environment, options) => {
-  const fileName = options.file;
-  return await pipeP(
-    getObjectDefinitions,
-    saveToFile(fileName)
-  )(environment);
-}
-
+// (fileName, env)
+module.exports = useWith(
+  saveToFile, [
+    identity, 
+    getObjectDefinitions
+  ]
+)
