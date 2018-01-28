@@ -2,11 +2,9 @@
 
 const commander = require('commander');
 const functions = {
-    objectDefinitions: require('../core/saveObjectDefinitions'),
-    transformations: require('../core/saveTransformations'),
+    commonResources: require('../core/saveCommonResources'),
     formulas: require('../core/saveFormulas'),
     elements: require('../core/saveElements'),
-    formulaInstances: require('../core/saveFormulaInstances'),
     all: require('../core/saveAll')
 }
 
@@ -21,7 +19,7 @@ const save = (object, environment, options) => {
         process.exit(1);
     }
     try {
-        functions[object](options.file, environment);
+        functions[object](options.file);
     } catch (err) {
         console.log("Failed to complete operation: ", err);
     }
@@ -34,10 +32,10 @@ commander
   .on('--help', () => {
     console.log('  Examples:');
     console.log('');
-    console.log('    $ doctor save objectDefinitions staging -f ~/Desktop/objectDefinitions-staging.json');
-    console.log('    $ doctor save formulas production -f ~/Desktop/formulas-production.json');
-    console.log('    $ doctor save transformations production -f ~/Desktop/transformations-production.json');
-    console.log('    $ doctor save all production -f ~/Desktop/production-backup-1-21-18.json');
+    console.log('    $ doctor export commonResources staging -f ~/Desktop/commonResources-staging.json');
+    console.log('    $ doctor export formulas production -f ~/Desktop/formulas-production.json');
+    console.log('    $ doctor export elements production -f ~/Desktop/elements-production.json');
+    console.log('    $ doctor export all production -f ~/Desktop/production-backup-1-21-18.json');
     console.log('');
   })
   .parse(process.argv);

@@ -5,7 +5,7 @@ let commander = require('commander');
 
 commander
     .version('1.0.0')
-    .command('save', 'save objects locally')
-    .command('migrate', 'migrate object from one environment to another')
+    .command('export', 'save objects locally')
+    .command('import', 'imports objects into your account')
     .command('delete', 'delete objects from your account')
     .parse(process.argv);

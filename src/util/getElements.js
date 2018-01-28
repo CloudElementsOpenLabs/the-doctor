@@ -1,13 +1,16 @@
 'use strict';
 
+const {filter, pipeP, map} = require('ramda');
 const get = require('./get');
-const {curry, map, is, ifElse, __} = require('ramda');
+const mapP = require('./mapP');
+const getElements = () => get('elements');
+const filterElements = element => element.private === true;
+const makePath = element => `elements/${element.id}`;
 
-const makePath = (elementKey) => `elements/${elementKey}`;
-
-module.exports = curry(async (env, elementKeys) => {
-    return pipeP(
-        map(makePath),
-        map({__: get(__, env)})
-    )(elementKeys);
-});
+//()
+module.exports = pipeP(
+    getElements, 
+    filter(filterElements),
+    map(makePath),
+    mapP(get)
+);

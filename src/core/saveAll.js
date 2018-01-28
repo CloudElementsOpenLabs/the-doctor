@@ -3,16 +3,18 @@
 const {pipeP, curry, objOf} = require('ramda');
 const getFormulas = require('../util/getFormulas');
 const findTransformations = require('../util/findTransformations');
-const getObjectDefinitions = require('../util/getObjectDefinitions');
-const getFormulasInstances = require('../util/get')('formulas/instances');
+const get = require('../util/get');
+const getFormulasInstances = () => get('formulas/instances');
+const getElements = require('../util/getElements');
 const saveToFile = require('../util/saveToFile');
 
-module.exports = async (fileName, env) => {
+module.exports = async (fileName) => {
     const backup = {
-        formulas: await getFormulas(env),
-        transformations: await findTransformations(env),
-        objectDefinitions: await getObjectDefinitions(env),
-        formulasInstances: await getFormulasInstances(env)
+        formulas: await get(`formulas`),
+        transformations: await findTransformations(),
+        objectDefinitions: await get(`organizations/objects/definitions`),
+        formulasInstances: await getFormulasInstances(),
+        elements: await getElements()
     };
     saveToFile(fileName, backup);
 };

@@ -5,13 +5,13 @@ const rp = require('request-promise');
 const authHeader = require('./authHeader');
 const baseUrl = require('./baseUrl');
 
-module.exports = curry(async (path, env, body) => {
+module.exports = curry(async (path, body) => {
   let options = {
     json: true,
     headers: {
-        Authorization: authHeader(env),
+        Authorization: authHeader(),
     },
-    url: baseUrl(path, env),
+    url: baseUrl(path),
     method: "POST",
     body: body
   };

@@ -2,4 +2,4 @@
 
 const get = require('./get');
 
-module.exports = get('formulas');
+module.exports = () => get('formulas');
