@@ -1,5 +1,6 @@
 'use strict';
 const postElement = require('./post')('elements');
+const mapP = (require('./mapP'));
 
-//(data, env)
-module.exports = map(postElement);
+//(data)
+module.exports = mapP(postElement);
