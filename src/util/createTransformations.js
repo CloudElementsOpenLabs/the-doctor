@@ -1,19 +1,43 @@
-const createTransformation = require('./createTransformation');
+'use strict';
+
 const {map, curry} = require('ramda');
 
-const makePath = (key, objectName) => `organizations/elements/${keyOrId}/transformations/${objectName}`
+const makePath = curry((key, objectName) => `organizations/elements/${keyOrId}/transformations/${objectName}`);
 
-module.exports = curry(async (env, transformations) => {
-    pipeP(
-        keys, 
-        map(makePath(__, prop(__)))
-    )(transformations);
-});
+const create = pipeP(
+    makePath
+)
 
-let transformations = {
-    sfdc: {
-      myContact: {
+//(objectName, transformations)
+const createAllForElement = useWith(
+    makePath, [
+        identity,
+        Object.keys
+    ]
+)
+
+module.exports = pipeP(
+    Object.keys,
+    map(makePath)
+)
+
+// converge(
+//     makePath, [
+//         Object.keys,
+//         pipe(
+//             Object.keys,
+//             map(Object.keys)
+//         )
+//     ]
+// )
+
+
+
+
+//     {
+//     sfdc: {
+//       myContact: {
   
-      }
-    }
-  }
+//       }
+//     }
+//   }
