@@ -5,7 +5,7 @@ const createTransformations = require('../util/createTransformations');
 const readFile = require('../util/readFile');
 const {pipeP, tap, prop} = require('ramda');
 
-// (fileNamee)
+// (fileName)
 module.exports = pipeP(
     readFile, 
     tap(pipeP(

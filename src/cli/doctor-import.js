@@ -34,7 +34,7 @@ commander
     console.log('');
     console.log('    $ doctor import commonResources staging -f ~/Desktop/objectDefinitions-staging.json');
     console.log('    $ doctor import formulas production -f ~/Desktop/formulas-production.json');
-    console.log('    $ doctor import elements production -f ~/Desktop/formulas-production.json');
+    console.log('    $ doctor import elements production -f ~/Desktop/elements-production.json');
     console.log('    $ doctor import all production -f ~/Desktop/production-backup-1-21-18.json');
     console.log('');
   })
