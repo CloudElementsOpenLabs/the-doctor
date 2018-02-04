@@ -8,11 +8,11 @@ const {pipeP, tap, prop} = require('ramda');
 // (fileName)
 module.exports = pipeP(
     readFile, 
-    tap(pipeP(
+    tap(pipe(
         prop('objectDefinitions'),
         createObjectDefinitions
     )),
-    tap(pipeP(
+    tap(pipe(
         prop('transformations'),
         createTransformations
     ))

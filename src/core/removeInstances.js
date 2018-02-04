@@ -1,16 +1,17 @@
 'use strict';
 
 const {curry, pipeP, map, prop} = require('ramda');
-const getInstances = require('../util/getInstances');
+const get = require('../util/get');
+const getInstances = () => get('instances');
 const remove = require('../util/remove');
 const makePath = id => `instances/${id}`;
 
-module.exports = env => {
-    const removeInstance = remove(env);
-    pipeP(
-        getInstances,
-        map(prop('id')),
-        map(makePath),
-        map(removeInstance)
-    )(env);
-}
+module.exports = pipeP(
+    getInstances, 
+    map(
+        pipe(
+            makePath, 
+            remove
+        )
+    )
+)

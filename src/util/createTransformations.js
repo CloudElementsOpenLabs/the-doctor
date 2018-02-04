@@ -1,43 +1,22 @@
 'use strict';
+const {map, find, equals} = require('ramda');
+const get = require('./get');
+const create = require('./post')
+const makePath = (elementKey, objectName) => `organizations/elements/${elementKey}/transformations/${objectName}`;
+const makePathGet = elementKey => `organizations/elements/${elementKey}/transformations`
+const update = require('./update');
 
-const {map, curry, pipeP, useWith, identity} = require('ramda');
+module.exports = async (transformations) => {
+    map(async elementKey => {
+        let endpointTransformations = get(makePathGet(elementKey));
+        map(async objectName => {
+            let endpointObjectName = find(equals(objectName))(endpointTransformations.keys);
+            if(endpointObjectName) {
+                await update(makePath(elementKey, endpointObjectName), transformations[elementKey][endpointObjectName]);
+            } else {
+                await create(makePath(elementKey, objectName), transformations[elementKey][objectName]);
+            }
+        })(transformations[elementKey].keys)
+    })(transformations.keys);
+}
 
-const makePath = curry((key, objectName) => `organizations/elements/${keyOrId}/transformations/${objectName}`);
-
-// const create = pipeP(
-//     makePath
-// )
-
-// //(objectName, transformations)
-// const createAllForElement = useWith(
-//     makePath, [
-//         identity,
-//         Object.keys
-//     ]
-// )
-
-// module.exports = pipeP(
-//     Object.keys,
-//     map(makePath)
-// )
-
-// converge(
-//     makePath, [
-//         Object.keys,
-//         pipe(
-//             Object.keys,
-//             map(Object.keys)
-//         )
-//     ]
-// )
-
-
-
-
-//     {
-//     sfdc: {
-//       myContact: {
-  
-//       }
-//     }
-//   }

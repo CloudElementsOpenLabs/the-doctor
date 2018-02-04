@@ -1,21 +1,20 @@
 'use strict';
 
-const {compose, prop, curry, pipeP} = require('ramda');
+const {map, pipe, converge, prop, curry, pipeP} = require('ramda');
 const remove = require('../util/remove');
-const getFormulas = require('../util/getFormulas');
-const getFormulaInstances = require('../util/get');
+const get = require('../util/get');
+const getFormulaInstances = () => get('formulas/instances');
 const makePath = curry((formulaId, instanceId) => `formulas/${formulaId}/instances/${instanceId}`);
-const idProp = prop('id');
 
-// (env)
-const formulasDeletePaths = pipeP(
-    getFormulas,
-    map(idProp),
-    map(makePath)
+module.exports = pipeP(
+    getFormulaInstances, 
+    map(
+        pipe(
+            converge(makePath, [
+                pipe(prop('formula'), prop('id')),
+                prop('id')
+            ]),
+            remove
+        )
+    )
 );
-
-// (env)
-module.exports = env => pipeP(
-    formulasDeletePaths,
-    map(remove(getFormulaInstances, idProp, __, env))
-)(env);

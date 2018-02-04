@@ -19,7 +19,7 @@ const importBackup = (object, environment, options) => {
         process.exit(1);
     }
     try {
-        functions[object](options.file, environment);
+        functions[object](options.file);
     } catch (err) {
         console.log("Failed to complete operation: ", err);
     }

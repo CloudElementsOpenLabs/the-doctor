@@ -1,11 +1,11 @@
 'use strict';
 
-const {pipeP} = require('ramda');
+const {pipe} = require('ramda');
 const readFile = require('../util/readFile');
 const createFormulas = require('../util/createFormulas');
 
 //(fileName)
-module.exports = pipeP(
+module.exports = pipe(
   readFile, 
   createFormulas
 )

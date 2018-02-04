@@ -18,6 +18,6 @@ module.exports = curry(async (path, body) => {
   try {
     return (await rp(options));
   } catch (err) {
-    console.log(err);
+    console.error(err.message);
   }
 });

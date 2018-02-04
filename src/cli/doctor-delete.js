@@ -2,10 +2,11 @@
 
 const commander = require('commander');
 const functions = {
-    objectDefinitions: require('../core/saveObjectDefinitions'),
+    commonResources: require('../core/removeCommonResources'),
     transformations: require('../core/removeFormulas'),
     formulaInstances: require('../core/removeFormulaInstances'),
-    instances: {},
+    instances: require('../core/removeInstances'),
+    elements: require('../core/removeElements'),
     formulas: require('../core/saveFormulas')
 }
 
@@ -23,8 +24,6 @@ const remove = (object, environment, options) => {
 
 commander
   .command('object [environment]', 'object')
-  .option("-f, --file [file]", "location of file to save objects")
-  .option("-k, --keys [...keys]", "elementKeys to save transformations for")
   .action((object, environment, options) => remove(object, environment, options))
   .on('--help', () => {
     console.log('  Examples:');

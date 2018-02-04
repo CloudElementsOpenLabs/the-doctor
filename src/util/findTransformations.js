@@ -30,11 +30,6 @@ const createObject = async (objectNames) => {
     return object;
 }
 
-// const createObject = pipe(
-//     map(ap(pair, pipe(makePathTransformations, get, resolveP))),
-//     fromPairs
-// );
-
 module.exports = pipeP(
     getObjectNames,
     map(makePathObjects),
