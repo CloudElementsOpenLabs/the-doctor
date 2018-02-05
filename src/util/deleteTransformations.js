@@ -1,12 +1,13 @@
 'use strict';
 const {map, find, equals} = require('ramda');
+const mapP = require('./mapP');
 const makePath = (elementKey, objectName) => `organizations/elements/${elementKey}/transformations/${objectName}`;
 const remove = require('./remove');
 
 module.exports = async (transformations) => {
-    map(async elementKey => {
-        map(async objectName => {
+    await maP(async elementKey => {
+        maP(async objectName => {
             remove(makePath(elementKey, objectName));
-        })(transformations[elementKey].keys)
-    })(transformations.keys);
+        })(Object.keys(transformations[elementKey]))
+    })(Object.keys(transformations));
 };

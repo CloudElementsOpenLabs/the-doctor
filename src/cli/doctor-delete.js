@@ -3,20 +3,20 @@
 const commander = require('commander');
 const functions = {
     commonResources: require('../core/removeCommonResources'),
-    transformations: require('../core/removeFormulas'),
     formulaInstances: require('../core/removeFormulaInstances'),
     instances: require('../core/removeInstances'),
     elements: require('../core/removeElements'),
-    formulas: require('../core/saveFormulas')
+    formulas: require('../core/removeFormulas')
 }
 
 const remove = (object, environment, options) => {
+    process.env.ENV = environment;
     if (!functions[object]) {
         console.log('Command not found: %o', object);
         process.exit(1);
     }
     try {
-        functions[object](environment, options);
+        functions[object]();
     } catch (err) {
         console.log("Failed to complete operation: ", err);
     }

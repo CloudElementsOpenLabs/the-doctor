@@ -6,14 +6,18 @@ const makePath = objectName => `organizations/objects/${objectName}/definitions`
 const update = require('./update');
 
 module.exports = async (objectDefinitions) => {
-    let endpointObjects = await get('organizations/objects/definitions');
+    objectDefinitions = objectDefinitions.objectDefinitions;
+    let endpointObjects = [];
+    try {
+        endpointObjects = await get('organizations/objects/definitions');
+    } catch (err) {}
     map(async objectName => {
-        let endpointObjectName = find(equals(objectName))(endpointObjects.keys);
+        let endpointObjectName = find(equals(objectName))(Object.keys(endpointObjects));
         if(endpointObjectName) {
             await update(makePath(endpointObjectName), objectDefinitions[endpointObjectName]);
         } else {
             await create(makePath(objectName), objectDefinitions[objectName]);
         }
-    })(objectDefinitions.keys);
+    })(Object.keys(objectDefinitions));
 }
 

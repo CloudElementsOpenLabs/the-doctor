@@ -2,4 +2,4 @@
 
 const remove = require('./remove');
 
-module.exports = () => remove('organizations/objects/definitions');
+module.exports = async () => await remove('organizations/objects/definitions');

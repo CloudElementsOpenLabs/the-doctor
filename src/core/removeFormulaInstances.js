@@ -1,6 +1,6 @@
 'use strict';
 
-const {map, pipe, converge, prop, curry, pipeP} = require('ramda');
+const {map, pipe, converge, prop, curry, pipeP, tap} = require('ramda');
 const remove = require('../util/remove');
 const get = require('../util/get');
 const getFormulaInstances = () => get('formulas/instances');

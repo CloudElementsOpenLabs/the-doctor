@@ -27,7 +27,7 @@ const importBackup = (object, environment, options) => {
 
 commander
   .command('object [environment]', 'object')
-  .option("-f, --file [file]", "location of file to save objects")
+  .option("-f, --file [file]", "location of file to load objects from")
   .action((object, environment, options) => importBackup(object, environment, options))
   .on('--help', () => {
     console.log('  Examples:');

@@ -1,8 +1,7 @@
 'use strict';
 
-const {curry} = require('ramda');
 const fs = require('fs');
 
-module.exports = curry((fileName) => {
-  return JSON.parse(fs.readFileSync(fileName));
-});
+module.exports = async(fileName) => {
+  return new Promise((resolve, reject) => resolve(JSON.parse(fs.readFileSync(fileName))));
+};

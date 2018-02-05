@@ -8,9 +8,9 @@ module.exports = async (path) => {
   let options = {
     json: true,
     headers: {
-        Authorization: authHeader(env),
+        Authorization: authHeader(),
     },
-    url: baseUrl(path, env),
+    url: baseUrl(path),
     method: "DELETE"
   };
   try {
