@@ -1,6 +1,7 @@
 'use strict';
 
 const commander = require('commander');
+const loadAccount = require('../util/loadAccount');
 const functions = {
     commonResources: require('../core/removeCommonResources'),
     formulaInstances: require('../core/removeFormulaInstances'),
@@ -9,8 +10,9 @@ const functions = {
     formulas: require('../core/removeFormulas')
 }
 
-const remove = (object, environment, options) => {
-    process.env.ENV = environment;
+const remove = async (object, account, options) => {
+    await loadAccount(account);
+
     if (!functions[object]) {
         console.log('Command not found: %o', object);
         process.exit(1);
@@ -23,15 +25,15 @@ const remove = (object, environment, options) => {
 };
 
 commander
-  .command('object [environment]', 'object')
-  .action((object, environment, options) => remove(object, environment, options))
+  .command('object [account]', 'object')
+  .action((object, account, options) => remove(object, account, options))
   .on('--help', () => {
     console.log('  Examples:');
     console.log('');
-    console.log('    $ doctor delete objectDefinitions staging');
+    console.log('    $ doctor delete objectDefinitions personalAccount');
     console.log('    $ doctor delete formulas production');
-    console.log('    $ doctor delete transformations production');
-    console.log('    $ doctor delete formulaInstances productionw');
+    console.log('    $ doctor delete transformations staging');
+    console.log('    $ doctor delete formulaInstances dev');
     console.log('');
   })
   .parse(process.argv);

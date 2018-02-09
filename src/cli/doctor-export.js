@@ -1,6 +1,7 @@
 'use strict';
 
 const commander = require('commander');
+const loadAccount = require('../util/loadAccount');
 const functions = {
     commonResources: require('../core/saveCommonResources'),
     formulas: require('../core/saveFormulas'),
@@ -8,8 +9,10 @@ const functions = {
     all: require('../core/saveAll')
 }
 
-const save = (object, environment, options) => {
-    process.env.ENV = environment;
+const save = async (object, account, options) => {
+    console.log(account)
+    await loadAccount(account);
+
     if (!functions[object]) {
         console.log('Command not found: %o', object);
         process.exit(1);
@@ -26,16 +29,16 @@ const save = (object, environment, options) => {
 };
 
 commander
-  .command('object [environment]', 'object')
+  .command('object [account]', 'object')
   .option("-f, --file [file]", "location of file to save objects")
-  .action((object, environment, options) => save(object, environment, options))
+  .action((object, account, options) => save(object, account, options))
   .on('--help', () => {
     console.log('  Examples:');
     console.log('');
     console.log('    $ doctor export commonResources staging -f ~/Desktop/commonResources-staging.json');
     console.log('    $ doctor export formulas production -f ~/Desktop/formulas-production.json');
-    console.log('    $ doctor export elements production -f ~/Desktop/elements-production.json');
-    console.log('    $ doctor export all production -f ~/Desktop/production-backup-1-21-18.json');
+    console.log('    $ doctor export elements dev -f ~/Desktop/elements-production.json');
+    console.log('    $ doctor export all personalAccount -f ~/Desktop/production-backup-1-21-18.json');
     console.log('');
   })
   .parse(process.argv);

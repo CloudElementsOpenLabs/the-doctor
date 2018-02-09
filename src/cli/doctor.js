@@ -8,4 +8,5 @@ commander
     .command('export', 'save objects locally')
     .command('import', 'imports objects into your account')
     .command('delete', 'delete objects from your account')
+    .command('accounts', 'manage accounts to use')
     .parse(process.argv);
