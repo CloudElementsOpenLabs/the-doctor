@@ -34,6 +34,8 @@ commander
   .option("-n, --name [name]", "Nickname of the account")
   .option("-u, --userSecret [userSecret]", "User Secret for this account")
   .option("-o, --orgSecret [orgSecret]", "Organization Secret for this account")
+  .option("-b, --baseUrl [baseUrl]", "baseUrl for the account")
+
   .action((operation, options) => accounts(operation, options))
   .on('--help', () => {
     console.log('  Examples:');
