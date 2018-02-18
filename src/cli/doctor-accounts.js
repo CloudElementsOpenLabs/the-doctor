@@ -40,7 +40,7 @@ commander
   .on('--help', () => {
     console.log('  Examples:');
     console.log('');
-    console.log('    $ doctor accounts add -n devStaging -u awuhusdfwlekfjs -o elrigusvbdsvirf');
+    console.log('    $ doctor accounts add -n devStaging -u awuhusdfwlekfjs -o elrigusvbdsvirf -b https://staging.cloud-elements.com');
     console.log('    $ doctor accounts list');
     console.log('    $ doctor accounts remove -n devStaging');
     console.log('');

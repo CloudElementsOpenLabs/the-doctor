@@ -5,9 +5,9 @@ const makePath = (elementKey, objectName) => `organizations/elements/${elementKe
 const remove = require('./remove');
 
 module.exports = async (transformations) => {
-    await maP(async elementKey => {
-        maP(async objectName => {
-            remove(makePath(elementKey, objectName));
+    await mapP(async elementKey => {
+        await mapP(async objectName => {
+            await remove(makePath(elementKey, objectName));
         })(Object.keys(transformations[elementKey]))
     })(Object.keys(transformations));
 };

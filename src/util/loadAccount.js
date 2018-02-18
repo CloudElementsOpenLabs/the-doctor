@@ -8,7 +8,7 @@ module.exports = async (account) => {
     const accounts = await readFile(propsPath);
     const props = find(propEq('name', account))(accounts);
     if (!props) {
-        console.log(`Account ${account.name} not found`);
+        console.log(`No account found`);
         process.exit(1);      
     }
     process.env.BASE_URL = props.baseUrl;

@@ -11,7 +11,6 @@ const functions = {
 
 const importBackup = async (object, account, options) => {
     await loadAccount(account);
-
     if (!functions[object]) {
         console.log('Command not found: %o', object);
         process.exit(1);

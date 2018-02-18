@@ -5,8 +5,8 @@ const create = require('./post')
 const makePath = objectName => `organizations/objects/${objectName}/definitions`;
 const update = require('./update');
 
-module.exports = async (objectDefinitions) => {
-    objectDefinitions = objectDefinitions.objectDefinitions;
+module.exports = async (data) => {
+    const objectDefinitions = data.objectDefinitions;
     let endpointObjects = [];
     try {
         endpointObjects = await get('organizations/objects/definitions');
@@ -19,5 +19,6 @@ module.exports = async (objectDefinitions) => {
             await create(makePath(objectName), objectDefinitions[objectName]);
         }
     })(Object.keys(objectDefinitions));
+    return data
 }
 
