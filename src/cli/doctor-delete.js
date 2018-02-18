@@ -30,10 +30,11 @@ commander
   .on('--help', () => {
     console.log('  Examples:');
     console.log('');
-    console.log('    $ doctor delete objectDefinitions personalAccount');
+    console.log('    $ doctor delete commonResources personalAccount');
     console.log('    $ doctor delete formulas production');
-    console.log('    $ doctor delete transformations staging');
+    console.log('    $ doctor delete instances staging');
     console.log('    $ doctor delete formulaInstances dev');
+    console.log('    $ doctor delete elements dev');
     console.log('');
   })
   .parse(process.argv);
