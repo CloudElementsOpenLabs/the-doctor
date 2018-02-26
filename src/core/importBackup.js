@@ -8,22 +8,31 @@ const readFile = require('../util/readFile');
 const {pipeP, tap, prop} = require('ramda');
 
 // (fileNamee)
-module.exports = pipeP(
-    readFile, 
-    tap(pipeP(
-        prop('objectDefinitions'),
-        createObjectDefinitions
-    )),
-    tap(pipeP(
-        prop('transformations'),
-        createTransformations
-    )),
-    tap(pipeP(
-        prop('formulas'),
-        createFormulas
-    )),
-    tap(pipeP(
-        prop('elements'),
-        createElements
-    ))
-);
+// module.exports = pipeP(
+//     readFile, 
+//     tap(pipe(
+//         prop('objectDefinitions'),
+//         createObjectDefinitions
+//     )),
+//     tap(pipe(
+//         prop('transformations'),
+//         createTransformations
+//     )),
+//     tap(pipe(
+//         prop('formulas'),
+//         createFormulas
+//     )),
+//     tap(pipe(
+//         prop('elements'),
+//         createElements
+//     ))
+// );
+
+module.exports = async (fileName) => {
+    const fileData = await readFile(fileName);
+    createObjectDefinitions(fileData).then(r => {
+        createTransformations(fileData)
+    });
+    await createFormulas(fileData.formulas);
+    await createElements(fileData.elements);
+}

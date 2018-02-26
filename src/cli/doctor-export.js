@@ -10,7 +10,6 @@ const functions = {
 }
 
 const save = async (object, account, options) => {
-    console.log(account)
     await loadAccount(account);
 
     if (!functions[object]) {

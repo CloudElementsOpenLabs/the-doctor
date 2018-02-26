@@ -11,14 +11,17 @@ module.exports = async (data) => {
     try {
         endpointObjects = await get('organizations/objects/definitions');
     } catch (err) {}
-    map(async objectName => {
+    const objectNames = Object.keys(objectDefinitions);
+    let objectName = '';
+    for (let i = 0; i < objectNames.length; i++) {
+        objectName = objectNames[i];
         let endpointObjectName = find(equals(objectName))(Object.keys(endpointObjects));
         if(endpointObjectName) {
             await update(makePath(endpointObjectName), objectDefinitions[endpointObjectName]);
         } else {
             await create(makePath(objectName), objectDefinitions[objectName]);
         }
-    })(Object.keys(objectDefinitions));
+    }
     return data
 }
 
