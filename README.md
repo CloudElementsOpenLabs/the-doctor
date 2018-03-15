@@ -22,7 +22,7 @@ Install the node dependencies and initialize the doctor.
 
 ```bash
 # Install all necessary npm packages:
-$ npm install
+$ npm install -g
 
 # Initialize your doctor properties file:
 $ doctor init
