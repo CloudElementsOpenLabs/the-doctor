@@ -10,7 +10,7 @@ The Doctor is a CLI tool to allow easy control management with Cloud Elements. T
 
 ## How
 
-To interact with `The Doctor` CLI run ``npm install -g ce-utils``. This will allow the control management tool to be at your finger tips. From there you can run commands like  `doctor --help` or `doctor init` to get started. What this allows you to do is add cloud elements accounts that you will be moving information between. Another way to add an account is `doctor accounts add -n devStaging -u <user secret> -o <organization secret> -b <base url for the given account for example https://staging.cloud-elements.com> ` Once an account is added to your environment you will be able to move information in or out of that account using the import, export, or delete functionality. Again there is the option of getting more help about how to use these by running commands like `doctor import --help`.
+To interact with `The Doctor` CLI run ``npm install -g ce-util``. This will allow the control management tool to be at your finger tips. From there you can run commands like  `doctor --help` or `doctor init` to get started. What this allows you to do is add cloud elements accounts that you will be moving information between. Another way to add an account is `doctor accounts add -n devStaging -u <user secret> -o <organization secret> -b <base url for the given account for example https://staging.cloud-elements.com> ` Once an account is added to your environment you will be able to move information in or out of that account using the import, export, or delete functionality. Again there is the option of getting more help about how to use these by running commands like `doctor import --help`.
 
 
 ## Installation
