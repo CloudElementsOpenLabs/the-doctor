@@ -2,11 +2,11 @@
 
 const {identity, converge} = require('ramda');
 const getElements = require('../util/getElements');
-const saveToFile = require('../util/saveToFile');
+const save = require('../util/save');
 
-//(fileName)
+//(parms)
 module.exports = converge(
-    saveToFile, [
+    save, [
       identity, 
       getElements
     ]

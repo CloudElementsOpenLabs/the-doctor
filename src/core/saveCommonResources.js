@@ -2,7 +2,7 @@
 
 const get = require('../util/get');
 const findTransformations = require('../util/findTransformations');
-const saveToFile = require('../util/saveToFile');
+const save = require('../util/save');
 const {identity, converge} = require('ramda');
 
 const getData = async () => {
@@ -11,9 +11,9 @@ const getData = async () => {
     transformations: await findTransformations()
   };
 }
-//(fileName)
+//(parms)
 module.exports = converge(
-  saveToFile, [
+  save, [
     identity, 
     getData
   ]

@@ -2,12 +2,12 @@
 
 const {converge, identity} = require('ramda');
 const getFormulas = require('../util/getFormulas');
-const saveToFile = require('../util/saveToFile');
+const save = require('../util/save');
 
-//(fileName)
+//(parms)
 module.exports = converge(
-    saveToFile, [
-      identity, 
+    save, [
+      identity,
       getFormulas
     ]
   )

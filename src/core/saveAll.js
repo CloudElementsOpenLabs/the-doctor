@@ -6,9 +6,9 @@ const findTransformations = require('../util/findTransformations');
 const get = require('../util/get');
 const getFormulasInstances = () => get('formulas/instances');
 const getElements = require('../util/getElements');
-const saveToFile = require('../util/saveToFile');
+const save = require('../util/save');
 
-module.exports = async (fileName) => {
+module.exports = async (parms) => {
     const backup = {
         formulas: await get(`formulas`),
         transformations: await findTransformations(),
@@ -16,5 +16,5 @@ module.exports = async (fileName) => {
         formulasInstances: await getFormulasInstances(),
         elements: await getElements()
     };
-    saveToFile(fileName, backup);
+    save(parms, backup);
 };

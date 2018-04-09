@@ -2,11 +2,11 @@
 
 const {useWith, identity} = require('ramda');
 const getFormulasInstances = require('../util/get')('formulas/instances');
-const saveToFile = require('../util/saveToFile');
+const save = require('../util/save');
 
-//(fileName, env)
+//(parms)
 module.exports = useWith(
-    saveToFile, [
+    save, [
       identity, 
       getFormulasInstances
     ]

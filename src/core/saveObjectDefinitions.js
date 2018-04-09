@@ -1,12 +1,12 @@
 'use strict';
 
 const get = require('../util/get');
-const saveToFile = require('../util/saveToFile');
+const save = require('../util/save');
 const {pipeP, prop, converge, identity, useWith} = require('ramda');
 
-// (fileName, env)
+// (parms, env)
 module.exports = useWith(
-  saveToFile, [
+  save, [
     identity, 
     get('organizations/objects/definitions')
   ]
