@@ -56,8 +56,8 @@ const saveCreds = (answers) => {
 
 const questions = []
 if (!optimist.argv.user) questions.push(buildQuestion('name', 'input', 'Nickname of account:', (value) => validateValue(value)))
-if (!optimist.argv.password) questions.push(buildQuestion('userSecret', 'input', 'Default user secret:', (value) => validateValue(value)))
-if (!optimist.argv.organization) questions.push(buildQuestion('orgSecret', 'input', 'Default organization secret to use:', (value) => validateValue(value)))
-if (!optimist.argv.baseUrl) questions.push(buildQuestion('baseUrl', 'input', 'baseUrl for the account:', (value) => validateValue(value)))
+if (!optimist.argv.password) questions.push(buildQuestion('userSecret', 'input', 'User secret:', (value) => validateValue(value)))
+if (!optimist.argv.organization) questions.push(buildQuestion('orgSecret', 'input', 'Organization secret:', (value) => validateValue(value)))
+if (!optimist.argv.baseUrl) questions.push(buildQuestion('baseUrl', 'input', 'Base url (format like https://staging.cloud-elements.com):', (value) => validateValue(value)))
 
 inquirer.prompt(questions).then(answers => saveCreds(answers))
