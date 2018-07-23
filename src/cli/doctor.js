@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 'use strict';
-require('dotenv').config({path: '/Users/calebgeene/the-doctor-dev/config.env'});
 let commander = require('commander');
 
 commander

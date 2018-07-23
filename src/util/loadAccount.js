@@ -1,7 +1,9 @@
 'use strict';
 
 const readFile = require('./readFile');
-const propsPath = `${process.env.HOME}/.doctor/config.json`;
+const homeDir = (process.platform === 'win32') ? process.env.HOMEPATH : process.env.HOME;
+const path = require('path')
+const filePath = path.normalize(`${homeDir}/.doctor/config.json`);
 const {find, propEq} = require('ramda');
 
 module.exports = async (account) => {
