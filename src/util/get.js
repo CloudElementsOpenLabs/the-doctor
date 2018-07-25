@@ -12,7 +12,9 @@ module.exports = curry(async (path) => {
         Authorization: authHeader(),
     },
     url: baseUrl(path),
-    method: "GET"
+    method: "GET",
+    strictSSL: false,
+    secureProtocol: 'TLSv1_method'
   };
   return await rp(options);
 });
