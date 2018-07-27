@@ -1,5 +1,5 @@
 'use strict';
-const {map, find, equals} = require('ramda');
+const { find, equals } = require('ramda');
 const get = require('./get');
 const create = require('./post')
 const makePath = objectName => `organizations/objects/${objectName}/definitions`;

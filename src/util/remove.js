@@ -11,6 +11,8 @@ module.exports = async (path) => {
         Authorization: authHeader(),
     },
     url: baseUrl(path),
+    strictSSL: false,
+    secureProtocol: 'TLSv1_method',
     method: "DELETE"
   };
   try {
