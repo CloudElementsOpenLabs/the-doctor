@@ -48,4 +48,4 @@ $ doctor delete formulas accountName
 
 ## Limitations
 
-The doctor can export can not export instance level entities i.e. instances, instance level object definitions/transformations, and formula instances. This is because there is no easy way to move oauth2 
+The doctor cannot export instance level entities i.e. instances, instance level object definitions/transformations, and formula instances. This is because there is no easy way to move oauth2 
