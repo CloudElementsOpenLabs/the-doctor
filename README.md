@@ -44,6 +44,9 @@ $ doctor export commonResources staging -f ~/Desktop/commonResources-staging.jso
 
 # doctor delete has similar functionality but will not allow you to delete all. Please see doctor delete --help for more
 $ doctor delete formulas accountName 
+
+# export formulas separating out JS into files for easier version control
+$ doctor export formulas staging -d ~/Desktop/formulas
 ```
 
 ## Limitations
