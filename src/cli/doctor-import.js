@@ -2,6 +2,7 @@
 
 const commander = require('commander');
 const loadAccount = require('../util/loadAccount');
+const {startSpinner, stopSpinner} = require('../util/spinner')
 const functions = {
     commonResources: require('../core/importCommonResources'),
     formulas: require('../core/importFormulas'),
@@ -20,10 +21,12 @@ const importBackup = async (object, account, options) => {
         process.exit(1);
     }
     try {
-        functions[object](options.file);
+        await startSpinner();
+        await functions[object](options.file);
+        await stopSpinner();
     } catch (err) {
         console.log("Failed to complete operation: ", err);
-    }
+    } 
 };
 
 commander

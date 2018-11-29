@@ -3,7 +3,7 @@
 const createObjectDefinitions = require('../util/createObjectDefinitions');
 const createTransformations = require('../util/createTransformations');
 const readFile = require('../util/readFile');
-const {pipeP, tap, prop, pipe} = require('ramda');
+const {pipeP} = require('ramda');
 
 // (fileName)
 module.exports = pipeP(

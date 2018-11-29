@@ -1,5 +1,5 @@
 'use strict';
-const {map, find, and, propEq, pipeP, filter} = require('ramda');
+const {map, find, propEq, pipeP, filter} = require('ramda');
 const get = require('./get');
 const createElement = require('./post')('elements');
 const makePath = element => `elements/${element.key}`;
@@ -11,8 +11,10 @@ module.exports = async (elements) => {
         let endpointElement = find(propEq('key', element.key))(endpointElements);
         if (endpointElement) {
             await update(makePath(endpointElement), element);
+            console.log(`Updated Element: ${endpointElement.key}`)
         } else {
             await createElement(element);
+            console.log(`Created Element: ${element.key}`)
         }
     })(elements);
 }

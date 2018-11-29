@@ -5,13 +5,12 @@ const createTransformations = require('../util/createTransformations');
 const createFormulas = require('../util/createFormulas');
 const createElements = require('../util/createElements');
 const readFile = require('../util/readFile');
-const {pipeP, tap, prop} = require('ramda');
 
 module.exports = async (fileName) => {
     const fileData = await readFile(fileName);
+    await createElements(fileData.elements);
     createObjectDefinitions(fileData).then(r => {
         createTransformations(fileData)
     });
     await createFormulas(fileData.formulas);
-    await createElements(fileData.elements);
 }

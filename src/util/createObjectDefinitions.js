@@ -18,8 +18,10 @@ module.exports = async (data) => {
         let endpointObjectName = find(equals(objectName))(Object.keys(endpointObjects));
         if(endpointObjectName) {
             await update(makePath(endpointObjectName), objectDefinitions[endpointObjectName]);
+            console.log(`Updated Object: ${endpointObjectName}`)
         } else {
             await create(makePath(objectName), objectDefinitions[objectName]);
+            console.log(`Created Object: ${endpointObjectName}`)
         }
     }
     return data

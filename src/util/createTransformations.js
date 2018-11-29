@@ -17,8 +17,10 @@ module.exports = async (transformations) => {
             let endpointObjectName = find(equals(objectName))(Object.keys(endpointTransformations));
             if(endpointObjectName) {
                 await update(makePath(elementKey, endpointObjectName), transformations[elementKey][endpointObjectName]);
+                console.log(`Updated Transformation: ${endpointObjectName} - ${elementKey}`)
             } else {
                 await create(makePath(elementKey, objectName), transformations[elementKey][objectName]);
+                console.log(`Created Transformation: ${endpointObjectName} - ${elementKey}`)
             }
         })(Object.keys(transformations[elementKey]))
     })(Object.keys(transformations));

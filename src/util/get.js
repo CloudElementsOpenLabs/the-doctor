@@ -3,7 +3,7 @@
 const rp = require('request-promise');
 const authHeader = require('./authHeader');
 const baseUrl = require('./baseUrl');
-const {curry} = require('ramda');
+const {curry, test} = require('ramda');
 
 module.exports = curry(async (path) => {
   let options = {
@@ -16,5 +16,13 @@ module.exports = curry(async (path) => {
     strictSSL: false,
     secureProtocol: 'TLSv1_method'
   };
-  return await rp(options);
+  try {
+    return await rp(options);
+  } catch (err) {
+    if (test(/^No (.*) found$/, err.error.message)) {
+      return {}
+    } else {
+      throw err
+    }
+  }
 });

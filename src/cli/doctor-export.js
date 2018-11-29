@@ -2,6 +2,7 @@
 
 const commander = require('commander');
 const loadAccount = require('../util/loadAccount');
+const {startSpinner, stopSpinner} = require('../util/spinner')
 const functions = {
     commonResources: require('../core/saveCommonResources'),
     formulas: require('../core/saveFormulas'),
@@ -21,7 +22,9 @@ const save = async (object, account, options) => {
         process.exit(1);
     }
     try {
-        functions[object]({object, options});
+        await startSpinner();
+        await functions[object]({object, options});
+        await stopSpinner();
     } catch (err) {
         console.log("Failed to complete operation: ", err);
     }

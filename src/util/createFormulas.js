@@ -1,19 +1,39 @@
 'use strict';
-const {map, find, propEq} = require('ramda');
+const {map, find, propEq, mergeAll, curry} = require('ramda');
 const get = require('./get');
-const createFormula = require('./post')('formulas');
+const postFormula = require('./post')('formulas');
 const makePath = formula => `formulas/${formula.id}`;
 const update = require('./update');
 
-module.exports = async (formulas) => {
-    let endpointFormulas = await get('formulas');
-    map(async formula => {
-        let endpointFormula = find(propEq('name' ,formula.name))(endpointFormulas);
-        if(endpointFormula) {
-            await update(makePath(endpointFormula), formula);
-        } else {
-            await createFormula(formula);
-        }
-    })(formulas);
+const createFormula = curry(async (endpointFormulas,formula) => {
+    let endpointFormula = find(propEq('name' ,formula.name))(endpointFormulas)
+    if(endpointFormula) {
+        return { [formula.id]: endpointFormula.id }
+    } else {
+        let result = await postFormula(formula)
+        console.log(`Created Formula: ${formula.name}`)
+        return { [formula.id]: result.id }
+    }
+})
+
+const updateFormula = async formula => {
+    await update(makePath(formula), formula);
+    console.log(`Updated Formula: ${formula.name}`)
 }
 
+module.exports = async (formulas) => {
+    let endpointFormulas = await get('formulas')
+    let formulaIds = mergeAll(await Promise.all(map(createFormula(endpointFormulas))(formulas)))
+    let fixSteps = map(s => s.type === 'formula'? ({ ...s, properties: { formulaId: formulaIds[s.properties.formulaId] } }) : s)
+    let newFormulas = map(f => ({
+            ...f,
+            id: formulaIds[f.id],
+            steps: fixSteps(f.steps),
+            subFormulas: f.subFormulas ? map(s => ({
+                    ...s, 
+                    id: formulaIds[s.id],
+                    steps: fixSteps(s.steps)
+                }))(f.subFormulas) : []
+            }))(formulas)
+    return Promise.all(map(updateFormula)(newFormulas))
+}
