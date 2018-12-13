@@ -6,11 +6,11 @@ const makePath = formula => `formulas/${formula.id}`;
 const update = require('./update');
 
 const createFormula = curry(async (endpointFormulas,formula) => {
-    let endpointFormula = find(propEq('name' ,formula.name))(endpointFormulas)
+    const endpointFormula = find(propEq('name' ,formula.name))(endpointFormulas)
     if(endpointFormula) {
         return { [formula.id]: endpointFormula.id }
     } else {
-        let result = await postFormula(formula)
+        const result = await postFormula(formula)
         console.log(`Created Formula: ${formula.name}`)
         return { [formula.id]: result.id }
     }
@@ -22,10 +22,10 @@ const updateFormula = async formula => {
 }
 
 module.exports = async (formulas) => {
-    let endpointFormulas = await get('formulas')
+    const endpointFormulas = await get('formulas')
     let formulaIds = mergeAll(await Promise.all(map(createFormula(endpointFormulas))(formulas)))
-    let fixSteps = map(s => s.type === 'formula'? ({ ...s, properties: { formulaId: formulaIds[s.properties.formulaId] } }) : s)
-    let newFormulas = map(f => ({
+    const fixSteps = map(s => s.type === 'formula'? ({ ...s, properties: { formulaId: formulaIds[s.properties.formulaId] } }) : s)
+    const newFormulas = map(f => ({
             ...f,
             id: formulaIds[f.id],
             steps: fixSteps(f.steps),

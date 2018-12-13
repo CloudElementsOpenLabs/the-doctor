@@ -1,27 +1,30 @@
 'use strict';
 
+const {forEachObjIndexed, prop, keys} = require('ramda');
 const get = require('../util/get');
 const findTransformations = require('../util/findTransformations');
-const save = require('../util/save');
-const {identity, converge, tap, map, prop, keys, pipeP} = require('ramda');
+const saveToFile = require('../util/saveToFile');
+const saveToDir = require('../util/saveCommonResourcesToDir');
+const saveTo = require('./saveTo')
 
 const getData = async () => {
   return {
     objectDefinitions: await get('organizations/objects/definitions'),
     transformations: await findTransformations()
-  };
+  }
 }
 
-const log = async data => {
-  map(object => {
-    console.log(`Saved Object: ${prop('objectName',object)}.`)
+const log = data => {
+  forEachObjIndexed((object,key) => {
+    console.log(`Saved Object: ${key}.`)
   })(data.objectDefinitions)
-  map(element => {
-    map(transformation => {
-      console.log(`Saved Transformation: ${prop('objectName',transformation)} - ${element}.`)
-    })(data.transformations[element])
-  })(keys(data.transformations))
+  
+  forEachObjIndexed((element,elementKey) => {
+    forEachObjIndexed((transformation,tKey) => {
+      console.log(`Saved Transformation: ${tKey} - ${elementKey}.`)
+    })(element)
+  })(data.transformations)
 }
 
 //(parms)
-module.exports = converge(save, [identity, pipeP(getData, tap(log))])
+module.exports = saveTo(getData, log, saveToFile, saveToDir)

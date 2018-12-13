@@ -1,7 +1,7 @@
 'use strict';
 
 const get = require('../util/get');
-const save = require('../util/save');
+const save = require('../util/saveToFile');
 const {identity, useWith} = require('ramda');
 
 // (parms, env)

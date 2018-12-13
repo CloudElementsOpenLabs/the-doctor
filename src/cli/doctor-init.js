@@ -1,14 +1,13 @@
-'use strict';
+'use strict'
 
 const commander = require('commander')
-const fs = require('fs');
+const fs = require('fs')
 const inquirer = require('inquirer')
 const path = require('path')
 const homeDir = (process.platform === 'win32') ? process.env.HOMEPATH : process.env.HOME
 const optimist = require('optimist')
   .default('user', process.env.DOCTOR_USER)
 const touch = require("touch")
-// constant addAccount= require('./doctor-accounts.js');
 
 commander
   .option('-u, --userSecret <user>', 'default CE user to run churros as', '')
@@ -27,10 +26,10 @@ const buildQuestion = (name, type, message, validate, defaultValue) => {
     message: message,
     validate: validate,
     default: defaultValue
-  };
-};
+  }
+}
 
-function addAccount(options) {
+const addAccount = options => {
   var add = require('../core/addAccount')
   add(options)
 }
@@ -41,7 +40,7 @@ const saveCreds = (answers) => {
 // double check this but should be the fix for a windows machine
   try {
     fs.mkdirSync(folderPath)
-    touch(filePath);
+    touch(filePath)
     fs.writeFile(filePath, "[]", function(err) {
       if (err) {
         return console.log(err)
