@@ -1,5 +1,5 @@
 'use strict';
-const {pipe, pipeP, cond, prop, isNil, not, useWith, assoc, curry} = require('ramda');
+const {pipe, pipeP, cond, prop, isNil, not, useWith} = require('ramda');
 const importElements = require('./importElements')
 const importCommonResources = require('./importCommonResources')
 const importFormulas = require('./importFormulas')
@@ -17,14 +17,20 @@ const importBackupFromFile = async fileData => {
     await createFormulas(fileData.formulas)
 }
 
-//(fileName)
-module.exports = async parms => {
-    if(pipe(prop('file'), isNil, not)(parms)){
-        pipeP(useWith(readFile, [prop('file', parms)]), importBackupFromFile)
-    }
-    if(pipe(prop('dir'), isNil, not)(parms)){
-        await importElements({...parms, dir: `${parms.dir}/elements`})
-        await importCommonResources({...parms, dir: `${parms.dir}/commonResources`})
-        await importFormulas({...parms, dir: `${parms.dir}/formulas`})
-    }
+const importBackupFromDir = async parms => {
+    await importElements({...parms, dir: `${parms.dir}/elements`})
+    await importCommonResources({...parms, dir: `${parms.dir}/commonResources`})
+    await importFormulas({...parms, dir: `${parms.dir}/formulas`})
 }
+
+//(fileName)
+module.exports = cond([
+    [ 
+      pipe(prop('file'), isNil, not),
+      pipeP(useWith(readFile, [prop('file')]), importBackupFromFile)
+    ],
+    [
+      pipe(prop('dir'), isNil, not),
+      importBackupFromDir
+    ]
+  ])

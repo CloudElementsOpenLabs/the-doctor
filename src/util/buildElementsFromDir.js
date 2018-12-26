@@ -18,22 +18,20 @@ const getDirectories = async source =>{
 }
 
 const buildHooks = elementFolder => map(h => 
-    h.type === 'postRequest' || h.type === 'preRequest'? 
-    {
+    ({
         ...h, 
         body: readFileSync(`${elementFolder}/${h.type}Hook.js`).toString()
-    } 
-    : h)
+    }))
 
 const toElementFolderName = (dirName, elementName) => `${dirName}/${toDirectoryName(elementName)}`
 
 const buildResources = elementFolder => map(r => 
     r.hooks ? {
         ...r,
-        hooks: map(h => h.type === 'postRequest' || h.type === 'preRequest'? {
+        hooks: map(h => ({
             ...h,
             body: readFileSync(`${elementFolder}/resources/${r.id}${h.type}Hook.js`).toString()
-        }: h)(r.hooks)
+        }))(r.hooks)
     }: r )
 
 module.exports = async (dirName) => {
