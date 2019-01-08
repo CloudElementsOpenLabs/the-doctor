@@ -1,11 +1,11 @@
 'use strict';
 
-const {pipe, prop, map, forEach} = require('ramda');
-const getFormulas = require('../util/getFormulas');
-const findTransformations = require('../util/findTransformations');
-const get = require('../util/get');
-const getElements = require('../util/getElements');
-const saveToFile = require('../util/saveToFile');
+const {pipe, prop, map, forEach} = require('ramda')
+const getFormulas = require('../util/getFormulas')
+const findTransformations = require('../util/findTransformations')
+const get = require('../util/get')
+const getElements = require('../util/getElements')
+const saveToFile = require('../util/saveToFile')
 const saveToDir = require('../util/saveBackupToDir')
 const saveTo = require('./saveTo')
 

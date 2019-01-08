@@ -2,10 +2,10 @@
 
 const loadAccount = require('../util/loadAccount');
 const {startSpinner, stopSpinner} = require('../util/spinner')
-const saveCommonResources = require('../core/saveCommonResources')
+
 const functions = {
-    commonResources: saveCommonResources,
-    vdr: saveCommonResources,
+    commonResources: require('../core/saveCommonResources'),
+    vdr: require('../core/saveCommonResources'),
     formulas: require('../core/saveFormulas'),
     elements: require('../core/saveElements'),
     all: require('../core/saveAll')

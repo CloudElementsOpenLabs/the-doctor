@@ -17,7 +17,7 @@ const createFormula = curry(async (endpointFormulas,formula) => {
 })
 
 const updateFormula = async formula => {
-    await update(makePath(formula), formula);
+    await update(makePath(formula), formula)
     console.log(`Updated Formula: ${formula.name}`)
 }
 
