@@ -11,6 +11,7 @@ commander
     .command('import', 'imports objects into your account')
     .command('upload', 'imports objects into your account')
     .command('delete', 'delete objects from your account')
+    .command('graph', 'graph a formula flowchart')
     .command('accounts', 'manage accounts to use')
     .command('init', 'initialize account')
     .parse(process.argv)
