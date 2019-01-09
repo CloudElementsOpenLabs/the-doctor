@@ -12,7 +12,7 @@ commander
   .on('--help', () => {
     console.log('  Examples:')
     console.log('')
-    console.log('    $ doctor download commonResources staging -f ~/Desktop/commonResources-staging.json')
+    console.log('    $ doctor download vdrs staging -f ~/Desktop/vdrs-staging.json')
     console.log('    $ doctor download formulas production -f ~/Desktop/formulas-production.json -d ~/Desktop/formulas')
     console.log('    $ doctor download elements dev -f ~/Desktop/elements-production.json')
     console.log('    $ doctor download all personalAccount -f ~/Desktop/production-backup-1-21-18.json')
