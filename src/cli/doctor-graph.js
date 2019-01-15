@@ -15,6 +15,7 @@ const remove = async (object, options) => {
         await functions[object](options)
     } catch (err) {
         console.log("Failed to complete operation: ", err)
+        process.exit(1)
     }
 }
 

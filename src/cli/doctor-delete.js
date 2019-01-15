@@ -41,6 +41,7 @@ const remove = async (object, account, options) => {
         await stopSpinner()
     } catch (err) {
         console.log("Failed to complete operation: ", err)
+        process.exit(1)
     }
 }
 
