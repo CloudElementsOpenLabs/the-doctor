@@ -6,7 +6,7 @@ const remove = require('../util/remove');
 const {filter, pipe, pipeP, propEq, prop, map, tap} = require('ramda');
 const makePath = (id) => `elements/${id}`;
 const makeMessage = name => `Deloeted Element: ${name}.`
-const log = forEach(pipe(prop('name'), makeMessage, console.log))
+const log = map(pipe(prop('name'), makeMessage, console.log))
 
 module.exports = pipeP(
     getElements, 

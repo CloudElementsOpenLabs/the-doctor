@@ -5,7 +5,7 @@ const remove = require('../util/remove');
 const getFormulas = require('../util/getFormulas');
 const makePath = id => `formulas/${id}`;
 const makeMessage = name => `Deleted Formula: ${name}.`
-const log = forEach(pipe(prop('name'), makeMessage, console.log))
+const log = map(pipe(prop('name'), makeMessage, console.log))
 
 module.exports = pipeP(
     getFormulas,

@@ -7,7 +7,7 @@ const {startSpinner, stopSpinner} = require('../util/spinner')
 
 const functions = {
     commonResources: require('../core/removeCommonResources'),
-    vdr : require('../core/removeCommonResources'),
+    vdrs : require('../core/removeCommonResources'),
     formulaInstances: require('../core/removeFormulaInstances'),
     instances: require('../core/removeInstances'),
     elements: require('../core/removeElements'),
@@ -16,7 +16,7 @@ const functions = {
 const specificFunctions = {
     elements: require('../core/removeElement'),
     formulas: require('../core/removeFormula'),
-    vdr: require('../core/removeCommonResource'),
+    vdrs: require('../core/removeCommonResource'),
     commonResources: require('../core/removeCommonResource')
 }
 
@@ -52,7 +52,7 @@ commander
   .on('--help', () => {
     console.log('  Examples:')
     console.log('')
-    console.log('    $ doctor delete commonResources personalAccount')
+    console.log('    $ doctor delete vdrs personalAccount')
     console.log('    $ doctor delete formulas production')
     console.log('    $ doctor delete instances staging')
     console.log('    $ doctor delete formulaInstances dev')
