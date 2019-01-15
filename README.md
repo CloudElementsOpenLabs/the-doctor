@@ -2,7 +2,7 @@
 
 --------------------------------------------------------------------------------
 
-[![version](http://img.shields.io/badge/version-v1.2.0-blue.svg)](#)
+[![version](http://img.shields.io/badge/version-v2.0.0-blue.svg)](#)
 
 
 ## Overview
@@ -15,7 +15,7 @@ $ npm install -g ce-util
 ```
 > __PROTIP:__ `node` version must  be >= `v6.3.0`
 
-# Setu
+# Setup
 ```bash
 $ doctor init
 ```
