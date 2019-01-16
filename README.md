@@ -25,7 +25,7 @@ An account consists of a `name`, `orgSecret`, `userSecret` and `baseUrl`.
 Make sure the baseUrl is formatted like: `https://staging.cloud-elements.com`, `https://console.cloud-elements.com`, or `https://console.cloud-elements.co.uk`
 
 ## Usage
-The doctor can download/uplaod assents from your Cloud Elements accounts in two different modes. To a directory or to a file. 
+The doctor can download/upload assents from your Cloud Elements accounts to a directory or to a file. 
 ### GitHub
 For use with GitHub, it is recommended to use the --directory option. This will export to an intuitive directory structure. This will also extract any JavaScript and put it in its own file. This will allow it to be better source controlled. 
 
