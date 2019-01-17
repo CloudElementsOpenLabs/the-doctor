@@ -1,5 +1,5 @@
 'use strict';
-const {map, find, equals, keys} = require('ramda');
+const {map, find, equals, keys, propEq, reduce, append} = require('ramda');
 const get = require('./get');
 const create = require('./post')
 const makePath = (elementKey, objectName) => `organizations/elements/${elementKey}/transformations/${objectName}`;
@@ -16,13 +16,29 @@ module.exports = async (data) => {
         map(async objectName => {
             const endpointObjectName = find(equals(objectName))(keys(endpointTransformations));
             if(endpointObjectName) {
-                await update(makePath(elementKey, endpointObjectName), transformations[elementKey][endpointObjectName]);
+                const cleaned = cleanTransformation(transformations[elementKey][endpointObjectName], data.objectDefinitions[endpointObjectName])
+                await update(makePath(elementKey, endpointObjectName), cleaned);
                 console.log(`Updated Transformation: ${endpointObjectName} - ${elementKey}`)
             } else {
-                await create(makePath(elementKey, objectName), transformations[elementKey][objectName]);
+                const cleaned = cleanTransformation(transformations[elementKey][objectName], data.objectDefinitions[objectName])
+                await create(makePath(elementKey, objectName), cleaned);
                 console.log(`Created Transformation: ${objectName} - ${elementKey}`)
             }
         })(keys(transformations[elementKey]))
     })(keys(transformations));
 }
 
+const cleanTransformation = (transformation, objectDefinition) => {
+    if (transformation && transformation.fields) {
+        transformation.fields = reduce((fields, field) => {
+            const definitionField = find(propEq("path", field.path))(objectDefinition.fields)
+            if (definitionField) {
+                field.type = definitionField ? definitionField.type : field.type
+                return append(field, fields)
+            } else {
+                return fields 
+            }
+        })([], transformation.fields)
+    }
+    return transformation
+}

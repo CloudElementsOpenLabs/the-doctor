@@ -20,6 +20,6 @@ module.exports = curry(async (path, body) => {
   try {
     return (await rp(options));
   } catch (err) {
-    console.error(`Failed to create ${path} with name ${body.name}. \n${err.message}`);
+    console.error(`Failed to create ${path} with name ${body ? body.name : body}. \n${err.message}`);
   }
 });
