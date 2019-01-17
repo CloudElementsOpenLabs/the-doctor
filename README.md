@@ -27,7 +27,7 @@ Make sure the baseUrl is formatted like: `https://staging.cloud-elements.com`, `
 ## Usage
 The doctor can download/upload assents from your Cloud Elements accounts to a directory or to a file. 
 ### GitHub
-For use with GitHub, it is recommended to use the --directory option. This will export to an intuitive directory structure. This will also extract any JavaScript and put it in its own file. This will allow it to be better source controlled. 
+For use with GitHub, it is recommended to use the --directory option. This will export assets to an intuitive directory structure, and extract any JavaScript to its own file. 
 
 ### Continuous Deployment
 For use with continuous deployment or just routine backups its recommended to just use the --file option. This will save space complexity as an entire CE environment can be represented as one file. 
