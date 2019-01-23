@@ -12,7 +12,6 @@ module.exports = async (path) => {
     },
     url: baseUrl(path),
     strictSSL: false,
-    secureProtocol: 'TLSv1_method',
     method: "DELETE"
   };
   try {

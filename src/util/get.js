@@ -13,8 +13,7 @@ module.exports = curry(async (path) => {
     },
     url: baseUrl(path),
     method: "GET",
-    strictSSL: false,
-    secureProtocol: 'TLSv1_method'
+    strictSSL: false
   };
   try {
     return await rp(options);

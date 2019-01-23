@@ -14,7 +14,6 @@ module.exports = curry(async (path, body) => {
     url: baseUrl(path),
     method: "PUT",
     strictSSL: false,
-    secureProtocol: 'TLSv1_method',
     body: body
   };
   try {

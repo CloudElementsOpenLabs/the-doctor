@@ -1,4 +1,4 @@
-# The Doctor <sub><sup>| Cloud Elements control management tool </sup></sub>
+# The Doctor <sub><sup>| Cloud Elements Asset Management Tool </sup></sub>
 
 --------------------------------------------------------------------------------
 
@@ -81,7 +81,7 @@ $ doctor delete formulas accountName
 $ doctor download formulas staging -d ~/Desktop/formulas
 
 # import or export specific entities by their name using -n, --name
-$ doctor upload formulas -d ~/formulas -n specific\ formula\ name
+$ doctor upload formulas staging -d ~/formulas -n specific\ formula\ name
 ```
 
 ## Limitations
