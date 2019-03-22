@@ -90,7 +90,7 @@ The doctor can export can not export instance or account level entities i.e. ins
 
 ## Setup Local Development Environment
 ```bash 
-$ npm uninstall ce-uti -g 
+$ npm uninstall ce-util -g 
 $ git clone https://github.com/cloud-elements/the-doctor.git
 $ cd the-doctor
 $ npm install -g
