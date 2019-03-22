@@ -29,7 +29,7 @@ const buildTransformations = async (source) => {
                 const transformationFolder = join(elementFolder, name)
                 const transformationFile = join(transformationFolder, 'transformation.json')
                 if(isDirectory(transformationFolder) && existsSync(transformationFile)){
-                    result[element] = {}
+                    result[element] = result[element] ? result[element] : {}
                     const transformation = await readFile(transformationFile)
                     if(transformation.script) {
                         const scriptPath = transformationFile.replace('transformation.json','script.js')
