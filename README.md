@@ -87,3 +87,12 @@ $ doctor upload formulas staging -d ~/formulas -n specific\ formula\ name
 ## Limitations
 
 The doctor can export can not export instance or account level entities i.e. instances, instance or account level object definitions/transformations, accounts, users and formula instances. 
+
+## Setup Local Development Environment
+```bash 
+$ npm uninstall ce-uti -g 
+$ git clone https://github.com/cloud-elements/the-doctor.git
+$ cd the-doctor
+$ npm install -g
+$ npm link 
+```
