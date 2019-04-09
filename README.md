@@ -53,7 +53,7 @@ help [cmd]  display help for [cmd]
 
 ### Options
 `-d`, `--directory` for downloading/uploading to/from and directory  
-`-f`, `--file` for downloading/uplaoding to/from and file   
+`-f`, `--file` for downloading/uploading to/from and file   
 `-n`, `--name` for downloading/uploading a specific entity to/from and directory/file   
 
 ## Examples
