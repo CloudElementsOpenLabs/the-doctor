@@ -5,7 +5,7 @@ const get = require('./get');
 const mapP = require('./mapP');
 const getElements = () => get('elements');
 const filterElements = element => element.private === true;
-const makePath = element => `elements/${element.id}`;
+const makePath = element => `elements/${element.id}/export`;
 
 //()
 module.exports = pipeP(
