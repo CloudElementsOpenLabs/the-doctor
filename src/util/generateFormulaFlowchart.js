@@ -424,6 +424,8 @@ module.exports = async (formula, formulaDirName) => {
     .replace(':', '')
     .replace(';', '')
     .replace('/', '')
+    .replace('>', '')
+    .replace(/(\|)/g, '')
 
     writeFileSync(`${formulaDirName}/Flowchart-${formulaName}.html`, htmlFormulaTemplate
     .replace('{mermaid_title}', formula.name)
