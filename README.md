@@ -2,8 +2,8 @@
 
 --------------------------------------------------------------------------------
 
-[![version](http://img.shields.io/badge/version-v2.0.0-blue.svg)](#)
-
+[![Version](http://img.shields.io/npm/v/ce-util.svg)]()
+[![Downloads](https://img.shields.io/npm/dt/ce-util.svg)]()
 
 ## Overview
 The Doctor is a CLI tool to allow easy control management with Cloud Elements. This provides the ability to move between environments and to backup files locally or to GitHub.
