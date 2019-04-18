@@ -1,7 +1,8 @@
 'use strict';
-const {map, find, propEq, mergeAll, curry} = require('ramda');
+const {map, find, propEq, mergeAll, curry, pipeP} = require('ramda');
 const get = require('./get');
 const postFormula = require('./post')('formulas');
+const applyVersion = require('../util/applyVersion')
 const makePath = formula => `formulas/${formula.id}`;
 const update = require('./update');
 

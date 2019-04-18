@@ -1,8 +1,9 @@
 'use strict';
 
-const { forEachObjIndexed, type, isEmpty } = require('ramda')
+const { forEachObjIndexed, type, isEmpty, pipeP, __} = require('ramda')
 const get = require('../util/get')
 const findTransformations = require('../util/findTransformations')
+const applyVersion = require('../util/applyVersion')
 const saveToFile = require('../util/saveToFile')
 const saveToDir = require('../util/saveCommonResourcesToDir')
 const saveTo = require('./saveTo')
@@ -44,4 +45,9 @@ const log = data => {
 }
 
 //(parms)
-module.exports = saveTo(getData, log, saveToFile, saveToDir)
+module.exports = params => {
+  if (params.options.hasOwnProperty('version')){
+    params.options.name = params.options.name + '_' + params.options.version
+  }
+  return saveTo(pipeP(getData, applyVersion(__, params)), log, saveToFile, saveToDir)(params)
+}

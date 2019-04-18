@@ -28,6 +28,8 @@ Make sure the baseUrl is formatted like: `https://staging.cloud-elements.com`, `
 The doctor can download/upload assents from your Cloud Elements accounts to a directory or to a file. 
 ### GitHub
 For use with GitHub, it is recommended to use the --directory option. This will export assets to an intuitive directory structure, and extract any JavaScript to its own file. 
+### Versioning
+Versioning in the doctor can be used to manage VDRs or Formulas in github using the -v flag. It allows deploying an updated versioned object to an environment without affecting the current deployed version.  For upload the version is applied by appending "\_{version}" to the name of the object being uploaded. For downloads the version will split on a "_" delimiter. Example download result "myFormulaName_v2" saves as "myFormulaName". 
 
 ### Continuous Deployment
 For use with continuous deployment or just routine backups its recommended to just use the --file option. This will save space complexity as an entire CE environment can be represented as one file. 
@@ -54,7 +56,8 @@ help [cmd]  display help for [cmd]
 ### Options
 `-d`, `--directory` for downloading/uploading to/from and directory  
 `-f`, `--file` for downloading/uplaoding to/from and file   
-`-n`, `--name` for downloading/uploading a specific entity to/from and directory/file   
+`-n`, `--name` for downloading/uploading a specific entity to/from and directory/file  
+`-v`, `--version` for downloading/uploading versioned objects   
 
 ## Examples
 
@@ -82,11 +85,19 @@ $ doctor download formulas staging -d ~/Desktop/formulas
 
 # import or export specific entities by their name using -n, --name
 $ doctor upload formulas staging -d ~/formulas -n specific\ formula\ name
+
+# export a versioned object (example formula named myFormula_2)
+$ doctor download formulas staging -f ~/formula.json -n myFormula -v 2
+
+# import a versioned object (example formula named myFormula, version 3)
+$ doctor upload formulas staging -f ~/formula.json -v 3 
 ```
 
 ## Limitations
 
 The doctor can export can not export instance or account level entities i.e. instances, instance or account level object definitions/transformations, accounts, users and formula instances. 
+
+Versioning is not supported for elements
 
 ## Setup Local Development Environment
 ```bash 
