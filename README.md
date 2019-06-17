@@ -29,7 +29,7 @@ The doctor can download/upload assents from your Cloud Elements accounts to a di
 ### GitHub
 For use with GitHub, it is recommended to use the --directory option. This will export assets to an intuitive directory structure, and extract any JavaScript to its own file. 
 ### Versioning
-Versioning in the doctor can be used to manage VDRs or Formulas in github using the -v flag. It allows deploying an updated versioned object to an environment without affecting the current deployed version.  For upload the version is applied by appending "\_{version}" to the name of the object being uploaded. For downloads the version will split on a "_" delimiter. Example download result "myFormulaName_v2" saves as "myFormulaName". 
+Versioning in the doctor can be used to manage VDRs or Formulas in github using the -v flag. It allows deploying an updated versioned object to an environment without affecting the current deployed version.  For upload the version is applied by appending "\_{version}" to the name of the object being uploaded. For downloads the version will split on a "_" delimiter. Example download result "myFormulaName_v2" saves as "myFormulaName". Versioning currently only supports downloading of single objects using the `-n`
 
 ### Continuous Deployment
 For use with continuous deployment or just routine backups its recommended to just use the --file option. This will save space complexity as an entire CE environment can be represented as one file. 
@@ -102,7 +102,7 @@ Versioning is not supported for elements
 ## Setup Local Development Environment
 ```bash 
 $ npm uninstall ce-util -g 
-$ git clone https://github.com/cloud-elements/the-doctor.git
+$ git clone https://github.com/CloudElementsOpenLabs/the-doctor.git
 $ cd the-doctor
 $ npm install -g
 $ npm link 

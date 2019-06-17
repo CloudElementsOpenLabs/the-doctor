@@ -48,16 +48,29 @@ module.exports = curry((params, data) => {
                     if (formulaName.includes('_')){
                         let formulaNameNoVersion = formulaName.split('_')[0]
                         params[0].name = formulaNameNoVersion
+                        return params
+
                     }
+                    
                     else {
                         params[0].name = formulaName
+                        return params
+
                     }
                 }
             }
+            else {
+                return params
+            }
         }
         else {
-            console.log('operation failed: -n flag required to use -v on `doctor download`')
-            process.exit(1)
+            if (!data.options.rawArgs.includes('-d')){
+                console.log('operation failed: -n flag required to use -v on `doctor download`')
+                process.exit(1)
+            }
+            else{
+                return params
+            }
         }
     }
     else {
