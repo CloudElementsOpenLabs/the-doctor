@@ -1,6 +1,6 @@
 {
   "name": "ce-util",
-  "version": "2.1.1",
+  "version": "2.1.2",
   "description": "Utility for interacting with CE platform",
   "main": "index.js",
   "scripts": {
@@ -11,6 +11,10 @@
   },
   "author": "cgeene",
   "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/CloudElementsOpenLabs/the-doctor.git"
+  },
   "dependencies": {
     "cli-spinner": "^0.2.10",
     "commander": "^2.20.0",

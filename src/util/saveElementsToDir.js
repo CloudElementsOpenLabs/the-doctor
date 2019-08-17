@@ -2,6 +2,7 @@ const {existsSync, mkdirSync, writeFileSync} = require('fs');
 const {forEach, dissoc, map, omit, pipe, tap} = require('ramda');
 const sortobject = require('deep-sort-object');
 const {toDirectoryName} = require('./regex');
+const getResourceName = require('./getResourceName')
 
 module.exports = async (dir, data) => {
   const elements = await data
@@ -33,9 +34,10 @@ module.exports = async (dir, data) => {
           resource.parameters = map(omit(['id', 'resourceId', 'createdDate', 'updatedDate']))(resource.parameters)
         }
         if(resource.hooks) {
+          const uniqueName = getResourceName(resource)
           resource.hooks = map(pipe(
             omit(['id', 'resourceId']),
-            tap(h => writeFileSync(`${resourcesFolder}/${resource.id}${h.type}Hook.js`, h.body, 'utf8')),
+            tap(h => writeFileSync(`${resourcesFolder}/${uniqueName}${h.type}Hook.js`, h.body, 'utf8')),
             dissoc('body')
           ))(resource.hooks)
         }

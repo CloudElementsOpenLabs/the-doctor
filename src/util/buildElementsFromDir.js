@@ -1,6 +1,7 @@
 'use strict';
 const { readFileSync, lstatSync, readdir, existsSync } = require('fs');
 const readFile = require('./readFile');
+const getResourceName = require('./getResourceName')
 const { join } = require('path');
 const {promisify} = require('util');
 const {toDirectoryName} = require('./regex');
@@ -30,7 +31,7 @@ const buildResources = elementFolder => map(r =>
         ...r,
         hooks: map(h => ({
             ...h,
-            body: readFileSync(`${elementFolder}/resources/${r.id}${h.type}Hook.js`).toString()
+            body: readFileSync(`${elementFolder}/resources/${getResourceName(r)}${h.type}Hook.js`).toString()
         }))(r.hooks)
     }: r )
 
