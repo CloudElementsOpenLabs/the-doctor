@@ -95,7 +95,7 @@ $ doctor upload formulas staging -f ~/formula.json -v 3
 
 ## Limitations
 
-The doctor can export can not export instance or account level entities i.e. instances, instance or account level object definitions/transformations, accounts, users and formula instances. 
+The doctor can not export instance or account level entities i.e. instances, instance or account level object definitions/transformations, accounts, users and formula instances. 
 
 Versioning is not supported for elements
 
