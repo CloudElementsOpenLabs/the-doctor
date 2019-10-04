@@ -22,6 +22,7 @@ module.exports = async (dir, data) => {
         if (!existsSync(objectDirName)) {
             mkdirSync(objectDirName)
         }
+        object.fields = object.fields.sort((a, b) => a.path.localeCompare(b.path))
         writeFileSync(objectDirName + '/objectDefinition.json', JSON.stringify(sortobject(dissoc('id', object)), null, 4), 'utf8')
     })(resources.objectDefinitions)
 
