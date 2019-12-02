@@ -8,6 +8,7 @@ commander
   .option("-f, --file [file]", "location of file to save objects")
   .option("-d, --dir [dir]", "location of directory to save objects")
   .option("-n, --name [name]", "name of specific object to be download")
+  .option("-l, --level [level]", "level of the vdr")
   .option("-v, --version [version]", "version of an object to download [-n required]")
   .action((object, account, options) => save(object, account, options))
   .on('--help', () => {
