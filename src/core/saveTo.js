@@ -11,6 +11,7 @@ const saveTo = (getData, log, save, property) => converge(
           pathOr(null, ['options', 'name'], data),
           pathOr(null, ['options', 'level'], data),
           pathOr(null, ['options', 'account'], data),
+          pathOr(null, ['options', 'instance'], data),
         ),
       tap(log)
     )

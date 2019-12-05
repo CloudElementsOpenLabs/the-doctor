@@ -11,15 +11,30 @@ const saveTo = require('./saveTo')
 const isNotNilAndEmpty = value => !isNil(value) && !isEmpty(value);
 const isNilOrEmpty = value => isNil(value) || isEmpty(value);
 
-const getVdrsObjectsTransformations = async (objectDefinitions, vdrLevel, accountId) => {
+const getTransformationsForLevel = (vdrLevel, vdrkey, accountId, instanceId) => {
+  switch (vdrLevel) {
+    case 'organizations': 
+      return get(`${vdrLevel}/objects/${vdrkey}/transformations`);
+    case 'accounts': 
+      return get(`${vdrLevel}/${accountId}/objects/${vdrkey}/transformations`);
+    case 'instances': 
+      return get(`${vdrLevel}/${instanceId}/transformations`);
+    default: 
+      return null;
+  }
+}
+
+const getObjectDefinitionsUrl = (vdrLevel, instanceId) => equals(vdrLevel, 'instances')
+  ? `${vdrLevel}/${instanceId}/objects/definitions` 
+  : `${vdrLevel}/objects/definitions`;
+
+const getVdrsObjectsTransformations = async (objectDefinitions, vdrLevel, accountId, instanceId) => {
   let finalTransformationObject = {};
   let transformationList = [];
   let transformationsForElementKey = [];
   const vdrsKeys = keys(objectDefinitions);
   const transformationPromiseList = isNotNilAndEmpty(vdrsKeys)
-    ? vdrsKeys.map(vdrkey => equals(vdrLevel, 'accounts') && isNotNilAndEmpty(accountId)
-      ? get(`${vdrLevel}/${accountId}/objects/${vdrkey}/transformations`) 
-      : get(`${vdrLevel}/objects/${vdrkey}/transformations`))
+    ? vdrsKeys.map(vdrkey => getTransformationsForLevel(vdrLevel, vdrkey, accountId, instanceId))
     : Promise.resolve([]);
   await Promise.all(transformationPromiseList)
     .then(response => {
@@ -28,6 +43,7 @@ const getVdrsObjectsTransformations = async (objectDefinitions, vdrLevel, accoun
     .catch(error => {
       throw error;
     });
+  if (equals(vdrLevel, 'instances')) return flatten(transformationList);
   const elementKeyList = isNotNilAndEmpty(transformationList) ? 
     flatten(transformationList).map(transformation => pipe(prop('element'), prop('key'))(transformation))
     : [];
@@ -50,14 +66,15 @@ const getVdrsObjectsTransformations = async (objectDefinitions, vdrLevel, accoun
     return finalTransformationObject;
 }
 
-const getData = async (vdrName, vdrLevel, account) => {
+const getData = async (vdrName, vdrLevel, account, instance) => {
   // Determine what needs to be done here
   // 1. Should return only organizations vdrs?
   // 2. Should return only accounts vdrs?
   // 3. Should return both organizations and accounts vdrs?
   if (isNotNilAndEmpty(vdrName) && isNotNilAndEmpty(vdrLevel)) {
-    const objectDefinitions = await get(`${vdrLevel}/objects/definitions`);
-    const objectTransformations = await getVdrsObjectsTransformations(objectDefinitions, vdrLevel, account);
+    const objectDefinitionsUrl = getObjectDefinitionsUrl(vdrLevel, instance);
+    const objectDefinitions = await get(objectDefinitionsUrl);
+    const objectTransformations = await getVdrsObjectsTransformations(objectDefinitions, vdrLevel, account, instance);
     if(isNilOrEmpty(objectDefinitions) && isNilOrEmpty(objectTransformations)) {
       console.log(`The doctor was unable to find any vdr called ${vdrName}`)
       return;
@@ -73,21 +90,26 @@ const getData = async (vdrName, vdrLevel, account) => {
     const organizationsObjectTransformations = await getVdrsObjectsTransformations(organizationsObjectDefinitions, 'organizations');
     
     const accountsObjectDefinitions = await get(`accounts/objects/definitions`);
-    const accountsObjectTransformations = await getVdrsObjectsTransformations(accountsObjectDefinitions, 'accounts', account);    
+    const accountsObjectTransformations = await getVdrsObjectsTransformations(accountsObjectDefinitions, 'accounts', account);
+    
+    const instancesObjectDefinitions = await get(`instances/${instance}/objects/definitions`);
+    const instancesObjectTransformations = await getVdrsObjectsTransformations(instancesObjectDefinitions, 'instances', null, instance);
     
     if(isNilOrEmpty(organizationsObjectDefinitions) && isNilOrEmpty(organizationsObjectTransformations)) {
       console.log(`The doctor was unable to find any vdr called ${vdrName}`)
       return;
     }
     return {
-      name: vdrName,
+      objectName: vdrName,
       objectDefinitions: [
         organizationsObjectDefinitions[vdrName],
-        accountsObjectDefinitions[vdrName]
+        accountsObjectDefinitions[vdrName],
+        instancesObjectDefinitions[vdrName]
       ],
       transformations: uniq([
         organizationsObjectTransformations,
-        accountsObjectTransformations
+        accountsObjectTransformations,
+        instancesObjectTransformations
       ]),
     }
   }
