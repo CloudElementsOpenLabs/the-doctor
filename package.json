@@ -22,7 +22,6 @@
     "deep-sort-object": "^1.0.2",
     "dotenv": "^4.0.0",
     "inquirer": "^5.1.0",
-    "isomorphic-fetch": "^2.2.1",
     "optimist": "^0.6.1",
     "ramda": "^0.25.0",
     "ramda-adjunct": "^2.17.0",
