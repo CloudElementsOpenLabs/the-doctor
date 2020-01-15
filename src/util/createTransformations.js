@@ -11,7 +11,7 @@ module.exports = async (data) => {
     map(async elementKey => {
         let endpointTransformations = [];
         try {
-            endpointTransformations = await get(makePathGet(elementKey));
+            endpointTransformations = await get(makePathGet(elementKey),"");
         } catch (err) {}
         map(async objectName => {
             const endpointObjectName = find(equals(objectName))(keys(endpointTransformations));

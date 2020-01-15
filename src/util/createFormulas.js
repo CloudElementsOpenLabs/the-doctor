@@ -23,7 +23,7 @@ const updateFormula = async formula => {
 }
 
 module.exports = async (formulas) => {
-    const endpointFormulas = await get('formulas')
+    const endpointFormulas = await get('formulas',"")
     let formulaIds = mergeAll(await Promise.all(map(createFormula(endpointFormulas))(formulas)))
     const fixSteps = map(s => s.type === 'formula'? ({ ...s, properties: { formulaId: formulaIds[s.properties.formulaId] } }) : s)
     const newFormulas = map(f => ({

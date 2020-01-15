@@ -2,4 +2,4 @@
 
 const get = require('./get');
 
-module.exports = () => get(`organizations/objects/definitions`);
+module.exports = () => get(`organizations/objects/definitions`,"");
