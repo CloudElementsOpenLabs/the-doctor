@@ -107,3 +107,55 @@ $ cd the-doctor
 $ npm install -g
 $ npm link 
 ```
+
+
+
+## New changes to support account and instance level download from Doctor (Temporary readme)
+
+To test the new feature follow the below steps:
+  
+
+```bash
+# As a file (-f)
+
+# Download vdr from all the levels (organization, account, instance)
+
+$ doctor download vdrs staging -f ~/Downloads/vdrName.json -n vdrName -a 10807 -i 226925
+
+
+# Download vdr from an organization
+
+$ doctor download vdrs staging -f ~/Downloads/vdrName.json -n vdrName -l organizations
+  
+
+# Download vdr from an account
+
+$ doctor download vdrs staging -f ~/Downloads/vdrName.json -n vdrName -l accounts -a 10807
+
+
+# Download vdr from an instance
+
+$ doctor download vdrs staging -f ~/Downloads/vdrName.json -n vdrName -l instances -i 226925
+
+
+# As a directory (-d)
+
+# Download vdr from all the levels (organization, account, instance)
+
+$ doctor download vdrs staging -d ~/Downloads/vdrName -n vdrName -a 10807 -i 226925
+
+
+# Download vdr from an organization
+
+$ doctor download vdrs staging -d ~/Downloads/vdrName -n vdrName -l organizations
+
+  
+# Download vdr from an account
+
+$ doctor download vdrs staging -d ~/Downloads/vdrName -n vdrName -l accounts -a 10807
+
+
+# Download vdr from an instance
+
+$ doctor download vdrs staging -d ~/Downloads/vdrName -n vdrName -l instances -i 226925
+```
