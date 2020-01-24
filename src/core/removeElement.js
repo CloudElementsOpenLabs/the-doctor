@@ -1,7 +1,7 @@
 'use strict';
 
 const get = require('../util/get');
-const getElements = () => get('elements');
+const getElements = require('../util/getElements');
 const remove = require('../util/remove');
 const {filter, pipe, pipeP, propEq, prop, map, isEmpty, tap, forEach, toLower, equals} = require('ramda');
 const makePath = id => `elements/${id}`;

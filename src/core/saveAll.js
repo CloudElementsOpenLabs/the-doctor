@@ -31,7 +31,7 @@ const getData = async () => {
     return {
         formulas: await getFormulas(),
         transformations: await findTransformations(),
-        objectDefinitions: await get(`organizations/objects/definitions`),
+        objectDefinitions: await get(`organizations/objects/definitions`,""),
         elements: await getElements()
     }
   }
