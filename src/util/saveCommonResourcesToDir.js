@@ -41,8 +41,8 @@ module.exports = async (dir, data) => {
             writeFileSync(objectDirName + '/objectDefinition.json', JSON.stringify((dissoc('id', objectDefinitions)), null, 4), 'utf8')
     }
 
-    const objectTranformations = resources.transformations;
-    if (equals(type(objectTranformations), 'Array')) {
+    const transformations = resources.transformations;
+    if (equals(type(transformations), 'Array')) {
         forEach(objectTranformation => {
             forEachObjIndexed((element, key) => {
                 const vdrLevel = element.level || '';
@@ -52,30 +52,29 @@ module.exports = async (dir, data) => {
                 }
                 let transf = omit(['id', 'elementId', 'startDate'], element)
                 if(transf.script) {
-                    writeFileSync(`${tranfDirName}/script.js`, transf.script.body, 'utf8')
+                    writeFileSync(`${vdrLevelDirName}/script.js`, transf.script.body, 'utf8')
                     transf.script = dissoc('body', transf.script)
                 }
                 writeFileSync(`${vdrLevelDirName}/transformation.json`, JSON.stringify(assoc(key, transf, {}), null, 4), 'utf8')
             })(objectTranformation);
-        }, objectTranformations);
+        }, transformations);
     } else {
-        forEachObjIndexed((element, key) => {
+        forEachObjIndexed((transformation, key) => {
         const elementDirName = `${transfDir}/${toDirectoryName(key)}`
         if (!existsSync(elementDirName)) {
             mkdirSync(elementDirName)
         }
-        forEachObjIndexed((transformation,key) => {
-            const tranfDirName = `${elementDirName}/${toDirectoryName(key)}`
-            if (!existsSync(tranfDirName)) {
-                mkdirSync(tranfDirName)
-            }
-            let transf = omit(['id', 'elementId', 'startDate'], transformation)
-            if(transf.script) {
-                writeFileSync(`${tranfDirName}/script.js`, transf.script.body, 'utf8')
-                transf.script = dissoc('body', transf.script)
-            }
-            writeFileSync(`${tranfDirName}/transformation.json`, JSON.stringify(assoc(key, transf, {}), null, 4), 'utf8')
-        })(element)
-    })(resources.transformations)
+        const vdrLevel = objectDefinitions.level || '';
+        const tranfDirName = `${elementDirName}/${toDirectoryName(vdrLevel)}`
+        if (!existsSync(tranfDirName)) {
+            mkdirSync(tranfDirName)
+        }
+        let transf = omit(['id', 'elementId', 'startDate'], transformation)
+        if(transf.script) {
+            writeFileSync(`${tranfDirName}/script.js`, transf.script.body, 'utf8')
+            transf.script = dissoc('body', transf.script)
+        }
+        writeFileSync(`${tranfDirName}/transformation.json`, JSON.stringify(assoc(key, transf, {}), null, 4), 'utf8')
+    })(transformations)
 }
 }
