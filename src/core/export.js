@@ -8,11 +8,13 @@ const functions = {
     vdrs: require('../core/saveCommonResources'),
     formulas: require('../core/saveFormulas'),
     elements: require('../core/saveElements'),
+    execution: require('../core/saveExecution'),
     all: require('../core/saveAll')
 }
 
 module.exports = async (object, account, options) => {
     await loadAccount(account)
+    console.log("save was ran")
 
     if (!functions[object]) {
         console.log('Command not found: %o', object)
