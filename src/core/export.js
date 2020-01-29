@@ -2,6 +2,7 @@
 
 const loadAccount = require('../util/loadAccount');
 const {startSpinner, stopSpinner} = require('../util/spinner')
+const {type} = require('ramda')
 
 const functions = {
     commonResources: require('../core/saveCommonResources'),
@@ -14,7 +15,6 @@ const functions = {
 
 module.exports = async (object, account, options) => {
     await loadAccount(account)
-    console.log("save was ran")
 
     if (!functions[object]) {
         console.log('Command not found: %o', object)
@@ -22,6 +22,10 @@ module.exports = async (object, account, options) => {
     }
     if (!options.file && !options.dir) {
         console.log('Please specify a file to save with -f or a directory to save with -d')
+        process.exit(1)
+    }
+    if (object === 'execution' && type(options.name) === "Function") {
+        console.log('Please specify an execution id to download with -n')
         process.exit(1)
     }
     try {

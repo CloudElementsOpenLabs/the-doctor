@@ -1,0 +1,111 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        //for "program" don't use doctor.js as entry point, go directly to command file to prevent child process error
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "download execution",
+            "cwd": "${workspaceFolder}",
+            "program": "${workspaceFolder}/src/cli/doctor-download.js",
+            "protocol": "inspector",
+            "args": [
+                "execution",
+                "production",
+                "-f",
+                "~/Desktop/execution.json",
+                "-n",
+                "1511366101"
+            ],
+            "skipFiles": [
+                "${workspaceFolder}/node_modules/**/*.js",
+                "${workspaceFolder}/lib/**/*.js",
+                "<node_internals>/**/*.js"
+            ],
+            "console": "integratedTerminal",
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "download formulas",
+            "cwd": "${workspaceFolder}",
+            "program": "${workspaceFolder}/src/cli/doctor-download.js",
+            "protocol": "inspector",
+            "args": [
+                "formulas",
+                "production",
+                "-f",
+                "~/Desktop/formulas.json"
+            ],
+            "skipFiles": [
+                "${workspaceFolder}/node_modules/**/*.js",
+                "${workspaceFolder}/lib/**/*.js",
+                "<node_internals>/**/*.js"
+            ],
+            "console": "integratedTerminal",
+        },
+        // {
+        //     "type": "node",
+        //     "request": "launch",
+        //     "name": "download elements",
+        //     "cwd": "${workspaceFolder}",
+        //     "program": "${workspaceFolder}/src/cli/doctor-download.js",
+        //     "protocol": "inspector",
+        //     "args": [
+        //         "elements",
+        //         "stg",
+        //         "-d",
+        //         "~/tmp/doctor/elements"
+        //     ],
+        //     "console": "integratedTerminal",
+        // },
+        // {
+        //     "type": "node",
+        //     "request": "launch",
+        //     "name": "upload elements",
+        //     "cwd": "${workspaceFolder}",
+        //     "program": "${workspaceFolder}/src/cli/doctor-upload.js",
+        //     "protocol": "inspector",
+        //     "args": [
+        //         "elements",
+        //         "stg",
+        //         "-d",
+        //         "~/tmp/doctor/elements"
+        //     ],
+        //     "console": "integratedTerminal",
+        // },
+        // {
+        //     "type": "node",
+        //     "request": "launch",
+        //     "name": "download formulas",
+        //     "cwd": "${workspaceFolder}",
+        //     "program": "${workspaceFolder}/src/cli/doctor-download.js",
+        //     "protocol": "inspector",
+        //     "args": [
+        //         "formulas",
+        //         "stg",
+        //         "-d",
+        //         "~/tmp/doctor/formulas"
+        //     ],
+        //     "console": "integratedTerminal",
+        // },
+        // {
+        //     "type": "node",
+        //     "request": "launch",
+        //     "name": "upload formulas",
+        //     "cwd": "${workspaceFolder}",
+        //     "program": "${workspaceFolder}/src/cli/doctor-upload.js",
+        //     "protocol": "inspector",
+        //     "args": [
+        //         "formulas",
+        //         "stg",
+        //         "-d",
+        //         "~/tmp/doctor/formulas"
+        //     ],
+        //     "console": "integratedTerminal",
+        // }
+    ]
+}
