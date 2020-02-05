@@ -1,17 +1,16 @@
 'use strict';
 
-const {type, filter, curry, toLower} = require('ramda');
-
-// const filterData = curry((name, object) => object.name === name)
+const { curry } = require('ramda');
 
 //(fileName)
-module.exports = curry(async (getData, objectName, id) => {
-    if(objectName !== undefined && type(objectName) !== 'Function') {
-        const data = await getData()
-        return data;
-    } else if(id){
-        return await getData(id)
-    }else {
-        return await getData()
-    }
-})
+ module.exports = curry((getData) => {
+        return async function myfunct(id){
+            return await getData(id);
+        };
+    })
+
+// module.exports =  (getData, id) => {
+//     console.log("getData: ", getData)
+//     console.log("id: ", id)
+//     return  getData(id);
+// }

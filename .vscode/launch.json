@@ -18,13 +18,13 @@
                 "-f",
                 "~/Desktop/execution.json",
                 "-n",
-                "1511366101"
+                "1515022617"
             ],
-            "skipFiles": [
-                "${workspaceFolder}/node_modules/**/*.js",
-                "${workspaceFolder}/lib/**/*.js",
-                "<node_internals>/**/*.js"
-            ],
+            // "skipFiles": [
+            //     "${workspaceFolder}/node_modules/**/*.js",
+            //     "${workspaceFolder}/lib/**/*.js",
+            //     "<node_internals>/**/*.js"
+            // ],
             "console": "integratedTerminal",
         },
         {
@@ -38,13 +38,15 @@
                 "formulas",
                 "production",
                 "-f",
-                "~/Desktop/formulas.json"
+                "~/Desktop/formulas.json",
+                "-n",
+                "formulaNoSub"
             ],
-            "skipFiles": [
-                "${workspaceFolder}/node_modules/**/*.js",
-                "${workspaceFolder}/lib/**/*.js",
-                "<node_internals>/**/*.js"
-            ],
+            // "skipFiles": [
+            //     "${workspaceFolder}/node_modules/**/*.js",
+            //     "${workspaceFolder}/lib/**/*.js",
+            //     "<node_internals>/**/*.js"
+            // ],
             "console": "integratedTerminal",
         },
         // {
