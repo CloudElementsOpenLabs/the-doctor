@@ -110,11 +110,11 @@ const getData = async (vdrName, vdrLevel, accountId, instanceId) => {
     const organizationsObjectDefinitions = await get(`organizations/objects/definitions`);
     const organizationsObjectTransformations = await getVdrsObjectsTransformations(vdrName, 'organizations');
     
-    const accountsObjectDefinitions = await get(`accounts/objects/definitions`);
-    const accountsObjectTransformations = await getVdrsObjectsTransformations(vdrName, 'accounts', accountId);
+    // const accountsObjectDefinitions = await get(`accounts/objects/definitions`);
+    // const accountsObjectTransformations = await getVdrsObjectsTransformations(vdrName, 'accounts', accountId);
     
-    const instancesObjectDefinitions = await get(`instances/${instanceId}/objects/definitions`);
-    const instancesObjectTransformations = await getVdrsObjectsTransformations(vdrName, 'instances', null, instanceId);
+    // const instancesObjectDefinitions = await get(`instances/${instanceId}/objects/definitions`);
+    // const instancesObjectTransformations = await getVdrsObjectsTransformations(vdrName, 'instances', null, instanceId);
     
     if(isNilOrEmpty(organizationsObjectDefinitions) && isNilOrEmpty(organizationsObjectTransformations)) {
       console.log(`The doctor was unable to find any vdr called ${vdrName}`)
@@ -123,15 +123,11 @@ const getData = async (vdrName, vdrLevel, accountId, instanceId) => {
     return {
       objectName: vdrName,
       objectDefinitions: [
-        organizationsObjectDefinitions[vdrName],
-        accountsObjectDefinitions[vdrName],
-        instancesObjectDefinitions[vdrName]
+        organizationsObjectDefinitions[vdrName]
       ],
       transformations: uniq([
-        organizationsObjectTransformations,
-        accountsObjectTransformations,
-        instancesObjectTransformations
-      ]),
+        organizationsObjectTransformations
+      ])
     }
   }
 }
