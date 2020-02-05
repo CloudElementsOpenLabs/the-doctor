@@ -2,4 +2,4 @@
 
 const { curry } = require('ramda');
 
- module.exports = curry((getData) => async (id)=> await getData(id))
+ module.exports = curry((getExecution) => async (id)=> await getExecution(id))
