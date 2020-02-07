@@ -14,14 +14,16 @@ const getStepValues = async execution =>{
     let steps = execution.stepExecutions;
     let stepValues = [];
     await asyncForEach(steps, async (step)=>{
+      //todo do - add error handling for empty step values. These expire after 72 hours 
+      //and as of now just print an empty file
         let myRet = await get(`formulas/instances/executions/steps/${step.id}/values`);
-        stepValues.push(myRet[0]);
+        step.stepValues = myRet;
+        stepValues.push(step);
     })
-    console.log("stepValues: ", stepValues);
+    return stepValues;
 }
 
 module.exports = curry(async (fileName, data) => {
-  let stepValues = getStepValues(await data);
-  //Need an await here becuase fs.writeFileSync runs before we finish getting execution data
-  fs.writeFileSync(fileName, JSON.stringify((await data), null, 2), 'utf8')
+  let executionWithStepValues = await getStepValues( await data);
+  fs.writeFileSync(fileName, JSON.stringify(executionWithStepValues, null, 2), 'utf8')
 });
