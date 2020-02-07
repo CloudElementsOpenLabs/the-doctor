@@ -33,8 +33,6 @@ module.exports = async (object, account, options) => {
         await functions[object]({object, options})
         await stopSpinner()
     } catch (err) {
-        console.log("My Err: ", err)
-        console.log("Failed to complete operation: ", err.message)
         await stopSpinner()
         process.exit(1)
     }
