@@ -1,12 +1,18 @@
 'use strict';
 
-const {converge, pipe, pipeP, tap, prop, cond, isNil, not} = require('ramda');
+const {converge, pipe, pipeP, tap, prop, cond, isNil, not, pathOr} = require('ramda');
 
 const saveTo = (getData, log, save, property) => converge(
   save, [
     pipe(prop('options'), prop(property)),
     pipeP(
-      converge(getData, [ pipe(prop('options'), prop('name'))]), 
+      data => 
+        getData(
+          pathOr(null, ['options', 'name'], data),
+          pathOr(null, ['options', 'level'], data),
+          pathOr(null, ['options', 'account'], data),
+          pathOr(null, ['options', 'instance'], data),
+        ),
       tap(log)
     )
   ])
