@@ -6,7 +6,6 @@ const baseUrl = require('./baseUrl');
 const {curry, test} = require('ramda');
 
 module.exports = curry(async (path) => {
-  
   let options = {
     json: true,
     headers: {

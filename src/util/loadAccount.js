@@ -13,7 +13,6 @@ module.exports = async (account) => {
         console.log(`No account found`);
         process.exit(1);      
     }
-
     process.env.BASE_URL = props.baseUrl;
     process.env.USER_SECRET = props.userSecret;
     process.env.ORG_SECRET = props.orgSecret;
