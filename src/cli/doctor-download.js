@@ -20,7 +20,7 @@ commander
     console.log('    $ doctor download formulas production -d ~/Desktop/formulas -n formula-name')
     console.log('    $ doctor download elements dev -f ~/Desktop/elements-production.json -n element-name')
     console.log('    $ doctor download formulas dev -f ~/Desktop/formula.json -n formula-name -v 2')
-    console.log('    $ doctor download execution 103891203 production -f ~/Desktop/execution.json')
+    console.log('    $ doctor download execution production -f ~/Desktop/execution.json -n 1517001954')
     console.log('')
   })
   .parse(process.argv)
