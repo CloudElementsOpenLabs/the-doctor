@@ -2,7 +2,6 @@
 
 const {curry} = require('ramda');
 const fs = require('fs');
-const get = require('./get');
 const getStepValues = require('./getStepValues');
 
 module.exports = curry(async (fileName, data) => {
