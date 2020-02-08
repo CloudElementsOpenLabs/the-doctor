@@ -6,9 +6,8 @@ const getExecution = require('../util/getExecution')
 const saveExecutionToFile = require('../util/saveExecutionToFile')
 const saveToDir = require('../util/saveFormulasToDir');
 const saveTo = require('./saveTo')
-const makeMessage = name => `Saved Execution: ${name}.`
-const log = forEach(pipe(prop('name'), makeMessage, console.log))
+const log = execution => console.log(`Saved Execution: ${execution.id}.`)
 
-module.exports = async params => {
+module.exports = params => {
     return saveTo(getExecutionDataToExport(getExecution, params.options.name), log, saveExecutionToFile, saveToDir)(params)
 }
