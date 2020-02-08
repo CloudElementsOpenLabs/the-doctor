@@ -10,9 +10,12 @@ module.exports = async execution => {
 
     await asyncForEach(steps, async (step)=>{
         let stepValue = await get(`formulas/instances/executions/steps/${step.id}/values`);
-        stepValue[0]
-        if(!stepValue[0]) logError(step);
-        step.stepValues = stepValue;
+        if(!stepValue[0]) {
+            logError(step);
+            step.stepValues = [];
+        }else {
+            step.stepValues = stepValue; 
+        }
         stepValues.push(step);
     })
     execution.stepExecutions = stepValues;
