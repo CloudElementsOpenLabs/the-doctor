@@ -1,9 +1,8 @@
 'use strict';
 
-const { curry, prop, forEach, pipe, __} = require('ramda')
+const { prop, forEach, pipe, __} = require('ramda')
 const getExecutionDataToExport = require('./getExecutionDataToExport')
 const getExecution = require('../util/getExecution')
-const applyVersion = require('../util/applyVersion')
 const saveExecutionToFile = require('../util/saveExecutionToFile')
 const saveToDir = require('../util/saveFormulasToDir');
 const saveTo = require('./saveTo')
