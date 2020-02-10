@@ -2,6 +2,7 @@
 
 const loadAccount = require('../util/loadAccount');
 const {startSpinner, stopSpinner} = require('../util/spinner');
+const {type} = require('ramda');
 
 const functions = {
     commonResources: require('../core/saveCommonResources'),
@@ -23,7 +24,8 @@ module.exports = async (object, account, options) => {
         console.log('Please specify a file to save with -f or a directory to save with -d')
         process.exit(1)
     }
-    if (object === 'execution' && typeof options.name != 'string') {
+    // if (object === 'execution' && typeof options.name != 'string') {
+    if (object === 'execution' && type(options.name) === 'Function') {
         console.log('Please specify an execution id to download with -n')
         process.exit(1)
     }
