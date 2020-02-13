@@ -58,9 +58,9 @@ help [cmd]  display help for [cmd]
 `-f`, `--file` for downloading/uplaoding to/from and file   
 `-n`, `--name` for downloading/uploading a specific entity to/from and directory/file  
 `-v`, `--version` for downloading/uploading versioned objects   
-`-l`, `--level` for downloading vdrs from a specified level
-`-a`, `--accountId` for downloading the account level vdrs
-`-i`, `--instanceId` for downloading the instance level vdrs
+`-l`, `--level` for downloading vdrs from a specified level   
+`-a`, `--accountId` for downloading the account level vdrs   
+`-i`, `--instanceId` for downloading the instance level vdrs   
 
 ## Examples
 
@@ -80,11 +80,11 @@ $ doctor upload vdrs staging -f ~/Desktop/vdrs-staging.json
 # export vdrs from a specified account (note the account should be from your accounts list and you just need to denote the account name) to the given file path. Again: you can replace vdrs with formulas, elements, or all)
 $ doctor download vdrs staging -f ~/Desktop/vdrs-staging.json
 
-# export vdrs from all the levels (organization, account, instance)
-$ doctor download vdrs staging -d ~/Desktop/vdrs-staging -n vdrName -a 111 -i 222
+# export vdrs from all the levels (organization, account, instance) (Note: Downloaded file with all vdr levels can not be uploaded as the feature is under development)
+$ doctor download vdrs staging -f ~/Desktop/vdrs-staging.json -n vdrName -l all -a 111 -i 222
   
-# export vdrs from an account by specifying account id. (Note: You can replace accounts with instances and -a with -i to obtain instance level vdrs only)
-$ doctor download vdrs staging -f ~/Desktop/vdrs-staging.json -n vdrName -l accounts -a 111
+# export vdrs from an account by specifying account id. (Note: You can replace accounts with instances and -a with -i to obtain instance level vdrs only. Also, downloaded file or directory with accounts and instances vdr levels can not be uploaded as the feature is under development)
+$ doctor download vdrs staging -d ~/Desktop/vdrs-staging -n vdrName -l accounts -a 111
 
 # doctor delete has similar functionality but will not allow you to delete all. Please see doctor delete --help for more
 $ doctor delete formulas accountName 
