@@ -11,7 +11,6 @@ commander
   .option("-l, --level [level]", "level of the vdr")
   .option("-a, --account [accountId]", "the account id")
   .option("-i, --instance [instanceId]", "the instance id")
-  // .option("--all", "all vdr levels")
   .option("-v, --version [version]", "version of an object to download [-n required]")
   .action((object, account, options) => save(object, account, options))
   .on('--help', () => {
