@@ -13,7 +13,7 @@ const min = arr => arr.map(x=> {return {key: x.key, id:x.id, name:x.name}});
 module.exports = async () => {
     
     let extended = await getExtendedElements();
-    let elements = await getAllElements()
+    let elements = await getAllElements();
 
     //strip objects down to make them easy to compare as well as filter for the 2 types of elements we care about
     let priv = min(elements.filter(element => element.private==true));
@@ -31,5 +31,25 @@ module.exports = async () => {
     //an array of promises that returns the GET/{id} for the elements we care about
     let getByIdArr = pathsArr.map(path => get(path,""));
 
-    return await Promise.all(getByIdArr);
+    let elementsExport = await Promise.all(getByIdArr);
+    let finalExport = [];
+
+    for(let i=0; i<elementsExport.length; i++){
+        if(elementsExport[i].extended === true){
+            const resources = await get(`elements/${elementsExport[i].key}/resources`,"");
+            const accountOwnedResources = resources.filter(resource => resource.ownerAccountId !== 1);
+            let newElem = {...elementsExport[i]};
+            if(accountOwnedResources.length>0){
+                newElem.actuallyExtended = true;
+                newElem.resources = accountOwnedResources
+            };
+            
+            finalExport.push(newElem);
+
+        }else {
+            finalExport.push(elementsExport[i]);
+        }
+    }
+
+    return finalExport;
 };
