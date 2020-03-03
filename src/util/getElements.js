@@ -9,6 +9,13 @@ const getExtendedElements = () => get('elements',qs);
 const getAllElements = () => get('elements',"");
 const makePath = element => `elements/${element.id}/export`;
 const min = arr => arr.map(x=> {return {key: x.key, id:x.id, name:x.name}});
+const deleteIds = arr => arr.map(x=> {
+    delete x.id;
+    x.resources? deleteIds(x.resources) : "";
+    x.parameters? deleteIds(x.parameters) : "";
+    x.hooks? deleteIds(x.hooks) : "";
+    return x;
+});
 
 module.exports = async () => {
     
@@ -41,9 +48,11 @@ module.exports = async () => {
             let newElem = {...elementsExport[i]};
             if(accountOwnedResources.length>0){
                 newElem.actuallyExtended = true;
-                newElem.resources = accountOwnedResources
+                newElem.resources = deleteIds(accountOwnedResources);
+                // newElem.resources.parameters = deleteIds(newElem.resources.parameters);
+                // newElem.resources.hooks = deleteIds(newElem.resources.hooks);
             };
-            
+
             finalExport.push(newElem);
 
         }else {
