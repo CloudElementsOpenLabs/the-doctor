@@ -9,6 +9,5 @@ const saveTo = require('./saveTo')
 const makeMessage = name => `Saved Element: ${name}.`
 const log = forEach(pipe(prop('name'), makeMessage, console.log))
 
-
 //(parms)
 module.exports = saveTo(getDataToExport(getElements), log, saveToFile, saveToDir)

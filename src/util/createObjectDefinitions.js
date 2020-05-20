@@ -9,7 +9,7 @@ module.exports = async (data) => {
     const objectDefinitions = data.objectDefinitions;
     let endpointObjects = [];
     try {
-        endpointObjects = await get('organizations/objects/definitions');
+        endpointObjects = await get('organizations/objects/definitions',"");
     } catch (err) {}
 
     const objectNames = keys(objectDefinitions);

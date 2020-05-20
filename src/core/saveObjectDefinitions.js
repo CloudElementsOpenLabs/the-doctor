@@ -8,6 +8,6 @@ const {identity, useWith} = require('ramda');
 module.exports = useWith(
   save, [
     identity, 
-    get('organizations/objects/definitions')
+    get('organizations/objects/definitions',"")
   ]
 );

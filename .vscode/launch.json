@@ -1,0 +1,122 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        //for "program" don't use doctor.js as entry point, go directly to command file to prevent child process error
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "download vdr",
+            "cwd": "${workspaceFolder}",
+            "program": "${workspaceFolder}/src/cli/doctor-download.js",
+            "protocol": "inspector",
+            "args": [
+                "vdrs",
+                "stg",
+                "-d",
+                "~/tmp/doctor/vdrs"
+            ],
+            "console": "integratedTerminal",
+            "skipFiles": [
+                "<node_internals>/**/*.js",
+                "${workspaceFolder}/node_modules/**/*.js"
+            ]
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "upload vdr",
+            "cwd": "${workspaceFolder}",
+            "program": "${workspaceFolder}/src/cli/doctor-upload.js",
+            "protocol": "inspector",
+            "args": [
+                "vdrs",
+                "pgi-stg",
+                "-d",
+                "~/projects/formulas/client-projects/pgi"
+            ],
+            "console": "integratedTerminal",
+            "skipFiles": [
+                "<node_internals>/**/*.js",
+                "${workspaceFolder}/node_modules/**/*.js"
+            ]
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "download elements",
+            "cwd": "${workspaceFolder}",
+            "program": "${workspaceFolder}/src/cli/doctor-download.js",
+            "protocol": "inspector",
+            "args": [
+                "elements",
+                "mikeStaging",
+                "-f",
+                "~/Desktop/test/elements.json"
+            ],
+            "console": "integratedTerminal",
+            "skipFiles": [
+                "${workspaceFolder}/node_modules/**/*.js"
+            ]
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "upload elements",
+            "cwd": "${workspaceFolder}",
+            "program": "${workspaceFolder}/src/cli/doctor-upload.js",
+            "protocol": "inspector",
+            "args": [
+                "elements",
+                "stg",
+                "-d",
+                "~/tmp/doctor/elements"
+            ],
+            "console": "integratedTerminal",
+            "skipFiles": [
+                "<node_internals>/**/*.js",
+                "${workspaceFolder}/node_modules/**/*.js"
+            ]
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "download formulas",
+            "cwd": "${workspaceFolder}",
+            "program": "${workspaceFolder}/src/cli/doctor-download.js",
+            "protocol": "inspector",
+            "args": [
+                "formulas",
+                "stg",
+                "-d",
+                "~/tmp/doctor/formulas"
+            ],
+            "console": "integratedTerminal",
+            "skipFiles": [
+                "<node_internals>/**/*.js",
+                "${workspaceFolder}/node_modules/**/*.js"
+            ]
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "upload formulas",
+            "cwd": "${workspaceFolder}",
+            "program": "${workspaceFolder}/src/cli/doctor-upload.js",
+            "protocol": "inspector",
+            "args": [
+                "formulas",
+                "stg",
+                "-d",
+                "~/tmp/doctor/formulas"
+            ],
+            "console": "integratedTerminal",
+            "skipFiles": [
+                "<node_internals>/**/*.js",
+                "${workspaceFolder}/node_modules/**/*.js"
+            ]
+        }
+    ]
+}

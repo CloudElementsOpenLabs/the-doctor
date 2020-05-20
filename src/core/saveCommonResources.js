@@ -10,7 +10,7 @@ const saveTo = require('./saveTo')
 
 const getData = async (vdrName) => {
   const data = {
-    objectDefinitions: await get('organizations/objects/definitions'),
+    objectDefinitions: await get('organizations/objects/definitions',""),
     transformations: await findTransformations()
   }
   //Specific object export

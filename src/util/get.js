@@ -5,7 +5,7 @@ const authHeader = require('./authHeader');
 const baseUrl = require('./baseUrl');
 const {curry, test} = require('ramda');
 
-module.exports = curry(async (path) => {
+module.exports = curry(async (path,qs) => {
   let options = {
     json: true,
     headers: {
@@ -15,6 +15,7 @@ module.exports = curry(async (path) => {
     method: "GET",
     strictSSL: false
   };
+  qs?options.qs = qs:'';
   try {
     return await rp(options);
   } catch (err) {
