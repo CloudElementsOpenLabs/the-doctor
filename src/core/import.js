@@ -6,7 +6,7 @@ const {startSpinner, stopSpinner} = require('../util/spinner')
 
 const functions = {
     commonResources: require('../core/importCommonResources'),
-    vdrs: require('../core/importCommonResources'),
+    vdrs: require('./vdrs/upload/uploadMultipleVdrs'),
     formulas: require('../core/importFormulas'),
     elements: require('../core/importElements'),
     all: require('../core/importBackup')
@@ -16,7 +16,7 @@ const specificFunctions = {
     formulas: require('./importFormula'),
     elements: require('./importElement'),
     commonResources: require('./importCommonResource'),
-    vdrs: require('./importCommonResource')
+    vdrs: require('./vdrs/upload/uploadSingleVdr')
 }
 
 const validateObject = (object, functions) => {
