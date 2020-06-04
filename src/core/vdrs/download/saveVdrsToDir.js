@@ -1,8 +1,9 @@
-const { existsSync, mkdirSync, writeFileSync, rename, readdir, lstatSync } = require('fs');
+const { existsSync, mkdirSync, writeFileSync, renameSync, readdir, lstatSync } = require('fs');
 const { forEachObjIndexed, dissoc, omit } = require('ramda');
 const sortobject = require('deep-sort-object');
 const { join } = require('path');
 const { promisify } = require('util');
+const { replaceall } = require('replaceall');
 
 const createDirIfNotExist = (dirPath) => {
     if (!existsSync(dirPath)) {
@@ -10,18 +11,26 @@ const createDirIfNotExist = (dirPath) => {
     }
 }
 
+const getBackupDirName = () => {
+    let backupFolderName = `backup-${new Date().toLocaleString()}`;
+    backupFolderName = replaceall("/", "-", backupFolderName);
+    backupFolderName = replaceall(",", "-", backupFolderName);
+    backupFolderName = replaceall(":", "-", backupFolderName);
+    return replaceall(" ", "-", backupFolderName);
+}
+
 const moveOldFilestoBackup = async (dirPath) => {
     if (existsSync(dirPath)) {
-        const backupDir = join(dirPath, `backup-${new Date().toLocaleString()}`);
+        const backupFolderName = getBackupDirName();
+        const backupDir = join(dirPath, backupFolderName);
         const fileNames = await promisify(readdir)(dirPath);
-
         for (const fileName of fileNames) {
             const oldPath = join(dirPath, fileName);
-            if (lstatSync(oldPath).isDirectory() && (fileName === 'objectDefinitions' || fileName === 'transformations')) {
+            if (existsSync(oldPath) && lstatSync(oldPath).isDirectory() && (fileName === 'objectDefinitions' || fileName === 'transformations')) {
+                createDirIfNotExist(backupDir);
                 const newPath = join(backupDir, fileName);
-                fs.rename(oldPath, newPath, function (err) {
-                    if (err) throw err
-                })
+                createDirIfNotExist(newPath);
+                renameSync(oldPath, newPath);
             }
         }
     }
@@ -33,10 +42,10 @@ module.exports = async (dir, data) => {
     if (!existsSync(dir)) {
         mkdirSync(dir)
     }
+    moveOldFilestoBackup(dir);
     for (let [vdrName, vdrNameObject] of Object.entries(vdrs)) {
         const vdrDir = `${dir}/${vdrName}`;
         createDirIfNotExist(vdrDir);
-        moveOldFilestoBackup(vdrDir);
         writeFileSync(`${vdrDir}/${vdrName}.json`, JSON.stringify(sortobject(vdrNameObject), null, 4), 'utf8')
 
         // save defintion
