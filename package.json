@@ -1,6 +1,6 @@
 {
   "name": "ce-util",
-  "version": "2.1.5",
+  "version": "2.2.5",
   "description": "Utility for interacting with CE platform",
   "main": "index.js",
   "scripts": {
