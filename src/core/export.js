@@ -5,7 +5,7 @@ const {startSpinner, stopSpinner} = require('../util/spinner')
 
 const functions = {
     commonResources: require('../core/saveCommonResources'),
-    vdrs: require('../core/saveCommonResources'),
+    vdrs: require('./vdrs/download/downloadVdrs'),
     formulas: require('../core/saveFormulas'),
     elements: require('../core/saveElements'),
     all: require('../core/saveAll')

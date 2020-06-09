@@ -1,6 +1,6 @@
 {
   "name": "ce-util",
-  "version": "2.1.5",
+  "version": "2.2.5",
   "description": "Utility for interacting with CE platform",
   "main": "index.js",
   "scripts": {
@@ -26,6 +26,7 @@
     "optimist": "^0.6.1",
     "ramda": "^0.25.0",
     "ramda-adjunct": "^2.17.0",
+    "replaceall": "^0.1.6",
     "request": "^2.88.0",
     "request-promise": "^4.2.4",
     "touch": "^3.1.0"
