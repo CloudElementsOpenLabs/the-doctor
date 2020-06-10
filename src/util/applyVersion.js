@@ -4,6 +4,9 @@ const { curry } = require('ramda')
 var util = require('util')
 
 module.exports = curry((params, data) => {
+    if (!data.options.rawArgs) {
+        return params;
+    }
     if (data.options._name === "doctor-download"){
         // if -v present -n required for download, if -n present, -v optional
         if (data.options.rawArgs.includes('-n')){
