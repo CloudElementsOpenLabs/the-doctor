@@ -1,12 +1,12 @@
 'use strict';
 
-const {filter, pipeP, map} = require('ramda');
+const {filter,type, pipeP, map} = require('ramda');
 const {uniqBy} = require('lodash');
 const get = require('./get');
 const mapP = require('./mapP');
-const qs = {where: "extended='true'"};
-const getExtendedElements = () => get('elements',qs);
-const getAllElements = () => get('elements',"");
+
+const getExtendedElements = (qs) => get('elements',qs);
+const getAllElements = (param) => get('elements',param);
 const makePath = element => `elements/${element.id}/export`;
 const min = arr => arr.map(x=> {return {key: x.key, id:x.id, name:x.name}});
 const deleteIds = arr => arr.map(x=> {
@@ -17,15 +17,21 @@ const deleteIds = arr => arr.map(x=> {
     return x;
 });
 
-module.exports = async () => {
-    
-    let extended = await getExtendedElements();
-    let elements = await getAllElements();
+module.exports = async (keys) => {
+    let qs = {where: "extended='true'"};
+    let param = ""
+    if (type(keys) === 'String') {
+        var key = '\'' + keys.replace(/ /g, '').replace(/,/g, '\',\'') + '\'';
+        param = {where: "key in (" + key + ")"};
+        qs = {where: "extended='true' AND key in (" + key + ")"};
+    }
+    let extended = await getExtendedElements(qs);
+    let elements = await getAllElements(param);
 
     //strip objects down to make them easy to compare as well as filter for the 2 types of elements we care about
     let priv = min(elements.filter(element => element.private==true));
     extended = min(extended.filter(element => element.extended==true));
-    
+
     //create a superset of those elements
     let superset = priv.concat(extended);
 

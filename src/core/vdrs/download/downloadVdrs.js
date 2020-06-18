@@ -11,7 +11,7 @@ const exportVdrs = require('./exportVdrs')
 const getData = async (vdrName) => {
   let vdrNames = [];
   if (type(vdrName) === 'String') {
-    vdrNames = [vdrName];
+    vdrNames = vdrName.split(',');
   } else {
     vdrNames = await getVdrNames();
   }
