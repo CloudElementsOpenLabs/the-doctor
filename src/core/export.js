@@ -15,14 +15,20 @@ module.exports = async (object, account, options) => {
     await loadAccount(account)
 
     if (!functions[object]) {
-        throw new Error('Command not found: %o', object);
+        console.log('Command not found: %o', object)
+        process.exit(1)
+    }
+    if (!options.file && !options.dir) {
+        console.log('Please specify a file to save with -f or a directory to save with -d')
+        process.exit(1)
     }
     try {
         await startSpinner()
-        return await functions[object]({object, options})
+        await functions[object]({object, options})
+        await stopSpinner()
     } catch (err) {
         console.log("Failed to complete operation: ", err.message)
-    }finally {
         await stopSpinner()
+        process.exit(1)
     }
 }

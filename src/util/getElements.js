@@ -18,15 +18,15 @@ const deleteIds = arr => arr.map(x=> {
 });
 
 module.exports = async (keys) => {
-    let qs = {where: "extended='true'"};
-    let param = ""
+    let extended_qs = {where: "extended='true'"};
+    let getAll_qs = ""
     if (type(keys) === 'String') {
         var key = '\'' + keys.replace(/ /g, '').replace(/,/g, '\',\'') + '\'';
-        param = {where: "key in (" + key + ")"};
-        qs = {where: "extended='true' AND key in (" + key + ")"};
+        getAll_qs = {where: "key in (" + key + ")"};
+        extended_qs = {where: "extended='true' AND key in (" + key + ")"};
     }
-    let extended = await getExtendedElements(qs);
-    let elements = await getAllElements(param);
+    let extended = await getExtendedElements(extended_qs);
+    let elements = await getAllElements(getAll_qs);
 
     //strip objects down to make them easy to compare as well as filter for the 2 types of elements we care about
     let priv = min(elements.filter(element => element.private==true));
