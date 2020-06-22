@@ -9,6 +9,6 @@ module.exports = curry(async (getData, objectName) => {
     if(objectName !== undefined && type(objectName) !== 'Function') {
         return await getData(objectName)
     } else {
-        return await getData(objectName)
+        return await getData()
     }
 })
