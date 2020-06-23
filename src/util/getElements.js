@@ -8,9 +8,9 @@ const getPrivateElements = () => get('elements', { where: "private='true'" });
 const makePath = element => `elements/${element}/export`;
 
 
-const downloadElements = async (elementIds) => {
+const downloadElements = async (elementIds, qs) => {
     let pathsArr = map(makePath, elementIds);
-    let getByIdArr = pathsArr.map(path => get(path, ""));
+    let getByIdArr = pathsArr.map(path => get(path, qs));
     let elementsExport = await Promise.all(getByIdArr);
     return elementsExport;
 };
@@ -23,10 +23,13 @@ module.exports = async () => {
     let extendedElementsIds = map(e => e.id, extendedElements);
     extendedElementsIds = extendedElementsIds.filter(id => !privateElementIds.includes(id));
 
+    // get private elements
     const privateElementsExport = await downloadElements(privateElementIds);
-    const extendedElementsExport = await downloadElements(extendedElementsIds);
 
-    forEach(element => element.actuallyExtended = true, extendedElementsExport);
+    // get extended elements
+    const qs = { extendedOnly: true };
+    const extendedElementsExport = await downloadElements(extendedElementsIds, qs);
+    forEach(element => element.private = true, extendedElementsExport);
 
     let elements = privateElementsExport.concat(extendedElementsExport);
 
