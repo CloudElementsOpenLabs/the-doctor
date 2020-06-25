@@ -17,31 +17,34 @@ const checkIfOldVdrFormat = async (options) => {
       return false;
     }
   } else {
-    const fileLocation = join(options.dir, vdrName, `${vdrName}.json`);
+    const vdrNames = options.name.split(',')
+    for (const vdrName of vdrNames) {
+      const fileLocation = join(options.dir, vdrName, `${vdrName}.json`);
 
-    if (existsSync(fileLocation)) {
-      const payload = await readFile(fileLocation);
-      if (payload && payload.vdrVersion && (payload.vdrVersion === 'v1' || payload.vdrVersion === 'v2')) {
-        return false;
+      if (existsSync(fileLocation)) {
+        const payload = await readFile(fileLocation);
+        if (payload && payload.vdrVersion && (payload.vdrVersion === 'v1' || payload.vdrVersion === 'v2')) {
+          return false;
+        }
       }
     }
   }
   return true;
 }
 
+
 module.exports = async options => {
   if (await checkIfOldVdrFormat(options)) {
     await importCommonResource(options);
     return;
   }
-
-  const vdrName = options.name
-  let vdrs = options.file ? await readFile(options.file) : await buildVdrsFromDir(options.dir, vdrName)
-
-  if (!vdrs || isEmpty(vdrs)) {
-    console.log(`The doctor was unable to find any vdr called ${vdrName}`)
-    return
-  }
-
-  await upsertVdrs(vdrs);
+  const vdrNames = options.name.split(',')
+  vdrNames.forEach(async (vdrName) => {
+    let vdr = options.file ? await readFile(options.file) : await buildVdrsFromDir(options.dir, vdrName)
+    if (!vdr || isEmpty(vdr)) {
+      console.log('The doctor was unable to find any vdr called ${vdrName}')
+    }else {
+      await upsertVdrs(vdr);
+    }
+  })
 }
