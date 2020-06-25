@@ -15,7 +15,6 @@ const getData = async (vdrName) => {
   } else {
     vdrNames = await getVdrNames();
   }
-
   const exportData = await exportVdrs(vdrNames);
   return exportData;
 }

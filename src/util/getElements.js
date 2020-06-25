@@ -4,7 +4,7 @@ const {filter,type, pipeP, map} = require('ramda');
 const {uniqBy} = require('lodash');
 const get = require('./get');
 const mapP = require('./mapP');
-
+const applyQuotes = require('./quoteString');
 const getExtendedElements = (qs) => get('elements',qs);
 const getAllElements = (param) => get('elements',param);
 const makePath = element => `elements/${element.id}/export`;
@@ -21,7 +21,7 @@ module.exports = async (keys) => {
     let extended_qs = {where: "extended='true'"};
     let getAll_qs = ""
     if (type(keys) === 'String') {
-        var key = '\'' + keys.replace(/ /g, '').replace(/,/g, '\',\'') + '\'';
+        var key = applyQuotes(keys);
         getAll_qs = {where: "key in (" + key + ")"};
         extended_qs = {where: "extended='true' AND key in (" + key + ")"};
     }
