@@ -10,10 +10,10 @@ const exportVdrs = require('./exportVdrs')
 
 const getData = async (vdrName) => {
   let vdrNames = [];
-  if (vdrName !== undefined && type(vdrName) === 'Function') {
-    vdrNames = await getVdrNames();
-  } else {
+  if (type(vdrName) === 'String') {
     vdrNames = [vdrName];
+  } else {
+    vdrNames = await getVdrNames();
   }
 
   const exportData = await exportVdrs(vdrNames);
