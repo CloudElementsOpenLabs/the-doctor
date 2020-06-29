@@ -1,12 +1,12 @@
 'use strict';
-const {map, find, propEq, findIndex, pipeP, filter} = require('ramda');
+const { map, find, propEq, findIndex } = require('ramda');
 const getElements = require('./getElements');
 const get = require('./get');
 const createElement = require('./post')('elements');
 const post = require('./post');
 const makePath = element => `elements/${element.key}`;
 const update = require('./update');
-const min = arr => arr.map(x=> {return {methodPath: x.path + x.method}});
+const min = arr => arr.map(x => { return { methodPath: x.path + x.method } });
 
 
 module.exports = async (elements) => {
@@ -14,85 +14,58 @@ module.exports = async (elements) => {
     map(async element => {
         let endpointElement = find(propEq('key', element.key))(endpointElements);
         if (endpointElement) {
-            if(element.actuallyExtended !== true){
+            if (element.private === true || element.actuallyExtended === false) {
                 await update(makePath(endpointElement), element);
-                console.log(`Updated Element: ${endpointElement.key}`);    
-            } else{
-
+                console.log(`Updated Element: ${endpointElement.key}`);
+            } else {
                 //extend the element
                 // TODO
                 // GET resources from destination to compare
-                const resources = await get(`elements/${element.key}/resources`,"");
+                const resources = await get(`elements/${element.key}/resources`, "");
                 const destinationResources = resources.filter(resource => resource.ownerAccountId !== 1);
 
                 //combination of path + method is uniquq per element per account
                 const compDestination = min(destinationResources)
                 const compOrigin = min(element.resources);
 
-                let toUpload = {create: [], update: []};
+                let toUpload = { create: [], update: [] };
                 // 2, Compare GET/resources to the resources in the saved element
-                for(let i=0;i<compOrigin.length;i++){
+                for (let i = 0; i < compOrigin.length; i++) {
 
                     const exists = findIndex(propEq('methodPath', compOrigin[i].methodPath))(compDestination);
                     console.log(`Element Exteneded: ${element.key}`);
-                    if(exists>-1){
+                    if (exists > -1) {
                         // 3. If resource already exist - PUT
-                        toUpload.update.push(update(`elements/${element.key}/resources/${destinationResources[exists].id}`,element.resources[i]));
-                        let x = await update(`elements/${element.key}/resources/${destinationResources[exists].id}`,element.resources[i]);
+                        console.log('destinationResources[exists].id', destinationResources[exists].id);
+                        toUpload.update.push(update(`elements/${element.key}/resources/${destinationResources[exists].id}`, element.resources[i]));
                         console.log(`    Resource Updated:\n        Method: ${element.resources[i].method}\n        Path: ${element.resources[i].path}`);
-                    }else{
+                    } else {
                         // 4. If resource doesn't exist - POST        
-                        // let getByIdArr = pathsArr.map(path => get(path,""));
                         toUpload.create.push(post(`elements/${element.key}/resources`, element.resources[i]));
                         console.log(`    Resource Created:\n        Method: ${element.resources[i].method}\n        Path: ${element.resources[i].path}`);
                     }
                 }
-                
+
                 //combine arrays of promises
                 let arrs = toUpload.create.concat(toUpload.update);
                 await Promise.all(arrs);
-
             }
         } else {
-
-            if(element.actuallyExtended !== true){
+            if (element.private === true || element.actuallyExtended === false) {
                 //create non-extended element
                 await createElement(element);
                 console.log(`Created Element: ${element.key}`);
-            }else{
-                //extend the element
-                // TODO
-                // GET resources from destination to compare
-                const resources = await get(`elements/${element.key}/resources`,"");
-                const destinationResources = resources.filter(resource => resource.ownerAccountId !== 1);
+            } else {
+                let toUpload = { create: [], update: [] };
+                for (let i = 0; i < element.resources.length; i++) {
 
-                //combination of path + method is uniquq per element per account
-                const compDestination = min(destinationResources)
-                const compOrigin = min(element.resources);
-
-                let toUpload = {create: [], update: []};
-                // 2, Compare GET/resources to the resources in the saved element
-                for(let i=0;i<compOrigin.length;i++){
-
-                    const exists = findIndex(propEq('methodPath', compOrigin[i].methodPath))(compDestination);
-                    console.log(`Element Exteneded: ${element.key}`);
-                    if(exists>-1){
-                        // 3. If resource already exist - PUT
-                        toUpload.update.push(update(`elements/${element.key}/resources/${destinationResources[exists].id}`,element.resources[i]));
-                        console.log(`    Resource Updated:\n        Method: ${element.resources[i].method}\n        Path: ${element.resources[i].path}`);
-                    }else{
-                        // 4. If resource doesn't exist - POST        
-                        // let getByIdArr = pathsArr.map(path => get(path,""));
-                        toUpload.create.push(post(`elements/${element.key}/resources`, element.resources[i]));
-                        console.log(`    Resource Created:\n        Method: ${element.resources[i].method}\n        Path: ${element.resources[i].path}`);
-                    }
+                    toUpload.create.push(post(`elements/${element.key}/resources`, element.resources[i]));
+                    console.log(`    Resource Created:\n        Method: ${element.resources[i].method}\n        Path: ${element.resources[i].path}`);
                 }
-                
                 //combine arrays of promises
                 let arrs = toUpload.create.concat(toUpload.update);
                 await Promise.all(arrs);
             }
-            
         }
     })(elements);
 }
