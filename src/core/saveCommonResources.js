@@ -36,7 +36,7 @@ const log = data => {
   forEachObjIndexed((object,key) => {
     console.log(`Saved Object: ${key}.`)
   })(data.objectDefinitions)
-  
+
   forEachObjIndexed((element,elementKey) => {
     forEachObjIndexed((transformation,tKey) => {
       console.log(`Saved Transformation: ${tKey} - ${elementKey}.`)
