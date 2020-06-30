@@ -29,6 +29,5 @@ module.exports = async (object, account, options) => {
     } catch (err) {
         console.log("Failed to complete operation: ", err.message)
         await stopSpinner()
-        process.exit(1)
     }
 }
