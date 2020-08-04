@@ -91,6 +91,9 @@ $ doctor download formulas staging -f ~/formula.json -n myFormula -v 2
 
 # import a versioned object (example formula named myFormula, version 3)
 $ doctor upload formulas staging -f ~/formula.json -v 3 
+
+# export an execution and its step values to a file for a given execution id.
+$ doctor download execution production -f ~/Desktop/execution.json -n 1518943080 
 ```
 
 ## Limitations

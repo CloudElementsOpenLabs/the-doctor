@@ -1,13 +1,15 @@
 'use strict';
 
 const loadAccount = require('../util/loadAccount');
-const {startSpinner, stopSpinner} = require('../util/spinner')
+const {startSpinner, stopSpinner} = require('../util/spinner');
+const {type} = require('ramda');
 
 const functions = {
     commonResources: require('../core/saveCommonResources'),
     vdrs: require('./vdrs/download/downloadVdrs'),
     formulas: require('../core/saveFormulas'),
     elements: require('../core/saveElements'),
+    execution: require('../core/saveExecution'),
     all: require('../core/saveAll')
 }
 
@@ -20,6 +22,11 @@ module.exports = async (object, account, options) => {
     }
     if (!options.file && !options.dir) {
         console.log('Please specify a file to save with -f or a directory to save with -d')
+        process.exit(1)
+    }
+    // if (object === 'execution' && typeof options.name != 'string') {
+    if (object === 'execution' && type(options.name) === 'Function') {
+        console.log('Please specify an execution id to download with -n')
         process.exit(1)
     }
     try {
