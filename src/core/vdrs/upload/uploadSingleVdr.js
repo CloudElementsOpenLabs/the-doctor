@@ -39,12 +39,30 @@ module.exports = async options => {
     return;
   }
   const vdrNames = options.name.split(',')
+  const service = options.service;
   vdrNames.forEach(async (vdrName) => {
     let vdr = options.file ? await readFile(options.file) : await buildVdrsFromDir(options.dir, vdrName)
     if (!vdr || isEmpty(vdr)) {
       console.log('The doctor was unable to find any vdr called ${vdrName}')
-    }else {
-      await upsertVdrs(vdr);
+    } else {
+      try {
+        if (service) {
+          const cancelled = await service.isJobCancelled(service.jobId);
+          if (cancelled) {
+            throw new Error('job is cancelled');
+          }
+          await service.updateProcessArtifact(service.processId, 'vdrs', vdrName, 'inprogress', '');
+        }
+        await upsertVdrs(vdr);
+        if (service) {
+          await service.updateProcessArtifact(service.processId, 'vdrs', vdrName, 'completed', '');
+        }
+      } catch (error) {
+        if (service) {
+          await service.updateProcessArtifact(service.processId, 'vdrs', vdrName, 'error', error.toString());
+        }
+        throw error;
+      }
     }
   })
 }

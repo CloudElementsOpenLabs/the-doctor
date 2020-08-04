@@ -17,12 +17,31 @@ const createFormula = curry(async (endpointFormulas,formula) => {
     }
 })
 
-const updateFormula = async formula => {
-    await update(makePath(formula), formula)
-    console.log(`Updated Formula: ${formula.name}`)
-}
+const updateFormula = curry(async (service, formula) => {
+  try {
+    if (service) {
+      const cancelled = await service.isJobCancelled(service.jobId);
+      if (cancelled) {
+        throw new Error('job is cancelled');
+      }
+      await service.updateProcessArtifact(service.processId, 'formulas', formula.name, 'inprogress', '');
+    }
 
-module.exports = async (formulas) => {
+    await update(makePath(formula), formula)
+    if (service) {
+      await service.updateProcessArtifact(service.processId, 'formulas', formula.name, 'completed', '');
+    }
+  } catch (error) {
+    if (service) {
+      await service.updateProcessArtifact(service.processId, 'formulas', formula.name, 'error', error.toString());
+    }
+    throw error;
+  }
+  console.log(`Updated Formula: ${formula.name}`)
+})
+
+module.exports = async (formulas, service) => {
+    console.log('service1', service);
     const endpointFormulas = await get('formulas',"")
     let formulaIds = mergeAll(await Promise.all(map(createFormula(endpointFormulas))(formulas)))
     const fixSteps = map(s => s.type === 'formula'? ({ ...s, properties: { formulaId: formulaIds[s.properties.formulaId] } }) : s)
@@ -36,5 +55,5 @@ module.exports = async (formulas) => {
                     steps: fixSteps(s.steps)
                 }))(f.subFormulas) : []
             }))(formulas)
-    return Promise.all(map(updateFormula)(newFormulas))
+    return Promise.all(map(updateFormula(service))(newFormulas));
 }

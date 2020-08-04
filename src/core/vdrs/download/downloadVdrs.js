@@ -8,14 +8,14 @@ const saveTo = require('../../saveTo')
 const getVdrNames = require('./getVdrNames')
 const exportVdrs = require('./exportVdrs')
 
-const getData = async (vdrName) => {
+const getData = async (vdrName, service) => {
   let vdrNames = [];
   if (type(vdrName) === 'String') {
     vdrNames = vdrName.split(',');
   } else {
     vdrNames = await getVdrNames();
   }
-  const exportData = await exportVdrs(vdrNames);
+  const exportData = await exportVdrs(vdrNames, service);
   return exportData;
 }
 

@@ -17,7 +17,7 @@ const createElement = async (options, elements) => {
         }
     });
     if (assets.length > 0) {
-        await createElements(assets)
+        await createElements(assets, options.service)
     }
 }
 //(fileName)
