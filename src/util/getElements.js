@@ -6,17 +6,37 @@ const applyQuotes = require('./quoteString');
 
 const getExtendedElements = (qs) => get('elements', qs);
 const getPrivateElements = (qs) => get('elements', qs);
-const makePath = element => `elements/${element}/export`;
+const makePath = element => `elements/${element.id}/export`;
 
 
-const downloadElements = async (elementIds, qs) => {
-    let pathsArr = map(makePath, elementIds);
-    let getByIdArr = pathsArr.map(path => get(path, qs));
-    let elementsExport = await Promise.all(getByIdArr);
+const downloadElements = async (elements, qs, service) => {
+    let downloadPromise = await elements.map(async element => {
+        try {
+            if (service) {
+                const jobCancelled = await service.isJobCancelled(service.jobId);
+                if (jobCancelled) {
+                    throw new Error('job is cancelled');
+                }
+                await service.updateProcessArtifact(service.processId, 'elements', element.key, 'inprogress', '');
+            }
+            const exportedElement = await get(makePath(element), qs);
+
+            if (service) {
+                await service.updateProcessArtifact(service.processId, 'elements', element.key, 'completed', '');
+            }
+            return exportedElement;
+        } catch (error) {
+            if (service) {
+                await service.updateProcessArtifact(service.processId, 'elements', element.key, 'error', error.toString());
+            }
+            throw error;
+        }
+    });
+    let elementsExport = await Promise.all(downloadPromise);
     return elementsExport;
 };
 
-module.exports = async (keys) => {
+module.exports = async (keys, service) => {
     let extended_qs = {where: "extended='true'"};
     let private_qs = { where: "private='true'" }
     if (type(keys) === 'String') {
@@ -25,18 +45,17 @@ module.exports = async (keys) => {
         extended_qs = {where: "extended='true' AND key in (" + key + ")"};
     }
     const privateElements = await getPrivateElements(private_qs);
-    const extendedElements = await getExtendedElements(extended_qs);
+    const allExtendedElements = await getExtendedElements(extended_qs);
 
     const privateElementIds = map(e => e.id, privateElements);
-    let extendedElementsIds = map(e => e.id, extendedElements);
-    extendedElementsIds = extendedElementsIds.filter(id => !privateElementIds.includes(id));
+    const extendedElements = allExtendedElements.filter(element => !privateElementIds.includes(element.id));
 
     // get private elements
-    const privateElementsExport = await downloadElements(privateElementIds);
+    const privateElementsExport = await downloadElements(privateElements, {}, service);
 
     // get extended elements
     const qs = { extendedOnly: true };
-    const extendedElementsExport = await downloadElements(extendedElementsIds, qs);
+    const extendedElementsExport = await downloadElements(extendedElements, qs, service);
     forEach(element => element.private = true, extendedElementsExport);
 
     let elements = privateElementsExport.concat(extendedElementsExport);

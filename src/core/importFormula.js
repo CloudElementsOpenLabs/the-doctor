@@ -19,7 +19,7 @@ const createFormula = async (options, formulas) => {
         }
     })
     if (assets.length > 0) {
-        await createFormulas(assets)
+        await createFormulas(assets, options.service)
     }
 }
 
