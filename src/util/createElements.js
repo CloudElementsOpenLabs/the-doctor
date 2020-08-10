@@ -1,5 +1,8 @@
 'use strict';
 const { map, find, propEq, findIndex } = require('ramda');
+const { emitter, EventTopic } = require('../events/emitter');
+const constructEvent = require('../events/construct-event');
+const { isJobCancelled } = require('../events/cancelled-job');
 const getElements = require('./getElements');
 const get = require('./get');
 const createElement = require('./post')('elements');
@@ -9,17 +12,14 @@ const update = require('./update');
 const min = arr => arr.map(x => { return { methodPath: x.path + x.method } });
 
 
-module.exports = async (elements, service) => {
+module.exports = async (elements, jobId, processId) => {
     const endpointElements = await getElements();
-    map(async element => {
+    let uploadPromise = await elements.map(async element => {
         try {
-            if (service) {
-                const jobCancelled = await service.isJobCancelled(service.jobId);
-                if (jobCancelled) {
-                    throw new Error('job is cancelled');
-                }
-                await service.updateProcessArtifact(service.processId,'elements',element.key,'inprogress','');
+            if (isJobCancelled(jobId)) {
+                throw new Error('job is cancelled');
             }
+            emitter.emit(EventTopic.ASSET_STATUS, constructEvent(processId, 'elements', element.key, 'inprogress', ''));
             let endpointElement = find(propEq('key', element.key))(endpointElements);
             if (endpointElement) {
                 if (element.private === true || element.actuallyExtended === false) {
@@ -75,16 +75,12 @@ module.exports = async (elements, service) => {
                     await Promise.all(arrs);
                 }
             }
-            if (service) {
-                await service.updateProcessArtifact(service.processId,'elements',element.key,'completed','');
-            }
+            emitter.emit(EventTopic.ASSET_STATUS, constructEvent(processId, 'elements', element.key, 'completed', ''));
         }catch (error) {
-            if (service) {
-                await service.updateProcessArtifact(service.processId,'elements',element.key,'error',error.toString());
-            }
+            emitter.emit(EventTopic.ASSET_STATUS, constructEvent(processId, 'elements', element.key, 'error', error.toString()));
             throw error;
         }
-
-    })(elements);
+    });
+    await Promise.all(uploadPromise);
 }
 

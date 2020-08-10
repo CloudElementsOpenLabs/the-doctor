@@ -3,6 +3,7 @@
 const { type } = require('ramda');
 const loadAccount = require('../util/loadAccount');
 const {startSpinner, stopSpinner} = require('../util/spinner')
+const eventListener = require('../events/event-listener');
 
 const functions = {
     commonResources: require('../core/importCommonResources'),
@@ -28,6 +29,7 @@ const validateObject = (object, functions) => {
 
 module.exports = async (object, account, options) => {
     await loadAccount(account)
+    eventListener.addListener();
     
     if (!options.file && !options.dir) {
         console.log('Please specify a file or directory to save with -f / -d')

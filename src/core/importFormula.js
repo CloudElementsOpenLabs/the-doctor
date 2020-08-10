@@ -19,7 +19,7 @@ const createFormula = async (options, formulas) => {
         }
     })
     if (assets.length > 0) {
-        await createFormulas(assets, options.service)
+        await createFormulas(assets, options.jobId, options.processId)
     }
 }
 
@@ -38,6 +38,6 @@ module.exports = async options => {
 
     if(options.dir) {
         data = await buildFormulasFromDir(options.dir)
-        createFormula(options, data)
+        await createFormula(options, data)
     }
 }

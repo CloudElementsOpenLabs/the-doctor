@@ -1,5 +1,8 @@
 'use strict';
 const {map, find, propEq, mergeAll, curry, pipeP} = require('ramda');
+const { emitter, EventTopic } = require('../events/emitter');
+const constructEvent = require('../events/construct-event');
+const { isJobCancelled } = require('../events/cancelled-job');
 const get = require('./get');
 const postFormula = require('./post')('formulas');
 const applyVersion = require('../util/applyVersion')
@@ -17,31 +20,22 @@ const createFormula = curry(async (endpointFormulas,formula) => {
     }
 })
 
-const updateFormula = curry(async (service, formula) => {
+const updateFormula = curry(async (jobId, processId, formula) => {
   try {
-    if (service) {
-      const cancelled = await service.isJobCancelled(service.jobId);
-      if (cancelled) {
-        throw new Error('job is cancelled');
-      }
-      await service.updateProcessArtifact(service.processId, 'formulas', formula.name, 'inprogress', '');
+    if (isJobCancelled(jobId)) {
+      throw new Error('job is cancelled');
     }
-
+    emitter.emit(EventTopic.ASSET_STATUS, constructEvent(processId, 'formulas', formula.name, 'inprogess', ''));
     await update(makePath(formula), formula)
-    if (service) {
-      await service.updateProcessArtifact(service.processId, 'formulas', formula.name, 'completed', '');
-    }
+    emitter.emit(EventTopic.ASSET_STATUS, constructEvent(processId, 'formulas', formula.name, 'completed', ''));
   } catch (error) {
-    if (service) {
-      await service.updateProcessArtifact(service.processId, 'formulas', formula.name, 'error', error.toString());
-    }
+    emitter.emit(EventTopic.ASSET_STATUS, constructEvent(processId, 'formulas', formula.name, 'error', error.toString()));
     throw error;
   }
   console.log(`Updated Formula: ${formula.name}`)
 })
 
-module.exports = async (formulas, service) => {
-    console.log('service1', service);
+module.exports = async (formulas, jobId, processId) => {
     const endpointFormulas = await get('formulas',"")
     let formulaIds = mergeAll(await Promise.all(map(createFormula(endpointFormulas))(formulas)))
     const fixSteps = map(s => s.type === 'formula'? ({ ...s, properties: { formulaId: formulaIds[s.properties.formulaId] } }) : s)
@@ -55,5 +49,5 @@ module.exports = async (formulas, service) => {
                     steps: fixSteps(s.steps)
                 }))(f.subFormulas) : []
             }))(formulas)
-    return Promise.all(map(updateFormula(service))(newFormulas));
+    return Promise.all(map(updateFormula(jobId, processId))(newFormulas));
 }

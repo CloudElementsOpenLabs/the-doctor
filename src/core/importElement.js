@@ -17,7 +17,7 @@ const createElement = async (options, elements) => {
         }
     });
     if (assets.length > 0) {
-        await createElements(assets, options.service)
+        await createElements(assets, options.jobId, options.processId)
     }
 }
 //(fileName)
@@ -35,6 +35,6 @@ module.exports = async options => {
 
     if(options.dir) {
         data = await buildElementsFromDir(options.dir)
-        createElement(options, data)
+        await createElement(options, data)
     }
 }

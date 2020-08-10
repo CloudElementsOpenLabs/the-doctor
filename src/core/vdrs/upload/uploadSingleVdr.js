@@ -1,6 +1,10 @@
 'use strict';
 
 const { isEmpty } = require('ramda');
+const { emitter, EventTopic } = require('../../../events/emitter');
+const constructEvent = require('../../../events/construct-event');
+const { isJobCancelled } = require('../../../events/cancelled-job');
+
 const readFile = require('../../../util/readFile');
 const buildVdrsFromDir = require('./readVdrsFromDir');
 const upsertVdrs = require('./upsertVdrs');
@@ -39,30 +43,25 @@ module.exports = async options => {
     return;
   }
   const vdrNames = options.name.split(',')
-  const service = options.service;
-  vdrNames.forEach(async (vdrName) => {
+  const { jobId, processId } = options;
+
+  let uploadPromise = await vdrNames.map(async (vdrName) => {
     let vdr = options.file ? await readFile(options.file) : await buildVdrsFromDir(options.dir, vdrName)
     if (!vdr || isEmpty(vdr)) {
       console.log('The doctor was unable to find any vdr called ${vdrName}')
     } else {
       try {
-        if (service) {
-          const cancelled = await service.isJobCancelled(service.jobId);
-          if (cancelled) {
-            throw new Error('job is cancelled');
-          }
-          await service.updateProcessArtifact(service.processId, 'vdrs', vdrName, 'inprogress', '');
+        if (isJobCancelled(jobId)) {
+          throw new Error('job is cancelled');
         }
+        emitter.emit(EventTopic.ASSET_STATUS, constructEvent(processId, 'vdrs', vdrName, 'inprogress', ''));
         await upsertVdrs(vdr);
-        if (service) {
-          await service.updateProcessArtifact(service.processId, 'vdrs', vdrName, 'completed', '');
-        }
+        emitter.emit(EventTopic.ASSET_STATUS, constructEvent(processId, 'vdrs', vdrName, 'completed', ''));
       } catch (error) {
-        if (service) {
-          await service.updateProcessArtifact(service.processId, 'vdrs', vdrName, 'error', error.toString());
-        }
+        emitter.emit(EventTopic.ASSET_STATUS, constructEvent(processId, 'vdrs', vdrName, 'error', error.toString()));
         throw error;
       }
     }
-  })
+  });
+  await Promise.all(uploadPromise);
 }
