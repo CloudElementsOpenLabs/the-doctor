@@ -3,7 +3,8 @@
 const { isEmpty } = require('ramda');
 const { emitter, EventTopic } = require('../../../events/emitter');
 const constructEvent = require('../../../events/construct-event');
-const { isJobCancelled } = require('../../../events/cancelled-job');
+const { isJobCancelled, removeCancelledJobId } = require('../../../events/cancelled-job');
+const { Assets, ArtifactStatus } = require('../../../constants/artifact');
 
 const readFile = require('../../../util/readFile');
 const buildVdrsFromDir = require('./readVdrsFromDir');
@@ -52,13 +53,14 @@ module.exports = async options => {
     } else {
       try {
         if (isJobCancelled(jobId)) {
+          removeCancelledJobId(jobId);
           throw new Error('job is cancelled');
         }
-        emitter.emit(EventTopic.ASSET_STATUS, constructEvent(processId, 'vdrs', vdrName, 'inprogress', ''));
+        emitter.emit(EventTopic.ASSET_STATUS, constructEvent(processId, Assets.VDRS, vdrName, ArtifactStatus.INPROGRESS, ''));
         await upsertVdrs(vdr);
-        emitter.emit(EventTopic.ASSET_STATUS, constructEvent(processId, 'vdrs', vdrName, 'completed', ''));
+        emitter.emit(EventTopic.ASSET_STATUS, constructEvent(processId, Assets.VDRS, vdrName, ArtifactStatus.COMPLETED, ''));
       } catch (error) {
-        emitter.emit(EventTopic.ASSET_STATUS, constructEvent(processId, 'vdrs', vdrName, 'error', error.toString()));
+        emitter.emit(EventTopic.ASSET_STATUS, constructEvent(processId, Assets.VDRS, vdrName, ArtifactStatus.FAILED, error.toString()));
         throw error;
       }
     }

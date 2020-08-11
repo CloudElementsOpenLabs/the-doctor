@@ -2,7 +2,8 @@
 
 const { emitter, EventTopic } = require('../events/emitter');
 const constructEvent = require('../events/construct-event');
-const { isJobCancelled } = require('../events/cancelled-job');
+const { isJobCancelled, removeCancelledJobId } = require('../events/cancelled-job');
+const { Assets, ArtifactStatus } = require('../constants/artifact');
 const { forEach,type, map } = require('ramda');
 const get = require('./get')
 const applyQuotes = require('./quoteString');
@@ -16,14 +17,15 @@ const downloadElements = async (elements, qs, jobId, processId) => {
     let downloadPromise = await elements.map(async element => {
         try {
             if (isJobCancelled(jobId)) {
+                removeCancelledJobId(jobId);
                 throw new Error('job is cancelled');
             }
-            emitter.emit(EventTopic.ASSET_STATUS, constructEvent(processId, 'elements', element.key, 'inprogress', ''));
+            emitter.emit(EventTopic.ASSET_STATUS, constructEvent(processId, Assets.ELEMENTS, element.key, ArtifactStatus.INPROGRESS, ''));
             const exportedElement = await get(makePath(element), qs);
-            emitter.emit(EventTopic.ASSET_STATUS, constructEvent(processId, 'elements', element.key, 'completed', ''));
+            emitter.emit(EventTopic.ASSET_STATUS, constructEvent(processId, Assets.ELEMENTS, element.key, ArtifactStatus.COMPLETED, ''));
             return exportedElement;
         } catch (error) {
-            emitter.emit(EventTopic.ASSET_STATUS, constructEvent(processId, 'elements', element.key, 'error', error.toString()));
+            emitter.emit(EventTopic.ASSET_STATUS, constructEvent(processId, Assets.ELEMENTS, element.key, ArtifactStatus.FAILED, error.toString()));
             throw error;
         }
     });

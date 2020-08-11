@@ -2,7 +2,9 @@
 const { map, find, propEq, findIndex } = require('ramda');
 const { emitter, EventTopic } = require('../events/emitter');
 const constructEvent = require('../events/construct-event');
-const { isJobCancelled } = require('../events/cancelled-job');
+const { isJobCancelled, removeCancelledJobId } = require('../events/cancelled-job');
+const { Assets, ArtifactStatus } = require('../constants/artifact');
+
 const getElements = require('./getElements');
 const get = require('./get');
 const createElement = require('./post')('elements');
@@ -17,9 +19,10 @@ module.exports = async (elements, jobId, processId) => {
     let uploadPromise = await elements.map(async element => {
         try {
             if (isJobCancelled(jobId)) {
+                removeCancelledJobId(jobId);
                 throw new Error('job is cancelled');
             }
-            emitter.emit(EventTopic.ASSET_STATUS, constructEvent(processId, 'elements', element.key, 'inprogress', ''));
+            emitter.emit(EventTopic.ASSET_STATUS, constructEvent(processId, Assets.ELEMENTS, element.key, ArtifactStatus.INPROGRESS, ''));
             let endpointElement = find(propEq('key', element.key))(endpointElements);
             if (endpointElement) {
                 if (element.private === true || element.actuallyExtended === false) {
@@ -75,9 +78,9 @@ module.exports = async (elements, jobId, processId) => {
                     await Promise.all(arrs);
                 }
             }
-            emitter.emit(EventTopic.ASSET_STATUS, constructEvent(processId, 'elements', element.key, 'completed', ''));
+            emitter.emit(EventTopic.ASSET_STATUS, constructEvent(processId, Assets.ELEMENTS, element.key, ArtifactStatus.COMPLETED, ''));
         }catch (error) {
-            emitter.emit(EventTopic.ASSET_STATUS, constructEvent(processId, 'elements', element.key, 'error', error.toString()));
+            emitter.emit(EventTopic.ASSET_STATUS, constructEvent(processId, Assets.ELEMENTS, element.key, ArtifactStatus.FAILED, error.toString()));
             throw error;
         }
     });

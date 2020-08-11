@@ -18,7 +18,13 @@ const isJobCancelled = (jobId) => {
     return idSet.has(jobId);
 }
 
+const removeCancelledJobId = (jobId) => {
+    const idSet = getIdSet();
+    idSet.delete(jobId);
+}
+
 module.exports = {
     addCancelledJobId,
-    isJobCancelled
+    isJobCancelled,
+    removeCancelledJobId
 };
