@@ -1,64 +1,87 @@
 'use strict';
-
-const { forEach,type, map } = require('ramda');
-const get = require('./get')
+const {forEach, join, map, isNil, isEmpty, flatten, pipe, filter, type} = require('ramda');
+const get = require('./get');
 const applyQuotes = require('./quoteString');
-
 const getExtendedElements = (qs) => get('elements', qs);
 const getPrivateElements = (qs) => get('elements', qs);
-const makePath = element => `elements/${element.id}/export`;
-
+const makePath = (element) => `elements/${element.id}/export`;
+const isNilOrEmpty = (val) => isNil(val) || isEmpty(val);
 
 const downloadElements = async (elements, qs, service) => {
-    let downloadPromise = await elements.map(async element => {
-        try {
-            if (service) {
-                const jobCancelled = await service.isJobCancelled(service.jobId);
-                if (jobCancelled) {
-                    throw new Error('job is cancelled');
-                }
-                await service.updateProcessArtifact(service.processId, 'elements', element.key, 'inprogress', '');
-            }
-            const exportedElement = await get(makePath(element), qs);
-
-            if (service) {
-                await service.updateProcessArtifact(service.processId, 'elements', element.key, 'completed', '');
-            }
-            return exportedElement;
-        } catch (error) {
-            if (service) {
-                await service.updateProcessArtifact(service.processId, 'elements', element.key, 'error', error.toString());
-            }
-            throw error;
+  const downloadPromise = await elements.map(async (element) => {
+    try {
+      if (service) {
+        const jobCancelled = await service.isJobCancelled(service.jobId);
+        if (jobCancelled) {
+          throw new Error('job is cancelled');
         }
-    });
-    let elementsExport = await Promise.all(downloadPromise);
-    return elementsExport;
+        await service.updateProcessArtifact(service.processId, 'elements', element.key, 'inprogress', '');
+      }
+      const exportedElement = await get(makePath(element), qs);
+
+      if (service) {
+        await service.updateProcessArtifact(service.processId, 'elements', element.key, 'completed', '');
+      }
+      return exportedElement;
+    } catch (error) {
+      if (service) {
+        await service.updateProcessArtifact(service.processId, 'elements', element.key, 'error', error.toString());
+      }
+      throw error;
+    }
+  });
+  const elementsExport = await Promise.all(downloadPromise);
+  return elementsExport;
 };
 
 module.exports = async (keys, service) => {
-    let extended_qs = {where: "extended='true'"};
-    let private_qs = { where: "private='true'" }
-    if (type(keys) === 'String') {
-        var key = applyQuotes(keys);
-        private_qs = {where: "private='true' AND key in (" + key + ")"};
-        extended_qs = {where: "extended='true' AND key in (" + key + ")"};
-    }
-    const privateElements = await getPrivateElements(private_qs);
-    const allExtendedElements = await getExtendedElements(extended_qs);
+  // From CLI - User can pass comma seperated string of elements key
+  // From Doctor-service - It will be in Array of objects containing elementKey and private flag structure
+  const privateElementsKey = !isNilOrEmpty(keys)
+    ? Array.isArray(keys)
+      ? pipe(
+          filter((element) => element.private),
+          map((element) => element.key),
+          flatten,
+          join(', '),
+        )(keys)
+      : type(keys) === 'String'
+      ? keys
+      : []
+    : [];
+  const extendedElementsKey = !isNilOrEmpty(keys)
+    ? Array.isArray(keys)
+      ? pipe(
+          filter((element) => !element.private),
+          map((element) => element.key),
+          flatten,
+          join(', '),
+        )(keys)
+      : type(keys) === 'String'
+      ? keys
+      : []
+    : [];
 
-    const privateElementIds = map(e => e.id, privateElements);
-    const extendedElements = allExtendedElements.filter(element => !privateElementIds.includes(element.id));
+  const extended_qs = isNilOrEmpty(extendedElementsKey)
+    ? {where: "extended='true'"}
+    : {where: "extended='true' AND key in (" + applyQuotes(extendedElementsKey) + ')'};
+  const private_qs = isNilOrEmpty(privateElementsKey)
+    ? {where: "private='true'"}
+    : {where: "private='true' AND key in (" + applyQuotes(privateElementsKey) + ')'};
 
-    // get private elements
-    const privateElementsExport = await downloadElements(privateElements, {}, service);
+  const privateElements = await getPrivateElements(private_qs);
+  const allExtendedElements = await getExtendedElements(extended_qs);
 
-    // get extended elements
-    const qs = { extendedOnly: true };
-    const extendedElementsExport = await downloadElements(extendedElements, qs, service);
-    forEach(element => element.private = true, extendedElementsExport);
+  const privateElementIds = map((e) => e.id, privateElements);
+  const extendedElements = allExtendedElements.filter((element) => !privateElementIds.includes(element.id));
 
-    let elements = privateElementsExport.concat(extendedElementsExport);
+  // get private elements
+  const privateElementsExport = await downloadElements(privateElements, {}, service);
 
-    return elements
+  // get extended elements
+  const qs = {extendedOnly: true};
+  const extendedElementsExport = await downloadElements(extendedElements, qs, service);
+  forEach((element) => (element.private = true), extendedElementsExport);
+
+  return privateElementsExport.concat(extendedElementsExport);
 };

@@ -17,7 +17,9 @@ const checkIfOldVdrFormat = async (options) => {
       return false;
     }
   } else {
-    const vdrNames = options.name.split(',')
+    const vdrNames = Array.isArray(options.name)
+      ? options.name.map((vdr) => vdr.name)
+      : options.name.split(',');
     for (const vdrName of vdrNames) {
       const fileLocation = join(options.dir, vdrName, `${vdrName}.json`);
 
@@ -38,9 +40,11 @@ module.exports = async options => {
     await importCommonResource(options);
     return;
   }
-  const vdrNames = options.name.split(',')
+  const vdrNames = Array.isArray(options.name)
+    ? options.name.map((vdr) => vdr.name)
+    : options.name.split(',');
   const service = options.service;
-  vdrNames.forEach(async (vdrName) => {
+  vdrNames && vdrNames.forEach(async (vdrName) => {
     let vdr = options.file ? await readFile(options.file) : await buildVdrsFromDir(options.dir, vdrName)
     if (!vdr || isEmpty(vdr)) {
       console.log('The doctor was unable to find any vdr called ${vdrName}')
