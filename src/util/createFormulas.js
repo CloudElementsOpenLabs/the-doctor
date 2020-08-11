@@ -41,7 +41,6 @@ const updateFormula = curry(async (service, formula) => {
 })
 
 module.exports = async (formulas, service) => {
-    console.log('service1', service);
     const endpointFormulas = await get('formulas',"")
     let formulaIds = mergeAll(await Promise.all(map(createFormula(endpointFormulas))(formulas)))
     const fixSteps = map(s => s.type === 'formula'? ({ ...s, properties: { formulaId: formulaIds[s.properties.formulaId] } }) : s)

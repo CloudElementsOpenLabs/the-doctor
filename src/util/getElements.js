@@ -77,11 +77,11 @@ module.exports = async (keys, service) => {
 
   // get private elements
   const privateElementsExport = await downloadElements(privateElements, {}, service);
-
+  // For private elements, private flag won't get populated if we cloned any system element
+  forEach((element) => (element.private = true), privateElementsExport);  
   // get extended elements
   const qs = {extendedOnly: true};
   const extendedElementsExport = await downloadElements(extendedElements, qs, service);
-  forEach((element) => (element.private = true), extendedElementsExport);
 
   return privateElementsExport.concat(extendedElementsExport);
 };

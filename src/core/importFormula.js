@@ -1,6 +1,5 @@
 'use strict';
-
-const {any, find, toLower, identity} = require('ramda');
+const {any, find, toLower, isNil, isEmpty} = require('ramda');
 const readFile = require('../util/readFile');
 const buildFormulasFromDir = require('../util/buildFormulasFromDir');
 const createFormulas = require('../util/createFormulas');
@@ -12,7 +11,7 @@ const createFormula = async (options, formulas) => {
   let formulasToImport = [];
   if (!isNilOrEmpty(options.name)) {
     let formulaNames = Array.isArray(options.name)
-      ? options.name.map((formulaName) => formulaName)
+      ? options.name.map((formulaName) => formulaName.name)
       : options.name.split(',');
     formulaNames &&
       formulaNames.forEach((formulaName) => {
