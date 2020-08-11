@@ -6,12 +6,19 @@ const buildElementsFromDir = require('../util/buildElementsFromDir');
 const createElements = require('../util/createElements');
 
 const createElement = async (options, elements) => {
-    const element = find(f => toLower(f.name) === toLower(options.name))(elements)
-    if(!element) {
-        console.log(`The doctor was unable to find the element ${options.name}.`)
-        return
+    var names = options.name.split(',')
+    var assets = [];
+    names.forEach(ename => {
+        const element = find(f => toLower(f.key) === toLower(ename))(elements)
+        if (!element) {
+            console.log(`The doctor was unable to find the element ${ename}.`)
+        } else {
+            assets.push(element)
+        }
+    });
+    if (assets.length > 0) {
+        await createElements(assets, options.jobId, options.processId)
     }
-    await createElements([element])
 }
 //(fileName)
 module.exports = async options => {
@@ -28,6 +35,6 @@ module.exports = async options => {
 
     if(options.dir) {
         data = await buildElementsFromDir(options.dir)
-        createElement(options, data)
+        await createElement(options, data)
     }
 }

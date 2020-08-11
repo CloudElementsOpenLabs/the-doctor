@@ -1,64 +1,61 @@
 'use strict';
 
-const {filter, pipeP, map} = require('ramda');
-const {uniqBy} = require('lodash');
-const get = require('./get');
-const mapP = require('./mapP');
-const qs = {where: "extended='true'"};
-const getExtendedElements = () => get('elements',qs);
-const getAllElements = () => get('elements',"");
+const { emitter, EventTopic } = require('../events/emitter');
+const constructEvent = require('../events/construct-event');
+const { isJobCancelled, removeCancelledJobId } = require('../events/cancelled-job');
+const { Assets, ArtifactStatus } = require('../constants/artifact');
+const { forEach,type, map } = require('ramda');
+const get = require('./get')
+const applyQuotes = require('./quoteString');
+
+const getExtendedElements = (qs) => get('elements', qs);
+const getPrivateElements = (qs) => get('elements', qs);
 const makePath = element => `elements/${element.id}/export`;
-const min = arr => arr.map(x=> {return {key: x.key, id:x.id, name:x.name}});
-const deleteIds = arr => arr.map(x=> {
-    delete x.id;
-    x.resources? deleteIds(x.resources) : "";
-    x.parameters? deleteIds(x.parameters) : "";
-    x.hooks? deleteIds(x.hooks) : "";
-    return x;
-});
 
-module.exports = async () => {
-    
-    let extended = await getExtendedElements();
-    let elements = await getAllElements();
 
-    //strip objects down to make them easy to compare as well as filter for the 2 types of elements we care about
-    let priv = min(elements.filter(element => element.private==true));
-    extended = min(extended.filter(element => element.extended==true));
-    
-    //create a superset of those elements
-    let superset = priv.concat(extended);
-
-    //return only unique elements
-    let uniqElements = uniqBy(superset,'id');
-
-    //create the necessary path for GET/{id} for each of the unique elements
-    let pathsArr = map(makePath, uniqElements);
-
-    //an array of promises that returns the GET/{id} for the elements we care about
-    let getByIdArr = pathsArr.map(path => get(path,""));
-
-    let elementsExport = await Promise.all(getByIdArr);
-    let finalExport = [];
-
-    for(let i=0; i<elementsExport.length; i++){
-        if(elementsExport[i].extended === true){
-            const resources = await get(`elements/${elementsExport[i].key}/resources`,"");
-            const accountOwnedResources = resources.filter(resource => resource.ownerAccountId !== 1);
-            let newElem = {...elementsExport[i]};
-            if(accountOwnedResources.length>0){
-                newElem.actuallyExtended = true;
-                newElem.resources = deleteIds(accountOwnedResources);
-                // newElem.resources.parameters = deleteIds(newElem.resources.parameters);
-                // newElem.resources.hooks = deleteIds(newElem.resources.hooks);
-            };
-
-            finalExport.push(newElem);
-
-        }else {
-            finalExport.push(elementsExport[i]);
+const downloadElements = async (elements, qs, jobId, processId) => {
+    let downloadPromise = await elements.map(async element => {
+        try {
+            if (isJobCancelled(jobId)) {
+                removeCancelledJobId(jobId);
+                throw new Error('job is cancelled');
+            }
+            emitter.emit(EventTopic.ASSET_STATUS, constructEvent(processId, Assets.ELEMENTS, element.key, ArtifactStatus.INPROGRESS, ''));
+            const exportedElement = await get(makePath(element), qs);
+            emitter.emit(EventTopic.ASSET_STATUS, constructEvent(processId, Assets.ELEMENTS, element.key, ArtifactStatus.COMPLETED, ''));
+            return exportedElement;
+        } catch (error) {
+            emitter.emit(EventTopic.ASSET_STATUS, constructEvent(processId, Assets.ELEMENTS, element.key, ArtifactStatus.FAILED, error.toString()));
+            throw error;
         }
-    }
+    });
+    let elementsExport = await Promise.all(downloadPromise);
+    return elementsExport;
+};
 
-    return finalExport;
+module.exports = async (keys, jobId, processId) => {
+    let extended_qs = { where: "extended='true'" };
+    let private_qs = { where: "private='true'" }
+    if (type(keys) === 'String') {
+        var key = applyQuotes(keys);
+        private_qs = { where: "private='true' AND key in (" + key + ")" };
+        extended_qs = { where: "extended='true' AND key in (" + key + ")" };
+    }
+    const privateElements = await getPrivateElements(private_qs);
+    const allExtendedElements = await getExtendedElements(extended_qs);
+
+    const privateElementIds = map(e => e.id, privateElements);
+    const extendedElements = allExtendedElements.filter(element => !privateElementIds.includes(element.id));
+
+    // get private elements
+    const privateElementsExport = await downloadElements(privateElements, {}, jobId, processId);
+
+    // get extended elements
+    const qs = { extendedOnly: true };
+    const extendedElementsExport = await downloadElements(extendedElements, qs, jobId, processId);
+    forEach(element => element.private = true, extendedElementsExport);
+
+    let elements = privateElementsExport.concat(extendedElementsExport);
+
+    return elements
 };
