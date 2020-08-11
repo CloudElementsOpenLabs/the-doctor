@@ -6,7 +6,7 @@ const saveTo = (getData, log, save, property) => converge(
   save, [
     pipe(prop('options'), prop(property)),
     pipeP(
-      converge(getData, [ pipe(prop('options'), prop('name')), pipe(prop('options'), prop('service'))]),
+      converge(getData, [ pipe(prop('options'), prop('name')), pipe(prop('options'), prop('jobId')), pipe(prop('options'), prop('processId'))]),
       tap(log)
     )
   ])
