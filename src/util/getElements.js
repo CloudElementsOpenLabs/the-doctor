@@ -81,7 +81,6 @@ module.exports = async (keys, jobId, processId) => {
     // get extended elements
     const qs = { extendedOnly: true };
     const extendedElementsExport = await downloadElements(extendedElements, qs, jobId, processId);
-    forEach(element => element.private = true, extendedElementsExport);
 
     return privateElementsExport.concat(extendedElementsExport);
 };
