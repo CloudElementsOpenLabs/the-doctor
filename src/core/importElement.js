@@ -18,7 +18,7 @@ const createElement = async (options, elements) => {
       elementKeys.forEach((elementKey) => {
         const elementToImport = find((element) => toLower(element.key) === toLower(elementKey))(elements);
         if (isNilOrEmpty(elementToImport)) {
-          console.log(`The doctor was unable to find the element ${ename}.`);
+          console.log(`The doctor was unable to find the element ${elementKey}.`);
         } else {
           elementsToImport.push(elementToImport);
         }
