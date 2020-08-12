@@ -22,13 +22,12 @@ const createElement = async (options, elements) => {
         } else {
           elementsToImport.push(elementToImport);
         }
-      });
+    });
+    if (!isNilOrEmpty(elementsToImport)) {
+      await createElements(elementsToImport, options.jobId, options.processId)
+    }
   }
-
-  if (!isNilOrEmpty(elementsToImport)) {
-    await createElements(elementsToImport, options.service);
-  }
-};
+}
 //(fileName)
 module.exports = async (options) => {
   let data = {};
@@ -38,10 +37,9 @@ module.exports = async (options) => {
       await createElement(options, data.elements);
     }
     if (type(data) === 'Array') {
-      await createElement(options, data);
+      await createElement(options, data)
     }
   }
-
   if (options.dir) {
     data = await buildElementsFromDir(options.dir);
     createElement(options, data);

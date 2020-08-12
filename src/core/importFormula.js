@@ -26,9 +26,9 @@ const createFormula = async (options, formulas) => {
       });
   }
   if (!isNilOrEmpty(formulasToImport)) {
-    await createFormulas(formulasToImport, options.service);
+    await createFormulas(formulasToImport, options.jobId, options.processId);
   }
-};
+}
 
 //(fileName)
 module.exports = async (options) => {
@@ -42,7 +42,6 @@ module.exports = async (options) => {
       await createFormula(options, data);
     }
   }
-
   if (options.dir) {
     data = await buildFormulasFromDir(options.dir);
     createFormula(options, data);

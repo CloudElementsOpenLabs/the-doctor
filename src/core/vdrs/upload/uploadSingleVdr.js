@@ -1,6 +1,11 @@
 'use strict';
 
 const { isEmpty } = require('ramda');
+const { emitter, EventTopic } = require('../../../events/emitter');
+const constructEvent = require('../../../events/construct-event');
+const { isJobCancelled, removeCancelledJobId } = require('../../../events/cancelled-job');
+const { Assets, ArtifactStatus } = require('../../../constants/artifact');
+
 const readFile = require('../../../util/readFile');
 const buildVdrsFromDir = require('./readVdrsFromDir');
 const upsertVdrs = require('./upsertVdrs');
@@ -43,30 +48,26 @@ module.exports = async options => {
   const vdrNames = Array.isArray(options.name)
     ? options.name.map((vdr) => vdr.name)
     : options.name.split(',');
-  const service = options.service;
-  vdrNames && vdrNames.forEach(async (vdrName) => {
+  const {jobId, processId} = options;
+
+  let uploadPromise = await vdrNames.map(async (vdrName) => {
     let vdr = options.file ? await readFile(options.file) : await buildVdrsFromDir(options.dir, vdrName)
     if (!vdr || isEmpty(vdr)) {
       console.log('The doctor was unable to find any vdr called ${vdrName}')
     } else {
       try {
-        if (service) {
-          const cancelled = await service.isJobCancelled(service.jobId);
-          if (cancelled) {
-            throw new Error('job is cancelled');
-          }
-          await service.updateProcessArtifact(service.processId, 'vdrs', vdrName, 'inprogress', '');
+        if (isJobCancelled(jobId)) {
+          removeCancelledJobId(jobId);
+          throw new Error('job is cancelled');
         }
+        emitter.emit(EventTopic.ASSET_STATUS, constructEvent(processId, Assets.VDRS, vdrName, ArtifactStatus.INPROGRESS, ''));
         await upsertVdrs(vdr);
-        if (service) {
-          await service.updateProcessArtifact(service.processId, 'vdrs', vdrName, 'completed', '');
-        }
+        emitter.emit(EventTopic.ASSET_STATUS, constructEvent(processId, Assets.VDRS, vdrName, ArtifactStatus.COMPLETED, ''));
       } catch (error) {
-        if (service) {
-          await service.updateProcessArtifact(service.processId, 'vdrs', vdrName, 'error', error.toString());
-        }
+        emitter.emit(EventTopic.ASSET_STATUS, constructEvent(processId, Assets.VDRS, vdrName, ArtifactStatus.FAILED, error.toString()));
         throw error;
       }
     }
-  })
+  });
+  await Promise.all(uploadPromise);
 }

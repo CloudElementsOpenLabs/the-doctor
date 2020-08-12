@@ -2,6 +2,7 @@
 
 const loadAccount = require('../util/loadAccount');
 const {startSpinner, stopSpinner} = require('../util/spinner')
+const eventListener = require('../events/event-listener');
 
 const functions = {
     commonResources: require('../core/saveCommonResources'),
@@ -13,6 +14,7 @@ const functions = {
 
 module.exports = async (object, account, options) => {
     await loadAccount(account)
+    eventListener.addListener();
 
     if (!functions[object]) {
         console.log('Command not found: %o', object)
