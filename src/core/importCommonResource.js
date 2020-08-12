@@ -8,8 +8,8 @@ const createTransformations = require('../util/createTransformations');
 
 //(fileName)
 module.exports = async options => {
-  // From CLI - User can pass comma seperated string of elements key
-  // From Doctor-service - It will be in Array of objects containing elementKey and private flag structure
+  // From CLI - User can pass comma seperated string of vdrs name
+  // From Doctor-service - It will be in Array of objects containing vdr name
   const vdrNames = Array.isArray(options.name)
     ? options.name.map((vdr) => vdr.name)
     : options.name.split(',');

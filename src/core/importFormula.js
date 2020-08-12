@@ -6,8 +6,8 @@ const createFormulas = require('../util/createFormulas');
 const isNilOrEmpty = (val) => isNil(val) || isEmpty(val);
 
 const createFormula = async (options, formulas) => {
-  // From CLI - User can pass comma seperated string of elements key
-  // From Doctor-service - It will be in Array of objects containing elementKey and private flag structure
+  // From CLI - User can pass comma seperated string of formula name
+  // From Doctor-service - It will be in Array of objects containing formula name
   let formulasToImport = [];
   if (!isNilOrEmpty(options.name)) {
     let formulaNames = Array.isArray(options.name)
