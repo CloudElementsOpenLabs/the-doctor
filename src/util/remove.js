@@ -4,7 +4,7 @@ const rp = require('request-promise');
 const authHeader = require('./authHeader');
 const baseUrl = require('./baseUrl');
 
-module.exports = async (path) => {
+module.exports = async (path, qs) => {
   let options = {
     json: true,
     headers: {
@@ -12,7 +12,8 @@ module.exports = async (path) => {
     },
     url: baseUrl(path),
     strictSSL: false,
-    method: "DELETE"
+    method: "DELETE",
+    qs : qs ? qs : {}
   };
   try {
     return (await rp(options));

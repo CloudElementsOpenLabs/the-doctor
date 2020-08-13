@@ -1,10 +1,12 @@
 
-module.exports = (processId, type, name, status, error) => {
+module.exports = (processId, type, name, status, error, metadata, isNew) => {
     return {
         processId,
         type,
         name,
         status,
-        error
+        error,
+        metadata,
+        isNew
     }
 };
