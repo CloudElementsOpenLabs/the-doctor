@@ -24,11 +24,13 @@ module.exports = async (keys) => {
         : []
     : [];
 
+  // For CLI, if elements keys are empty then default the qs to true
+  // For Doctor-service, if any private or extended keys are empty then don't make API call
   const extended_qs = isNilOrEmpty(extendedElementsKey)
-    ? { where: "extended='true'" }
+    ? isNilOrEmpty(jobId) ? { where: "extended='true'" } : ''
     : { where: "extended='true' AND key in (" + applyQuotes(extendedElementsKey) + ')' };
 
-  const allExtendedElements = await getExtendedElements(extended_qs);
+  const allExtendedElements = !isNilOrEmpty(extended_qs) ? await getExtendedElements(extended_qs) : [];
 
   const privateElements = await getPrivateElements(keys);
   const privateElementIds = map((e) => e.id, privateElements);

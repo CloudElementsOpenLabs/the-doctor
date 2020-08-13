@@ -8,6 +8,7 @@ const getPrivateElements = (qs) => get('elements', qs);
 const isNilOrEmpty = (val) => isNil(val) || isEmpty(val);
 
 module.exports = async (keys) => {
+
   // From CLI - User can pass comma seperated string of elements key
   // From Doctor-service - It will be in Array of objects containing elementKey and private flag structure
   const privateElementsKey = !isNilOrEmpty(keys)
@@ -23,9 +24,11 @@ module.exports = async (keys) => {
         : []
     : [];
 
+  // For CLI, if elements keys are empty then default the qs to true
+  // For Doctor-service, if any private or extended keys are empty then don't make API call
   const private_qs = isNilOrEmpty(privateElementsKey)
-    ? { where: "private='true'" }
+    ? isNilOrEmpty(jobId) ? { where: "private='true'" } : ''
     : { where: "private='true' AND key in (" + applyQuotes(privateElementsKey) + ')' };
 
-  return await getPrivateElements(private_qs);
+  return !isNilOrEmpty(private_qs) ? await getPrivateElements(private_qs) : [];
 };
