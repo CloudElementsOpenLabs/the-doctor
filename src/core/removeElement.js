@@ -1,31 +1,35 @@
 'use strict';
 
-const get = require('../util/get');
-const getElements = require('../util/getElements');
+const { emitter, EventTopic } = require('../events/emitter');
+const constructEvent = require('../events/construct-event');
+const { isJobCancelled, removeCancelledJobId } = require('../events/cancelled-job');
+const { Assets, ArtifactStatus } = require('../constants/artifact');
+const getPrivateElements = require('../util/getPrivateElements');
 const remove = require('../util/remove');
-const {filter, pipe, pipeP, propEq, prop, map, isEmpty, tap, forEach, toLower, equals} = require('ramda');
+const { isEmpty } = require('ramda');
 const makePath = id => `elements/${id}`;
-const makeMessage = name => `Deleted Element: ${name}.`
-const log = forEach(pipe(prop('name'), makeMessage, console.log))
 
-const getElement = async name => {
-    const elements = await getElements()
-    const element = filter(pipe(prop('name'), toLower, equals(toLower(name))), elements)
-    if(isEmpty(element)) console.log(`The doctor was unable to find the element ${name}.`)
-    return element
+module.exports = async (options) => {
+    const { name, jobId, processId } = options;
+    const elements = await getPrivateElements(name)
+    if (isEmpty(elements)) {
+        console.log(`The doctor was unable to find the element ${name}.`)
+    }
+    const removePromises = await elements.map(async element => {
+        try {
+            if (isJobCancelled(jobId)) {
+                removeCancelledJobId(jobId);
+                throw new Error('job is cancelled');
+            }
+            emitter.emit(EventTopic.ASSET_STATUS, constructEvent(processId, Assets.ELEMENTS, element.key, ArtifactStatus.INPROGRESS, ''));
+            await remove(makePath(element.id));
+            console.log(`Deleted Element: ${element.key}.`);
+            emitter.emit(EventTopic.ASSET_STATUS, constructEvent(processId, Assets.ELEMENTS, element.key, ArtifactStatus.COMPLETED, ''));
+        } catch (error) {
+            emitter.emit(EventTopic.ASSET_STATUS, constructEvent(processId, Assets.ELEMENTS, element.key, ArtifactStatus.FAILED, error.toString()));
+            throw error;
+        }
+    })
+
+    Promise.all(removePromises);
 }
-
-module.exports = pipe(
-    prop('name'),
-    pipeP(getElement, 
-        filter(propEq('private', true)),
-        tap(log),
-        map(
-            pipe(
-                prop('id'),
-                makePath,
-                remove
-            )
-        )
-    )
-);

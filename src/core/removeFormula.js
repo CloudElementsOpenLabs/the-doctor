@@ -1,30 +1,36 @@
 'use strict';
 
-const {prop, pipeP, map, pipe, tap, forEach, filter, toLower, equals, isEmpty} = require('ramda');
+const { emitter, EventTopic } = require('../events/emitter');
+const constructEvent = require('../events/construct-event');
+const { isJobCancelled, removeCancelledJobId } = require('../events/cancelled-job');
+const { Assets, ArtifactStatus } = require('../constants/artifact');
+const { isEmpty } = require('ramda');
 const remove = require('../util/remove');
 const getFormulas = require('../util/getFormulas');
 const makePath = id => `formulas/${id}`;
-const makeMessage = name => `Deleted Formula: ${name}.`
-const log = forEach(pipe(prop('name'), makeMessage, console.log))
 
-const getFormula = async name => {
-    const formulas = await getFormulas()
-    const formula = filter(pipe(prop('name'), toLower, equals(toLower(name))), formulas)
-    if(isEmpty(formula)) console.log(`The doctor was unable to find the formula ${name}.`)
-    return formula
+
+module.exports = async (options) => {
+    const { name, jobId, processId } = options;
+    const formulas = await getFormulas(name)
+    if (isEmpty(formulas)) {
+        console.log(`The doctor was unable to find the formula ${name}.`)
+    }
+    const removePromises = await formulas.map(async formula => {
+        try {
+            if (isJobCancelled(jobId)) {
+                removeCancelledJobId(jobId);
+                throw new Error('job is cancelled');
+            }
+            emitter.emit(EventTopic.ASSET_STATUS, constructEvent(processId, Assets.FORMULAS, formula.name, ArtifactStatus.INPROGRESS, ''));
+            await remove(makePath(formula.name));
+            console.log(`Deleted Formula: ${formula.name}.`);
+            emitter.emit(EventTopic.ASSET_STATUS, constructEvent(processId, Assets.FORMULAS, formula.name, ArtifactStatus.COMPLETED, ''));
+        } catch (error) {
+            emitter.emit(EventTopic.ASSET_STATUS, constructEvent(processId, Assets.FORMULAS, formula.name, ArtifactStatus.FAILED, error.toString()));
+            throw error;
+        }
+    })
+
+    Promise.all(removePromises);
 }
-
-module.exports = pipe(
-    prop('name'),
-    pipeP(
-        getFormula,
-        tap(log),
-        map(
-            pipe(
-                prop('id'),
-                makePath, 
-                remove
-            )
-        )
-    )
-);

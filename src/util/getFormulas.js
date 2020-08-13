@@ -1,5 +1,5 @@
 'use strict';
-const {type, join} = require('ramda');
+const { type, join } = require('ramda');
 const { emitter, EventTopic } = require('../events/emitter');
 const constructEvent = require('../events/construct-event');
 const { isJobCancelled, removeCancelledJobId } = require('../events/cancelled-job');
@@ -19,10 +19,10 @@ module.exports = async (keys, jobId, processId) => {
   let formulaNames = [];
   if (type(keys) === 'String') {
     formulaNames = keys.split(',');
-    param = {where: 'name in (' + applyQuotes(join(', ', formulaNames)) + ')'};
+    param = { where: 'name in (' + applyQuotes(join(', ', formulaNames)) + ')' };
   } else if (Array.isArray(keys)) {
     formulaNames = keys.map((formula) => formula.name);
-    param = {where: 'name in (' + applyQuotes(join(', ', formulaNames)) + ')'};
+    param = { where: 'name in (' + applyQuotes(join(', ', formulaNames)) + ')' };
   } else {
     return get('formulas', param);
   }
@@ -34,6 +34,17 @@ module.exports = async (keys, jobId, processId) => {
     updateFormulasStatus(processId, formulaNames, ArtifactStatus.INPROGRESS, '');
     const result = await get('formulas', param);
     updateFormulasStatus(processId, formulaNames, ArtifactStatus.COMPLETED, '');
+
+    const newlyCreated = keys && Array.isArray(keys) ? keys.filter(key => {
+      return !result.some(formula => formula.name == key.name)
+    }) : [];
+    newlyCreated.forEach(formula => {
+      emitter.emit(EventTopic.ASSET_STATUS, constructEvent(processId, Assets.FORMULAS, formula.name, ArtifactStatus.COMPLETED, ''));
+    })
+
+
+
+
 
     return result;
   } catch (error) {
