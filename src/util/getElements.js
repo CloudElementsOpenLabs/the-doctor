@@ -36,8 +36,8 @@ module.exports = async (keys, jobId, processId) => {
     const privateElements = await getPrivateElements(keys);
     const allExtendedElements = await getExtendedElements(keys);
 
-    const privateElementIds = map((e) => e.id, privateElements);
-    const extendedElements = allExtendedElements.filter((element) => !privateElementIds.includes(element.id));
+    const extendedElements = !isNilOrEmpty(allExtendedElements)
+        ? allExtendedElements.filter((element) => element.extended && !element.private) : [];
 
     // get private elements
     const privateElementsExport = await downloadElements(privateElements, {}, jobId, processId, true);
