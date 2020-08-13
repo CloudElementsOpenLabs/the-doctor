@@ -13,19 +13,20 @@ const getPrivateElements = (qs) => get('elements', qs);
 const makePath = element => `elements/${element.id}/export`;
 const isNilOrEmpty = (val) => isNil(val) || isEmpty(val);
 
-const downloadElements = async (elements, qs, jobId, processId) => {
+const downloadElements = async (elements, qs, jobId, processId, isPrivate) => {
     let downloadPromise = await elements.map(async element => {
         try {
             if (isJobCancelled(jobId)) {
                 removeCancelledJobId(jobId);
                 throw new Error('job is cancelled');
             }
-            emitter.emit(EventTopic.ASSET_STATUS, constructEvent(processId, Assets.ELEMENTS, element.key, ArtifactStatus.INPROGRESS, ''));
+            const elementMetadata = JSON.stringify({private: isPrivate});
+            emitter.emit(EventTopic.ASSET_STATUS, constructEvent(processId, Assets.ELEMENTS, element.key, ArtifactStatus.INPROGRESS, '', elementMetadata));
             const exportedElement = await get(makePath(element), qs);
-            emitter.emit(EventTopic.ASSET_STATUS, constructEvent(processId, Assets.ELEMENTS, element.key, ArtifactStatus.COMPLETED, ''));
+            emitter.emit(EventTopic.ASSET_STATUS, constructEvent(processId, Assets.ELEMENTS, element.key, ArtifactStatus.COMPLETED, '', elementMetadata));
             return exportedElement;
         } catch (error) {
-            emitter.emit(EventTopic.ASSET_STATUS, constructEvent(processId, Assets.ELEMENTS, element.key, ArtifactStatus.FAILED, error.toString()));
+            emitter.emit(EventTopic.ASSET_STATUS, constructEvent(processId, Assets.ELEMENTS, element.key, ArtifactStatus.FAILED, error.toString(), elementMetadata));
             throw error;
         }
     });
@@ -39,10 +40,10 @@ module.exports = async (keys, jobId, processId) => {
   const privateElementsKey = !isNilOrEmpty(keys)
     ? Array.isArray(keys)
       ? pipe(
-        filter((element) => element.private),
-        map((element) => element.key),
-        flatten,
-        join(', '),
+          filter((element) => element.private),
+          map((element) => element.key),
+          flatten,
+          join(', '),
         )(keys)
       : type(keys) === 'String'
       ? keys
@@ -61,26 +62,28 @@ module.exports = async (keys, jobId, processId) => {
       : []
     : [];
 
-  const extended_qs = isNilOrEmpty(extendedElementsKey)
-    ? {where: "extended='true'"}
-    : {where: "extended='true' AND key in (" + applyQuotes(extendedElementsKey) + ')'};
+  // For CLI, if elements keys are empty then default the qs to true
+  // For Doctor-service, if any private or extended keys are empty then don't make API call
   const private_qs = isNilOrEmpty(privateElementsKey)
-    ? {where: "private='true'"}
+    ? isNilOrEmpty(jobId) ? {where: "private='true'"} : ''
     : {where: "private='true' AND key in (" + applyQuotes(privateElementsKey) + ')'};
+  const extended_qs = isNilOrEmpty(extendedElementsKey)
+    ? isNilOrEmpty(jobId) ? {where: "extended='true'"} : ''
+    : {where: "extended='true' AND key in (" + applyQuotes(extendedElementsKey) + ')'};
 
-    const privateElements = await getPrivateElements(private_qs);
-    const allExtendedElements = await getExtendedElements(extended_qs);
+    const privateElements = !isNilOrEmpty(private_qs) ? await getPrivateElements(private_qs) : [];
+    const allExtendedElements = !isNilOrEmpty(extended_qs) ? await getExtendedElements(extended_qs) : [];
 
     const privateElementIds = map((e) => e.id, privateElements);
     const extendedElements = allExtendedElements.filter((element) => !privateElementIds.includes(element.id));
 
     // get private elements
-    const privateElementsExport = await downloadElements(privateElements, {}, jobId, processId);
+    const privateElementsExport = await downloadElements(privateElements, {}, jobId, processId, true);
     // For private elements, private flag won't get populated if we cloned any system element
     forEach((element) => (element.private = true), privateElementsExport);  
     // get extended elements
     const qs = { extendedOnly: true };
-    const extendedElementsExport = await downloadElements(extendedElements, qs, jobId, processId);
+    const extendedElementsExport = await downloadElements(extendedElements, qs, jobId, processId, false);
 
     return privateElementsExport.concat(extendedElementsExport);
 };
