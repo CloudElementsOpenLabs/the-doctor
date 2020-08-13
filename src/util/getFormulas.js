@@ -11,7 +11,7 @@ const applyQuotes = require('./quoteString');
 // Unlike vdrs and formulas export, formulas download is a single call and we cant split the status update to each asset
 const updateFormulasStatus = (processId, formulaNames, status, error) => {
   for (const index in formulaNames) {
-    emitter.emit(EventTopic.ASSET_STATUS, constructEvent(processId, Assets.FORMULAS, formulaNames[index], status, error));
+    emitter.emit(EventTopic.ASSET_STATUS, constructEvent(processId, Assets.FORMULAS, formulaNames[index], status, error, '', false));
   }
 }
 module.exports = async (keys, jobId, processId) => {
@@ -39,12 +39,8 @@ module.exports = async (keys, jobId, processId) => {
       return !result.some(formula => formula.name == key.name)
     }) : [];
     newlyCreated.forEach(formula => {
-      emitter.emit(EventTopic.ASSET_STATUS, constructEvent(processId, Assets.FORMULAS, formula.name, ArtifactStatus.COMPLETED, ''));
+      emitter.emit(EventTopic.ASSET_STATUS, constructEvent(processId, Assets.FORMULAS, formula.name, ArtifactStatus.COMPLETED, '', '', true));
     })
-
-
-
-
 
     return result;
   } catch (error) {

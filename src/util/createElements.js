@@ -39,7 +39,7 @@ module.exports = async (elements, jobId, processId) => {
       }
       emitter.emit(
         EventTopic.ASSET_STATUS,
-        constructEvent(processId, Assets.ELEMENTS, element.key, ArtifactStatus.INPROGRESS, ''),
+        constructEvent(processId, Assets.ELEMENTS, element.key, ArtifactStatus.INPROGRESS, '', '', false),
       );
 
       if (!isNewElementToCreate(allElements, element)) {
@@ -104,12 +104,12 @@ module.exports = async (elements, jobId, processId) => {
       }
       emitter.emit(
         EventTopic.ASSET_STATUS,
-        constructEvent(processId, Assets.ELEMENTS, element.key, ArtifactStatus.COMPLETED, ''),
+        constructEvent(processId, Assets.ELEMENTS, element.key, ArtifactStatus.COMPLETED, '', '', false),
       );
     } catch (error) {
       emitter.emit(
         EventTopic.ASSET_STATUS,
-        constructEvent(processId, Assets.ELEMENTS, element.key, ArtifactStatus.FAILED, error.toString()),
+        constructEvent(processId, Assets.ELEMENTS, element.key, ArtifactStatus.FAILED, error.toString(), '', false),
       );
       throw error;
     }

@@ -19,12 +19,12 @@ const downloadElements = async (elements, qs, jobId, processId, isPrivate) => {
                 throw new Error('job is cancelled');
             }
             const elementMetadata = JSON.stringify({private: isPrivate});
-            emitter.emit(EventTopic.ASSET_STATUS, constructEvent(processId, Assets.ELEMENTS, element.key, ArtifactStatus.INPROGRESS, '', elementMetadata));
+            emitter.emit(EventTopic.ASSET_STATUS, constructEvent(processId, Assets.ELEMENTS, element.key, ArtifactStatus.INPROGRESS, '', elementMetadata, false));
             const exportedElement = await get(makePath(element), qs);
-            emitter.emit(EventTopic.ASSET_STATUS, constructEvent(processId, Assets.ELEMENTS, element.key, ArtifactStatus.COMPLETED, '', elementMetadata));
+            emitter.emit(EventTopic.ASSET_STATUS, constructEvent(processId, Assets.ELEMENTS, element.key, ArtifactStatus.COMPLETED, '', elementMetadata, false));
             return exportedElement;
         } catch (error) {
-            emitter.emit(EventTopic.ASSET_STATUS, constructEvent(processId, Assets.ELEMENTS, element.key, ArtifactStatus.FAILED, error.toString(), elementMetadata));
+            emitter.emit(EventTopic.ASSET_STATUS, constructEvent(processId, Assets.ELEMENTS, element.key, ArtifactStatus.FAILED, error.toString(), elementMetadata, false));
             throw error;
         }
     });
@@ -53,7 +53,7 @@ module.exports = async (keys, jobId, processId) => {
         return key.private && !privateElements.some(element => element.key == key.key)
     }) : [];
     newlyCreated.forEach(element => {
-        emitter.emit(EventTopic.ASSET_STATUS, constructEvent(processId, Assets.ELEMENTS, element.key, ArtifactStatus.COMPLETED, ''));
+        emitter.emit(EventTopic.ASSET_STATUS, constructEvent(processId, Assets.ELEMENTS, element.key, ArtifactStatus.COMPLETED, '', '', true));
     })
 
     return elements;

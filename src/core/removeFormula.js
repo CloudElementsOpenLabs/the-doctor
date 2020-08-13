@@ -22,12 +22,12 @@ module.exports = async (options) => {
                 removeCancelledJobId(jobId);
                 throw new Error('job is cancelled');
             }
-            emitter.emit(EventTopic.ASSET_STATUS, constructEvent(processId, Assets.FORMULAS, formula.name, ArtifactStatus.INPROGRESS, ''));
+            emitter.emit(EventTopic.ASSET_STATUS, constructEvent(processId, Assets.FORMULAS, formula.name, ArtifactStatus.INPROGRESS, '', '', false));
             await remove(makePath(formula.name));
             console.log(`Deleted Formula: ${formula.name}.`);
-            emitter.emit(EventTopic.ASSET_STATUS, constructEvent(processId, Assets.FORMULAS, formula.name, ArtifactStatus.COMPLETED, ''));
+            emitter.emit(EventTopic.ASSET_STATUS, constructEvent(processId, Assets.FORMULAS, formula.name, ArtifactStatus.COMPLETED, '', '', false));
         } catch (error) {
-            emitter.emit(EventTopic.ASSET_STATUS, constructEvent(processId, Assets.FORMULAS, formula.name, ArtifactStatus.FAILED, error.toString()));
+            emitter.emit(EventTopic.ASSET_STATUS, constructEvent(processId, Assets.FORMULAS, formula.name, ArtifactStatus.FAILED, error.toString(), '', false));
             throw error;
         }
     })

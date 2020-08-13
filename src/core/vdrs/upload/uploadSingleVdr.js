@@ -60,11 +60,11 @@ module.exports = async options => {
           removeCancelledJobId(jobId);
           throw new Error('job is cancelled');
         }
-        emitter.emit(EventTopic.ASSET_STATUS, constructEvent(processId, Assets.VDRS, vdrName, ArtifactStatus.INPROGRESS, ''));
+        emitter.emit(EventTopic.ASSET_STATUS, constructEvent(processId, Assets.VDRS, vdrName, ArtifactStatus.INPROGRESS, '', '', false));
         await upsertVdrs(vdr);
-        emitter.emit(EventTopic.ASSET_STATUS, constructEvent(processId, Assets.VDRS, vdrName, ArtifactStatus.COMPLETED, ''));
+        emitter.emit(EventTopic.ASSET_STATUS, constructEvent(processId, Assets.VDRS, vdrName, ArtifactStatus.COMPLETED, '', '', false));
       } catch (error) {
-        emitter.emit(EventTopic.ASSET_STATUS, constructEvent(processId, Assets.VDRS, vdrName, ArtifactStatus.FAILED, error.toString()));
+        emitter.emit(EventTopic.ASSET_STATUS, constructEvent(processId, Assets.VDRS, vdrName, ArtifactStatus.FAILED, error.toString(), '', false));
         throw error;
       }
     }

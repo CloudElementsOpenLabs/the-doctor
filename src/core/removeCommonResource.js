@@ -22,12 +22,12 @@ module.exports = async options => {
           removeCancelledJobId(jobId);
           throw new Error('job is cancelled');
       }
-      emitter.emit(EventTopic.ASSET_STATUS, constructEvent(processId, Assets.VDRS, vdr.vdrName, ArtifactStatus.INPROGRESS, ''));
+      emitter.emit(EventTopic.ASSET_STATUS, constructEvent(processId, Assets.VDRS, vdr.vdrName, ArtifactStatus.INPROGRESS, '', '', false));
       await remove(makePath(vdr.vdrName), { force: true });
       console.log(`Deleted VDR: ${vdr.vdrName}.`);
-      emitter.emit(EventTopic.ASSET_STATUS, constructEvent(processId, Assets.VDRS, vdr.vdrName, ArtifactStatus.COMPLETED, ''));
+      emitter.emit(EventTopic.ASSET_STATUS, constructEvent(processId, Assets.VDRS, vdr.vdrName, ArtifactStatus.COMPLETED, '', '', false));
   } catch (error) {
-      emitter.emit(EventTopic.ASSET_STATUS, constructEvent(processId, Assets.VDRS, vdr.vdrName, ArtifactStatus.FAILED, error.toString()));
+      emitter.emit(EventTopic.ASSET_STATUS, constructEvent(processId, Assets.VDRS, vdr.vdrName, ArtifactStatus.FAILED, error.toString(), '', false));
       throw error;
   }
 

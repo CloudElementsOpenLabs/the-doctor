@@ -15,11 +15,11 @@ module.exports = async (vdrNames, inputVdrs, jobId, processId) => {
         removeCancelledJobId(jobId);
         throw new Error('job is cancelled');
       }
-      emitter.emit(EventTopic.ASSET_STATUS, constructEvent(processId, Assets.VDRS, vdrNames[index], ArtifactStatus.INPROGRESS, ''));
+      emitter.emit(EventTopic.ASSET_STATUS, constructEvent(processId, Assets.VDRS, vdrNames[index], ArtifactStatus.INPROGRESS, '', '', false));
       vdr = await get(`/vdrs/${vdrNames[index]}/export`, "");
-      emitter.emit(EventTopic.ASSET_STATUS, constructEvent(processId, Assets.VDRS, vdrNames[index], ArtifactStatus.COMPLETED, ''));
+      emitter.emit(EventTopic.ASSET_STATUS, constructEvent(processId, Assets.VDRS, vdrNames[index], ArtifactStatus.COMPLETED, '', '', false));
     } catch (error) {
-      emitter.emit(EventTopic.ASSET_STATUS, constructEvent(processId, Assets.VDRS, vdrNames[index], ArtifactStatus.FAILED, error.toString()));
+      emitter.emit(EventTopic.ASSET_STATUS, constructEvent(processId, Assets.VDRS, vdrNames[index], ArtifactStatus.FAILED, error.toString(), '', false));
       throw error;
     }
     vdrs[vdrNames[index]] = vdr;
@@ -28,7 +28,7 @@ module.exports = async (vdrNames, inputVdrs, jobId, processId) => {
     return !vdrNames.includes(vdr.name);
   }) : [];
   newlyCreated.forEach(vdr => {
-    emitter.emit(EventTopic.ASSET_STATUS, constructEvent(processId, Assets.VDRS, vdr.name, ArtifactStatus.COMPLETED, ''));
+    emitter.emit(EventTopic.ASSET_STATUS, constructEvent(processId, Assets.VDRS, vdr.name, ArtifactStatus.COMPLETED, '', '', true));
   })
 
 
