@@ -22,7 +22,9 @@ const checkIfOldVdrFormat = async (options) => {
       return false;
     }
   } else {
-    const vdrNames = options.name.split(',')
+    const vdrNames = Array.isArray(options.name)
+      ? options.name.map((vdr) => vdr.name)
+      : options.name.split(',');
     for (const vdrName of vdrNames) {
       const fileLocation = join(options.dir, vdrName, `${vdrName}.json`);
 
@@ -43,8 +45,10 @@ module.exports = async options => {
     await importCommonResource(options);
     return;
   }
-  const vdrNames = options.name.split(',')
-  const { jobId, processId } = options;
+  const vdrNames = Array.isArray(options.name)
+    ? options.name.map((vdr) => vdr.name)
+    : options.name.split(',');
+  const {jobId, processId} = options;
 
   let uploadPromise = await vdrNames.map(async (vdrName) => {
     let vdr = options.file ? await readFile(options.file) : await buildVdrsFromDir(options.dir, vdrName)

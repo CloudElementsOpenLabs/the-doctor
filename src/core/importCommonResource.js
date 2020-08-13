@@ -8,9 +8,13 @@ const createTransformations = require('../util/createTransformations');
 
 //(fileName)
 module.exports = async options => {
-  const vdrNames = options.name.split(',')
+  // From CLI - User can pass comma seperated string of vdrs name
+  // From Doctor-service - It will be in Array of objects containing vdr name
+  const vdrNames = Array.isArray(options.name)
+    ? options.name.map((vdr) => vdr.name)
+    : options.name.split(',');
   let data = options.file ? await readFile(options.file) : await buildResourcesFromDir(options.dir)
-  vdrNames.forEach(async (vdrName) => {
+  vdrNames && vdrNames.forEach(async (vdrName) => {
     let transformations = {}
     forEachObjIndexed((element, elementKey) => {
       if (element[vdrName] !== undefined) {

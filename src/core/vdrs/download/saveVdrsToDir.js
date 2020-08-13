@@ -63,7 +63,7 @@ module.exports = async (dir, data) => {
         forEachObjIndexed((elementTransformtaion, elementKey) => {
             const elementTransformtaionDir = `${transformationDir}/${elementKey}`
             createDirIfNotExist(elementTransformtaionDir);
-            if (elementTransformtaion.script) {
+            if (elementTransformtaion && elementTransformtaion.script) {
                 writeFileSync(`${elementTransformtaionDir}/script.js`, elementTransformtaion.script.body, 'utf8')
                 elementTransformtaion.script = dissoc('body', elementTransformtaion.script)
             }
