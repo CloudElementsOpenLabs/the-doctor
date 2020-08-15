@@ -23,7 +23,7 @@ const isNewElementToCreate = (allElements, elementToImport) => {
   const existingElements = !isNilOrEmpty(allElements)
     ? allElements.filter(
         (element) =>
-          equals(element.key, elementToImport.key) && equals(existingElement.private, elementToImport.private),
+          equals(element.key, elementToImport.key) && equals(element.private, elementToImport.private),
       )
     : [];
   return isNilOrEmpty(existingElements);

@@ -4,12 +4,13 @@ const { emitter, EventTopic } = require('../events/emitter');
 const constructEvent = require('../events/construct-event');
 const { isJobCancelled, removeCancelledJobId } = require('../events/cancelled-job');
 const { Assets, ArtifactStatus } = require('../constants/artifact');
-const { forEach, map } = require('ramda');
+const { forEach, map, isNil, isEmpty } = require('ramda');
 const get = require('./get')
 
 const getExtendedElements = require('./getExtendedElements');
 const getPrivateElements = require('./getPrivateElements');
 const makePath = element => `elements/${element.id}/export`;
+const isNilOrEmpty = (val) => isNil(val) || isEmpty(val);
 
 const downloadElements = async (elements, qs, jobId, processId, isPrivate) => {
     let downloadPromise = await elements.map(async element => {
@@ -33,8 +34,8 @@ const downloadElements = async (elements, qs, jobId, processId, isPrivate) => {
 };
 
 module.exports = async (keys, jobId, processId) => {
-    const privateElements = await getPrivateElements(keys);
-    const allExtendedElements = await getExtendedElements(keys);
+    const privateElements = await getPrivateElements(keys, jobId);
+    const allExtendedElements = await getExtendedElements(keys, jobId);
 
     const extendedElements = !isNilOrEmpty(allExtendedElements)
         ? allExtendedElements.filter((element) => element.extended && !element.private) : [];
