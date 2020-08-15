@@ -7,7 +7,7 @@ const applyQuotes = require('./quoteString');
 const getPrivateElements = (qs) => get('elements', qs);
 const isNilOrEmpty = (val) => isNil(val) || isEmpty(val);
 
-module.exports = async (keys) => {
+module.exports = async (keys, jobId) => {
 
   // From CLI - User can pass comma seperated string of elements key
   // From Doctor-service - It will be in Array of objects containing elementKey and private flag structure
