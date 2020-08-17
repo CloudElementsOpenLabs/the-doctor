@@ -10,7 +10,7 @@ module.exports = async (dir, data) => {
     mkdirSync(dir)
   }
   forEach(element => {
-    const elementFolder = `${dir}/${toDirectoryName(element.key)}`
+    const elementFolder = `${dir}/${toDirectoryName(element.name)}`
     if (!existsSync(elementFolder)) {
       mkdirSync(elementFolder)
     }
