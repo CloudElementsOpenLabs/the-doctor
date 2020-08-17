@@ -56,7 +56,7 @@ help [cmd]  display help for [cmd]
 ### Options
 `-d`, `--directory` for downloading/uploading to/from and directory  
 `-f`, `--file` for downloading/uplaoding to/from and file   
-`-n`, `--name` for downloading/uploading a specific entity to/from and directory/file  
+`-n`, `--name` for downloading/uploading a specific entity or multiple comma-separated entities to/from and directory/file  
 `-v`, `--version` for downloading/uploading versioned objects   
 
 ## Examples
@@ -77,13 +77,25 @@ $ doctor upload vdrs staging -f ~/Desktop/vdrs-staging.json
 # export vdrs from a specified account (note the account should be from your accounts list and you just need to denote the account name) to the given file path. Again: you can replace vdrs with formulas, elements, or all)
 $ doctor download vdrs staging -f ~/Desktop/vdrs-staging.json
 
+# export an vdr from the list of specified account vdrs to the given folder path. For elements, you need to pass element key using -n. Again: you can replace vdrs with formulas, elements
+$ doctor download vdrs staging -n myVdr -D ~/Desktop/vdrs/
+
+# export vdrs (comma-separated) from the list of specified account vdrs to the given folder path. For elements, you need to pass element key using -n. Again: you can replace vdrs with formulas, elements
+$ doctor download vdrs staging -n vdr1,vdr2,vdr3 -D ~/Desktop/vdrs/
+
+# import an vdr from the list of specified account vdrs. For elements, you need to pass element key using -n. Again: you can replace vdrs with formulas, elements
+$ doctor upload vdrs staging -n myVdr -D ~/Desktop/vdrs/
+
+# import vdrs (comma-separated) from the list of specified account vdrs. For elements, you need to pass element key using -n. Again: you can replace vdrs with formulas, elements
+$ doctor upload vdrs staging -n vdr1,vdr2,vdr3 -D ~/Desktop/vdrs/
+
 # doctor delete has similar functionality but will not allow you to delete all. Please see doctor delete --help for more
 $ doctor delete formulas accountName 
 
 # export formulas separating out JS into files for easier version control
 $ doctor download formulas staging -d ~/Desktop/formulas
 
-# import or export specific entities by their name using -n, --name
+# import or export specific entities by their name using -n, --name (You can pass list of comma-separated names)
 $ doctor upload formulas staging -d ~/formulas -n specific\ formula\ name
 
 # export a versioned object (example formula named myFormula_2)
