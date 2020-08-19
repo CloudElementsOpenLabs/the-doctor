@@ -1,5 +1,5 @@
 'use strict';
-const {isNil, find, propEq, findIndex, isEmpty, equals} = require('ramda');
+const {isNil, propEq, findIndex, isEmpty, equals} = require('ramda');
 const {emitter, EventTopic} = require('../events/emitter');
 const constructEvent = require('../events/construct-event');
 const {isJobCancelled, removeCancelledJobId} = require('../events/cancelled-job');
@@ -11,19 +11,15 @@ const createElement = require('./post')('elements');
 const post = require('./post');
 const makePath = (element) => `elements/${element.key}`;
 const update = require('./update');
-const min = (arr) =>
-  arr.map((x) => {
-    return {methodPath: x.path + x.method};
-  });
+const min = (arr) => arr.map((x) => ({methodPath: x.path + x.method}));
 const isNilOrEmpty = (val) => isNil(val) || isEmpty(val);
 
-const isNewElementToCreate = (allElements, elementToImport) => {
+const isNewElementToCreate = async (allElements, elementToImport) => {
   // Here we need to identify whether the element is already present or not
   // Get all the elements at user account level and check the existence of the element
   const existingElements = !isNilOrEmpty(allElements)
     ? allElements.filter(
-        (element) =>
-          equals(element.key, elementToImport.key) && equals(element.private, elementToImport.private),
+        (element) => equals(element.key, elementToImport.key) && equals(element.private, elementToImport.private),
       )
     : [];
   return isNilOrEmpty(existingElements);
@@ -41,8 +37,8 @@ module.exports = async (elements, jobId, processId) => {
         EventTopic.ASSET_STATUS,
         constructEvent(processId, Assets.ELEMENTS, element.key, ArtifactStatus.INPROGRESS, '', '', false),
       );
-
-      if (!isNewElementToCreate(allElements, element)) {
+      const isNewElement = await isNewElementToCreate(allElements, element);
+      if (!isNewElement) {
         if (element.private === true || element.actuallyExtended === false) {
           await update(makePath(element), element);
           console.log(`Updated Element: ${element.key}`);
@@ -68,15 +64,11 @@ module.exports = async (elements, jobId, processId) => {
               toUpload.update.push(
                 update(`elements/${element.key}/resources/${destinationResources[exists].id}`, element.resources[i]),
               );
-              console.log(
-                `    Resource Updated:\n        Method: ${element.resources[i].method}\n        Path: ${element.resources[i].path}`,
-              );
+              console.log(`Resource Updated:\n Method: ${element.resources[i].method}\n Path: ${element.resources[i].path}`);
             } else {
               // 4. If resource doesn't exist - POST
               toUpload.create.push(post(`elements/${element.key}/resources`, element.resources[i]));
-              console.log(
-                `    Resource Created:\n        Method: ${element.resources[i].method}\n        Path: ${element.resources[i].path}`,
-              );
+              console.log(`Resource Created:\n Method: ${element.resources[i].method}\n Path: ${element.resources[i].path}`);
             }
           }
 
@@ -93,9 +85,7 @@ module.exports = async (elements, jobId, processId) => {
           let toUpload = {create: [], update: []};
           for (let i = 0; i < element.resources.length; i++) {
             toUpload.create.push(post(`elements/${element.key}/resources`, element.resources[i]));
-            console.log(
-              `    Resource Created:\n        Method: ${element.resources[i].method}\n        Path: ${element.resources[i].path}`,
-            );
+            console.log(`Resource Created:\n Method: ${element.resources[i].method}\n Path: ${element.resources[i].path}`);
           }
           //combine arrays of promises
           let arrs = toUpload.create.concat(toUpload.update);

@@ -8,6 +8,7 @@ commander
   .option("-f, --file [file]", "location of file to save objects")
   .option("-d, --dir [dir]", "location of directory to save objects")
   .option("-n, --name [name]", "name of specific object to be download")
+  .option("-u, --useNew [useNew]", "folder structure to use for download")
   .option("-v, --version [version]", "version of an object to download [-n required]")
   .action((object, account, options) => save(object, account, options))
   .on('--help', () => {

@@ -30,7 +30,5 @@ module.exports = async (vdrNames, inputVdrs, jobId, processId) => {
   newlyCreated.forEach(vdr => {
     emitter.emit(EventTopic.ASSET_STATUS, constructEvent(processId, Assets.VDRS, vdr.name, ArtifactStatus.COMPLETED, '', '', true));
   })
-
-
   return vdrs;
 };

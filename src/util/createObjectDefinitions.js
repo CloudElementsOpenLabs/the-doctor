@@ -10,7 +10,7 @@ module.exports = async (data) => {
     let endpointObjects = [];
     try {
         endpointObjects = await get('organizations/objects/definitions',"");
-    } catch (err) {}
+    } catch (error) {/* ignore */}
 
     const objectNames = keys(objectDefinitions);
     for(const objectName of objectNames){

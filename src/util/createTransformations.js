@@ -12,7 +12,7 @@ module.exports = async (data) => {
         let endpointTransformations = [];
         try {
             endpointTransformations = await get(makePathGet(elementKey),"");
-        } catch (err) {}
+        } catch (err) {/* ignore */}
         map(async objectName => {
             const endpointObjectName = find(equals(objectName))(keys(endpointTransformations));
             if(endpointObjectName) {

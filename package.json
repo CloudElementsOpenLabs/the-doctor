@@ -30,5 +30,8 @@
     "request": "^2.88.0",
     "request-promise": "^4.2.4",
     "touch": "^3.1.0"
+  },
+  "devDependencies": {
+    "eslint": "7.7.0"
   }
 }
