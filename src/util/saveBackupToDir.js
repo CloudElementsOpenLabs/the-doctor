@@ -1,6 +1,6 @@
 const {existsSync, mkdirSync} = require('fs');
 const saveElementsToDir = require('./saveElementsToDir')
-const saveCommonResourcesToDir = require('./saveCommonResourcesToDir')
+const {saveVdrsToDirOld} = require('../core/vdrs/download/saveVdrsToDir')
 const saveFormulasToDir = require('./saveFormulasToDir')
 
 module.exports = async (dir, dataPromise) => {
@@ -15,7 +15,7 @@ module.exports = async (dir, dataPromise) => {
     if (!existsSync(commonResourcesFolder)) {
         mkdirSync(commonResourcesFolder)
     }
-    await saveCommonResourcesToDir(commonResourcesFolder, {
+    await saveVdrsToDirOld(commonResourcesFolder, {
         objectDefinitions: data.objectDefinitions,
         transformations: data.transformations
     })

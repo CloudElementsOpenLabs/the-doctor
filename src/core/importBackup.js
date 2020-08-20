@@ -1,7 +1,7 @@
 'use strict';
 const {pipe, pipeP, cond, prop, isNil, not, useWith} = require('ramda');
 const importElements = require('./importElements')
-const importCommonResources = require('./importCommonResources')
+const importVdrs = require('./vdrs/upload/uploadMultipleVdrs')
 const importFormulas = require('./importFormulas')
 const createObjectDefinitions = require('../util/createObjectDefinitions');
 const createTransformations = require('../util/createTransformations');
@@ -11,7 +11,7 @@ const readFile = require('../util/readFile');
 
 const importBackupFromFile = async fileData => {
     await createElements(fileData.elements)
-    createObjectDefinitions(fileData).then(r => {
+    createObjectDefinitions(fileData).then(() => {
         createTransformations(fileData)
     });
     await createFormulas(fileData.formulas)
@@ -19,7 +19,7 @@ const importBackupFromFile = async fileData => {
 
 const importBackupFromDir = async parms => {
     await importElements({...parms, dir: `${parms.dir}/elements`})
-    await importCommonResources({...parms, dir: `${parms.dir}/commonResources`})
+    await importVdrs({...parms, dir: `${parms.dir}/vdrs`})
     await importFormulas({...parms, dir: `${parms.dir}/formulas`})
 }
 

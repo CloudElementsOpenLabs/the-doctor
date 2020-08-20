@@ -1,53 +1,32 @@
 'use strict';
-
-const { type } = require('ramda');
 const loadAccount = require('../util/loadAccount');
-const {startSpinner, stopSpinner} = require('../util/spinner')
+const {startSpinner, stopSpinner} = require('../util/spinner');
 const eventListener = require('../events/event-listener');
 
 const functions = {
-    commonResources: require('../core/importCommonResources'),
-    vdrs: require('./vdrs/upload/uploadMultipleVdrs'),
-    formulas: require('../core/importFormulas'),
-    elements: require('../core/importElements'),
-    all: require('../core/importBackup')
-}
-
-const specificFunctions = {
-    formulas: require('./importFormula'),
-    elements: require('./importElement'),
-    commonResources: require('./importCommonResource'),
-    vdrs: require('./vdrs/upload/uploadSingleVdr')
-}
-
-const validateObject = (object, functions) => {
-    if (!functions[object]) {
-        console.log('Command not found: %o', object)
-        process.exit(1)
-    }
-}
+  vdrs: require('./vdrs/upload/uploadMultipleVdrs'),
+  formulas: require('../core/importFormulas'),
+  elements: require('../core/importElements'),
+  all: require('../core/importBackup'),
+};
 
 module.exports = async (object, account, options) => {
-    await loadAccount(account)
-    eventListener.addListener();
-    
-    if (!options.file && !options.dir) {
-        console.log('Please specify a file or directory to save with -f / -d')
-        process.exit(1)
-    }
-    try {
-        await startSpinner()
-        if(options.name !== undefined && type(options.name) !== 'Function') {
-            validateObject(object, specificFunctions)
-            await specificFunctions[object](options)
-        } else {
-            validateObject(object, functions)
-            await functions[object](options)
-        }
-        await stopSpinner()
-    } catch (err) {
-        console.log("Failed to complete operation: ", err)
-        await stopSpinner()
-        throw err;
-    } 
+  await loadAccount(account);
+  if (!options.file && !options.dir) {
+    console.log('Please specify a file or directory to save with -f / -d');
+    process.exit(1);
+  } else if (!functions[object]) {
+    console.log('Command not found: %o', object);
+    process.exit(1);
+  }
+  eventListener.addListener();
+  try {
+    await startSpinner();
+    await functions[object](options);
+    await stopSpinner();
+  } catch (err) {
+    console.log('Failed to complete operation: ', err);
+    await stopSpinner();
+    throw err;
+  }
 };

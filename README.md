@@ -83,6 +83,9 @@ $ doctor download vdrs staging -n myVdr -D ~/Desktop/vdrs/
 # export vdrs (comma-separated) from the list of specified account vdrs to the given folder path. For elements, you need to pass element key using -n. Again: you can replace vdrs with formulas, elements
 $ doctor download vdrs staging -n vdr1,vdr2,vdr3 -D ~/Desktop/vdrs/
 
+# export vdrs from specified account vdrs to the given folder path. (Note: use -u or --useNew boolean flag to download vdrs in new folder structure for more readability)
+$ doctor download vdrs staging -D ~/Desktop/vdrs/ --useNew
+
 # import an vdr from the list of specified account vdrs. For elements, you need to pass element key using -n. Again: you can replace vdrs with formulas, elements
 $ doctor upload vdrs staging -n myVdr -D ~/Desktop/vdrs/
 

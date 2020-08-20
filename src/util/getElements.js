@@ -4,7 +4,7 @@ const { emitter, EventTopic } = require('../events/emitter');
 const constructEvent = require('../events/construct-event');
 const { isJobCancelled, removeCancelledJobId } = require('../events/cancelled-job');
 const { Assets, ArtifactStatus } = require('../constants/artifact');
-const { forEach, map, isNil, isEmpty } = require('ramda');
+const { forEach, isNil, isEmpty } = require('ramda');
 const get = require('./get')
 
 const getExtendedElements = require('./getExtendedElements');
@@ -14,12 +14,12 @@ const isNilOrEmpty = (val) => isNil(val) || isEmpty(val);
 
 const downloadElements = async (elements, qs, jobId, processId, isPrivate) => {
     let downloadPromise = await elements.map(async element => {
+        const elementMetadata = JSON.stringify({private: isPrivate});
         try {
             if (isJobCancelled(jobId)) {
                 removeCancelledJobId(jobId);
                 throw new Error('job is cancelled');
             }
-            const elementMetadata = JSON.stringify({private: isPrivate});
             emitter.emit(EventTopic.ASSET_STATUS, constructEvent(processId, Assets.ELEMENTS, element.key, ArtifactStatus.INPROGRESS, '', elementMetadata, false));
             const exportedElement = await get(makePath(element), qs);
             emitter.emit(EventTopic.ASSET_STATUS, constructEvent(processId, Assets.ELEMENTS, element.key, ArtifactStatus.COMPLETED, '', elementMetadata, false));

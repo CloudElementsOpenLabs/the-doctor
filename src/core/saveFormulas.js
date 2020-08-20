@@ -12,7 +12,7 @@ const log = forEach(pipe(prop('name'), makeMessage, console.log))
 
 //(parms)
 module.exports = params => {
-    if (params.options.hasOwnProperty('version')){
+    if (Object.prototype.hasOwnProperty.call(params.options, 'version')){
         params.options.name = params.options.name + '_' + params.options.version
     }
     return saveTo(pipeP(getDataToExport(getFormulas), applyVersion(__, params)), log, saveToFile, saveToDir)(params)

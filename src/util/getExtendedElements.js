@@ -1,10 +1,7 @@
 'use strict';
-
-const { join, map, isNil, isEmpty, flatten, pipe, filter, type } = require('ramda');
-const get = require('./get')
+const {join, map, isNil, isEmpty, flatten, pipe, filter, type} = require('ramda');
+const get = require('./get');
 const applyQuotes = require('./quoteString');
-const getPrivateElements = require('./getPrivateElements');
-
 const getExtendedElements = (qs) => get('elements', qs);
 const isNilOrEmpty = (val) => isNil(val) || isEmpty(val);
 
@@ -14,27 +11,27 @@ module.exports = async (keys, jobId) => {
   const extendedElementsKey = !isNilOrEmpty(keys)
     ? Array.isArray(keys)
       ? pipe(
-        filter((element) => !element.private),
-        map((element) => element.key),
-        flatten,
-        join(', '),
-      )(keys)
+          filter((element) => !element.private),
+          map((element) => element.key),
+          flatten,
+          join(', '),
+        )(keys)
       : type(keys) === 'String'
-        ? keys
-        : []
+      ? keys
+      : []
     : [];
 
   // For CLI, if elements keys are empty then default the qs to true
   // For Doctor-service, if any private or extended keys are empty then don't make API call
   const extended_qs = isNilOrEmpty(extendedElementsKey)
-    ? isNilOrEmpty(jobId) ? { where: "extended='true'" } : ''
-    : { where: "extended='true' AND key in (" + applyQuotes(extendedElementsKey) + ')' };
+    ? isNilOrEmpty(jobId)
+      ? {where: "extended='true'"}
+      : ''
+    : {where: "extended='true' AND key in (" + applyQuotes(extendedElementsKey) + ')'};
 
   const allExtendedElements = !isNilOrEmpty(extended_qs) ? await getExtendedElements(extended_qs) : [];
 
-  const privateElements = await getPrivateElements(keys);
-  const privateElementIds = map((e) => e.id, privateElements);
-
-  const extendedELements = allExtendedElements.filter((element) => !privateElementIds.includes(element.id));
-  return extendedELements;
+  return !isNilOrEmpty(allExtendedElements)
+    ? allExtendedElements.filter((element) => element.extended && !element.private)
+    : [];
 };

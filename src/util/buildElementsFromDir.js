@@ -40,7 +40,7 @@ module.exports = async (dirName) => {
     const elements = await Promise.all(map(readFile)(directories))
     return map(e => ({
         ...e, 
-        hooks: e.hooks? pipe(toElementFolderName, buildHooks)(dirName, e.key)(e.hooks): [],
-        resources: e.resources? pipe(toElementFolderName, buildResources)(dirName, e.key)(e.resources) : []
+        hooks: e.hooks? pipe(toElementFolderName, buildHooks)(dirName, e.name)(e.hooks): [],
+        resources: e.resources? pipe(toElementFolderName, buildResources)(dirName, e.name)(e.resources) : []
     }))(elements)
 }
