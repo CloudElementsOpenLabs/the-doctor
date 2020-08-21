@@ -81,7 +81,7 @@ module.exports = async (elements, jobId, processId) => {
                 )(elementsForKey)
               : [];
 
-            if (isNilOrEmpty(systemElementToExtend) && isNilOrEmpty(systemElementToExtend.id)) {
+            if (isNilOrEmpty(systemElementToExtend) || isNilOrEmpty(systemElementToExtend.id)) {
               element.resources.forEach((resource) => {
                 promisesList.createdResources.push(post(`elements/${element.key}/resources`, resource));
                 console.log(`Resource Created: ${resource.method} - ${resource.path}`);
