@@ -48,10 +48,6 @@ module.exports = async (elements, jobId, processId) => {
         removeCancelledJobId(jobId);
         throw new Error('job is cancelled');
       }
-      emitter.emit(
-        EventTopic.ASSET_STATUS,
-        constructEvent(processId, Assets.ELEMENTS, element.key, ArtifactStatus.INPROGRESS, '', '', false),
-      );
       // Here we need to identify whether the element is already present or not
       // Get all the elements at user account level and check the existence of the element
       const existingElement = !isNilOrEmpty(allElements)
@@ -61,18 +57,38 @@ module.exports = async (elements, jobId, processId) => {
               : equals(element.extended, searchElement.extended) && !searchElement.private,
           )(allElements)
         : [];
+      const elementMetadata = equals(element.private, true)
+        ? JSON.stringify({private: true})
+        : JSON.stringify({private: false});
+      emitter.emit(
+        EventTopic.ASSET_STATUS,
+        constructEvent(processId, Assets.ELEMENTS, element.key, ArtifactStatus.INPROGRESS, '', elementMetadata, false),
+      );
       if (isNilOrEmpty(existingElement)) {
         // Element doesn't exists in the db for given account
         if (element.private === true || element.actuallyExtended === false) {
           // Create non-extended element (Private element)
-          await createElement(element);
+          const importedElement = await createElement(element);
+          emitter.emit(
+            EventTopic.ASSET_STATUS,
+            constructEvent(
+              processId,
+              Assets.ELEMENTS,
+              element.key,
+              ArtifactStatus.COMPLETED,
+              '',
+              elementMetadata,
+              false,
+            ),
+          );
           console.log(`Created Element: ${element.key}`);
+          return importedElement;
         } else {
           let promisesList = {createdResources: [], updatedResources: []};
           if (!isNilOrEmpty(element.resources)) {
             // If we try to create resource based on element key then it will always
             // create resource in private element if exists
-            const elementsForKey = await get('elements', {where: "key = " + applyQuotes(element.key)});
+            const elementsForKey = await get('elements', {where: 'key = ' + applyQuotes(element.key)});
             const systemElementToExtend = !isNilOrEmpty(elementsForKey)
               ? find((searchElement) =>
                   equals(element.key, searchElement.key) && has('private', searchElement)
@@ -93,6 +109,18 @@ module.exports = async (elements, jobId, processId) => {
               });
             }
           }
+          emitter.emit(
+            EventTopic.ASSET_STATUS,
+            constructEvent(
+              processId,
+              Assets.ELEMENTS,
+              element.key,
+              ArtifactStatus.COMPLETED,
+              '',
+              elementMetadata,
+              false,
+            ),
+          );
           // Combine both the promises list and resolve all
           const allPromisesToResolve = concat(promisesList.createdResources, promisesList.updatedResources);
           await Promise.all(allPromisesToResolve);
@@ -101,8 +129,21 @@ module.exports = async (elements, jobId, processId) => {
         // Element exists in the db for given account
         if (element.private === true || element.actuallyExtended === false) {
           // Create non-extended element (Private element)
-          await update(makePath(element), element);
+          const importedElement = await update(makePath(element), element);
+          emitter.emit(
+            EventTopic.ASSET_STATUS,
+            constructEvent(
+              processId,
+              Assets.ELEMENTS,
+              element.key,
+              ArtifactStatus.COMPLETED,
+              '',
+              elementMetadata,
+              false,
+            ),
+          );
           console.log(`Updated Element: ${element.key}`);
+          return importedElement;
         } else {
           // Extend the element resources and element configurations (TODO)
           let promisesList = {createdResources: [], updatedResources: []};
@@ -126,15 +167,23 @@ module.exports = async (elements, jobId, processId) => {
               }
             });
           }
+          emitter.emit(
+            EventTopic.ASSET_STATUS,
+            constructEvent(
+              processId,
+              Assets.ELEMENTS,
+              element.key,
+              ArtifactStatus.COMPLETED,
+              '',
+              elementMetadata,
+              false,
+            ),
+          );
           // Combine both the promises list and resolve all
           const allPromisesToResolve = concat(promisesList.createdResources, promisesList.updatedResources);
           await Promise.all(allPromisesToResolve);
         }
       }
-      emitter.emit(
-        EventTopic.ASSET_STATUS,
-        constructEvent(processId, Assets.ELEMENTS, element.key, ArtifactStatus.COMPLETED, '', '', false),
-      );
     } catch (error) {
       emitter.emit(
         EventTopic.ASSET_STATUS,
