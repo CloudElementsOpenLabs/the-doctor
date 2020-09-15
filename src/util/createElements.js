@@ -1,5 +1,5 @@
 'use strict';
-const {isNil, isEmpty, equals, concat, find, filter, propOr, pipe, pluck, uniq, join, has} = require('ramda');
+const {isNil, isEmpty, equals, concat, find, filter, propOr, pipe, pluck, uniq, join, has, toLower} = require('ramda');
 const {emitter, EventTopic} = require('../events/emitter');
 const constructEvent = require('../events/construct-event');
 const {isJobCancelled, removeCancelledJobId} = require('../events/cancelled-job');
@@ -43,26 +43,35 @@ const fetchExtendedAndPrivateResources = async (existingElementId, elementKey) =
 module.exports = async (elements, jobId, processId) => {
   const allElements = await fetchAllElements(elements);
   let uploadPromise = await elements.map(async (element) => {
+    // Here we need to identify whether the element is already present or not
+    // Get all the elements at user account level and check the existence of the element
+    const existingElement = !isNilOrEmpty(allElements)
+      ? find((searchElement) =>
+          equals(toLower(element.key), toLower(searchElement.key))
+            ? has('private', element)
+              ? equals(element.private, searchElement.private) && !searchElement.extended
+              : equals(element.extended, searchElement.extended) && !searchElement.private
+            : false,
+        )(allElements)
+      : [];
+    const elementMetadata = equals(element.private, true)
+      ? JSON.stringify({private: true})
+      : JSON.stringify({private: false});
     try {
       if (isJobCancelled(jobId)) {
         removeCancelledJobId(jobId);
         throw new Error('job is cancelled');
       }
-      // Here we need to identify whether the element is already present or not
-      // Get all the elements at user account level and check the existence of the element
-      const existingElement = !isNilOrEmpty(allElements)
-        ? find((searchElement) =>
-            equals(element.key, searchElement.key) && has('private', element)
-              ? equals(element.private, searchElement.private) && !searchElement.extended
-              : equals(element.extended, searchElement.extended) && !searchElement.private,
-          )(allElements)
-        : [];
-      const elementMetadata = equals(element.private, true)
-        ? JSON.stringify({private: true})
-        : JSON.stringify({private: false});
       emitter.emit(
         EventTopic.ASSET_STATUS,
-        constructEvent(processId, Assets.ELEMENTS, element.key, ArtifactStatus.INPROGRESS, '', elementMetadata, false),
+        constructEvent(
+          processId,
+          Assets.ELEMENTS,
+          element.key,
+          ArtifactStatus.INPROGRESS,
+          '',
+          elementMetadata,
+        ),
       );
       if (isNilOrEmpty(existingElement)) {
         // Element doesn't exists in the db for given account
@@ -78,7 +87,6 @@ module.exports = async (elements, jobId, processId) => {
               ArtifactStatus.COMPLETED,
               '',
               elementMetadata,
-              false,
             ),
           );
           console.log(`Created Element: ${element.key}`);
@@ -118,7 +126,6 @@ module.exports = async (elements, jobId, processId) => {
               ArtifactStatus.COMPLETED,
               '',
               elementMetadata,
-              false,
             ),
           );
           // Combine both the promises list and resolve all
@@ -139,7 +146,6 @@ module.exports = async (elements, jobId, processId) => {
               ArtifactStatus.COMPLETED,
               '',
               elementMetadata,
-              false,
             ),
           );
           console.log(`Updated Element: ${element.key}`);
@@ -176,7 +182,6 @@ module.exports = async (elements, jobId, processId) => {
               ArtifactStatus.COMPLETED,
               '',
               elementMetadata,
-              false,
             ),
           );
           // Combine both the promises list and resolve all
@@ -187,7 +192,14 @@ module.exports = async (elements, jobId, processId) => {
     } catch (error) {
       emitter.emit(
         EventTopic.ASSET_STATUS,
-        constructEvent(processId, Assets.ELEMENTS, element.key, ArtifactStatus.FAILED, error.toString(), '', false),
+        constructEvent(
+          processId,
+          Assets.ELEMENTS,
+          element.key,
+          ArtifactStatus.FAILED,
+          error.toString(),
+          elementMetadata,
+        ),
       );
       throw error;
     }

@@ -32,11 +32,13 @@ const importElements = curry(async (elements, options) => {
         if (equals(type(elementKey), 'Object') && !isNilOrEmpty(options.jobId)) {
           const {key} = elementKey;
           const elementToImport = find((element) =>
-            equals(toLower(element.key), toLower(key)) && elementKey.private
+            equals(toLower(element.key), toLower(key))
+              ? elementKey.private
               ? has('private', element) && element.private
               : has('private', element)
               ? !element.private && element.extended
-              : element.extended,
+              : element.extended
+              : false,
           )(elements);
           if (isNilOrEmpty(elementToImport)) {
             console.log(`The doctor was unable to find the element ${key}.`);
@@ -44,7 +46,7 @@ const importElements = curry(async (elements, options) => {
             elementsToImport.push(elementToImport);
           }
         } else {
-          const elementToImport = find((element) => toLower(element.key) === toLower(elementKey))(elements);
+          const elementToImport = find((element) => equals(toLower(element.key), toLower(elementKey)))(elements);
           if (isNilOrEmpty(elementToImport)) {
             console.log(`The doctor was unable to find the element ${elementKey}.`);
           } else {
