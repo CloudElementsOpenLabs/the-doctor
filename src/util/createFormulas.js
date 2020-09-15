@@ -1,12 +1,11 @@
 'use strict';
-const {map, find, propEq, mergeAll, curry, pipeP} = require('ramda');
+const {map, find, propEq, mergeAll, curry} = require('ramda');
 const { emitter, EventTopic } = require('../events/emitter');
 const constructEvent = require('../events/construct-event');
 const { isJobCancelled, removeCancelledJobId } = require('../events/cancelled-job');
 const { Assets, ArtifactStatus } = require('../constants/artifact');
 const get = require('./get');
 const postFormula = require('./post')('formulas');
-const applyVersion = require('../util/applyVersion')
 const makePath = formula => `formulas/${formula.id}`;
 const update = require('./update');
 
@@ -27,11 +26,11 @@ const updateFormula = curry(async (jobId, processId, formula) => {
       removeCancelledJobId(jobId);
       throw new Error('job is cancelled');
     }
-    emitter.emit(EventTopic.ASSET_STATUS, constructEvent(processId, Assets.FORMULAS, formula.name, ArtifactStatus.INPROGRESS, '', '', false));
+    emitter.emit(EventTopic.ASSET_STATUS, constructEvent(processId, Assets.FORMULAS, formula.name, ArtifactStatus.INPROGRESS, '', ''));
     await update(makePath(formula), formula)
-    emitter.emit(EventTopic.ASSET_STATUS, constructEvent(processId, Assets.FORMULAS, formula.name, ArtifactStatus.COMPLETED, '', '', false));
+    emitter.emit(EventTopic.ASSET_STATUS, constructEvent(processId, Assets.FORMULAS, formula.name, ArtifactStatus.COMPLETED, '', ''));
   } catch (error) {
-    emitter.emit(EventTopic.ASSET_STATUS, constructEvent(processId, Assets.FORMULAS, formula.name, ArtifactStatus.FAILED, error.toString(), '', false));
+    emitter.emit(EventTopic.ASSET_STATUS, constructEvent(processId, Assets.FORMULAS, formula.name, ArtifactStatus.FAILED, error.toString(), ''));
     throw error;
   }
   console.log(`Updated Formula: ${formula.name}`)

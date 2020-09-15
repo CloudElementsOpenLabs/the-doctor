@@ -15,18 +15,18 @@ module.exports = async (vdrs, jobId, processId) => {
       }
       emitter.emit(
         EventTopic.ASSET_STATUS,
-        constructEvent(processId, Assets.VDRS, vdrName, ArtifactStatus.INPROGRESS, '', '', false),
+        constructEvent(processId, Assets.VDRS, vdrName, ArtifactStatus.INPROGRESS, '', ''),
       );
       await update('vdrs/import', vdr);
       console.log(`Upserted VDR: ${vdrName}`)
       emitter.emit(
         EventTopic.ASSET_STATUS,
-        constructEvent(processId, Assets.VDRS, vdrName, ArtifactStatus.COMPLETED, '', '', false),
+        constructEvent(processId, Assets.VDRS, vdrName, ArtifactStatus.COMPLETED, '', ''),
       );
     } catch (error) {
       emitter.emit(
         EventTopic.ASSET_STATUS,
-        constructEvent(processId, Assets.VDRS, vdrName, ArtifactStatus.FAILED, error.toString(), '', false),
+        constructEvent(processId, Assets.VDRS, vdrName, ArtifactStatus.FAILED, error.toString(), ''),
       );
       throw error;
     }
