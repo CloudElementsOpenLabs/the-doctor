@@ -58,38 +58,42 @@ const moveOldFilestoBackup = async (dirPath) => {
  * @param {Object} data
  */
 const saveVdrsToDirNew = async (dir, data) => {
-  const vdrs = await data;
-  createDirIfNotExist(dir);
-  moveOldFilestoBackup(dir);
+  try {
+    const vdrs = await data;
+    createDirIfNotExist(dir);
+    moveOldFilestoBackup(dir);
 
-  forEachObjIndexed((vdrNameObject, vdrName) => {
-    const vdrDir = `${dir}/${vdrName}`;
-    createDirIfNotExist(vdrDir);
-    writeFileSync(`${vdrDir}/${vdrName}.json`, JSON.stringify(sortobject(vdrNameObject), null, 4), 'utf8');
-    // save defintion
-    const definition = vdrNameObject.definition;
-    const definitionDir = `${vdrDir}/definition`;
-    createDirIfNotExist(definitionDir);
-    definition.fields = definition.fields.sort((a, b) => a.path.localeCompare(b.path));
-    writeFileSync(definitionDir + '/objectDefinition.json', JSON.stringify(sortobject(definition), null, 4), 'utf8');
-    // save transformation
-    const transformations = vdrNameObject.transformation;
-    const transformationDir = `${vdrDir}/transformation`;
-    createDirIfNotExist(transformationDir);
-    forEachObjIndexed((elementTransformtaion, elementKey) => {
-      const elementTransformtaionDir = `${transformationDir}/${elementKey}`;
-      createDirIfNotExist(elementTransformtaionDir);
-      if (elementTransformtaion && elementTransformtaion.script) {
-        writeFileSync(`${elementTransformtaionDir}/script.js`, elementTransformtaion.script.body, 'utf8');
-        elementTransformtaion.script = dissoc('body', elementTransformtaion.script);
-      }
-      writeFileSync(
-        `${elementTransformtaionDir}/transformation.json`,
-        JSON.stringify(sortobject(elementTransformtaion), null, 4),
-        'utf8',
-      );
-    })(transformations);
-  }, vdrs);
+    forEachObjIndexed((vdrNameObject, vdrName) => {
+      const vdrDir = `${dir}/${vdrName}`;
+      createDirIfNotExist(vdrDir);
+      writeFileSync(`${vdrDir}/${vdrName}.json`, JSON.stringify(sortobject(vdrNameObject), null, 4), 'utf8');
+      // save defintion
+      const definition = vdrNameObject.definition;
+      const definitionDir = `${vdrDir}/definition`;
+      createDirIfNotExist(definitionDir);
+      definition.fields = definition.fields.sort((a, b) => a.path.localeCompare(b.path));
+      writeFileSync(definitionDir + '/objectDefinition.json', JSON.stringify(sortobject(definition), null, 4), 'utf8');
+      // save transformation
+      const transformations = vdrNameObject.transformation;
+      const transformationDir = `${vdrDir}/transformation`;
+      createDirIfNotExist(transformationDir);
+      forEachObjIndexed((elementTransformtaion, elementKey) => {
+        const elementTransformtaionDir = `${transformationDir}/${elementKey}`;
+        createDirIfNotExist(elementTransformtaionDir);
+        if (elementTransformtaion && elementTransformtaion.script) {
+          writeFileSync(`${elementTransformtaionDir}/script.js`, elementTransformtaion.script.body, 'utf8');
+          elementTransformtaion.script = dissoc('body', elementTransformtaion.script);
+        }
+        writeFileSync(
+          `${elementTransformtaionDir}/transformation.json`,
+          JSON.stringify(sortobject(elementTransformtaion), null, 4),
+          'utf8',
+        );
+      })(transformations);
+    }, vdrs);
+  } catch (error) {
+    throw error;
+  }
 };
 
 /**
@@ -102,40 +106,44 @@ const saveVdrsToDirNew = async (dir, data) => {
  * @param {Object} data
  */
 const saveVdrsToDirOld = async (dir, data) => {
-  const vdrs = await data;
-  createDirIfNotExist(dir);
-  const definitionDir = `${dir}/objectDefinitions`;
-  createDirIfNotExist(definitionDir);
-  const transformationDir = `${dir}/transformations`;
-  createDirIfNotExist(transformationDir);
+  try {
+    const vdrs = await data;
+    createDirIfNotExist(dir);
+    const definitionDir = `${dir}/objectDefinitions`;
+    createDirIfNotExist(definitionDir);
+    const transformationDir = `${dir}/transformations`;
+    createDirIfNotExist(transformationDir);
 
-  forEachObjIndexed((vdr, vdrName) => {
-    // save definition
-    const objectDirName = `${definitionDir}/${toDirectoryName(vdrName)}`;
-    createDirIfNotExist(objectDirName);
-    vdr.definition.fields = vdr.definition.fields.sort((a, b) => a.path.localeCompare(b.path));
-    writeFileSync(
-      objectDirName + '/objectDefinition.json',
-      JSON.stringify(sortobject(dissoc('id', vdr.definition)), null, 4),
-      'utf8',
-    );
-    // save transformation
-    forEachObjIndexed((elementTransformation, elementKey) => {
-      const elementTransformtaionDir = `${transformationDir}/${elementKey}`;
-      createDirIfNotExist(elementTransformtaionDir);
-      const elementTransformtaionByVdrNameDir = `${elementTransformtaionDir}/${vdrName}`;
-      createDirIfNotExist(elementTransformtaionByVdrNameDir);
-      if (elementTransformation && elementTransformation.script) {
-        writeFileSync(`${elementTransformtaionByVdrNameDir}/script.js`, elementTransformation.script.body, 'utf8');
-        elementTransformation.script = dissoc('body', elementTransformation.script);
-      }
+    forEachObjIndexed((vdr, vdrName) => {
+      // save definition
+      const objectDirName = `${definitionDir}/${toDirectoryName(vdrName)}`;
+      createDirIfNotExist(objectDirName);
+      vdr.definition.fields = vdr.definition.fields.sort((a, b) => a.path.localeCompare(b.path));
       writeFileSync(
-        `${elementTransformtaionByVdrNameDir}/transformation.json`,
-        JSON.stringify(sortobject(elementTransformation), null, 4),
+        objectDirName + '/objectDefinition.json',
+        JSON.stringify(sortobject(dissoc('id', vdr.definition)), null, 4),
         'utf8',
       );
-    })(vdr.transformation);
-  })(vdrs);
+      // save transformation
+      forEachObjIndexed((elementTransformation, elementKey) => {
+        const elementTransformtaionDir = `${transformationDir}/${elementKey}`;
+        createDirIfNotExist(elementTransformtaionDir);
+        const elementTransformtaionByVdrNameDir = `${elementTransformtaionDir}/${vdrName}`;
+        createDirIfNotExist(elementTransformtaionByVdrNameDir);
+        if (elementTransformation && elementTransformation.script) {
+          writeFileSync(`${elementTransformtaionByVdrNameDir}/script.js`, elementTransformation.script.body, 'utf8');
+          elementTransformation.script = dissoc('body', elementTransformation.script);
+        }
+        writeFileSync(
+          `${elementTransformtaionByVdrNameDir}/transformation.json`,
+          JSON.stringify(sortobject(elementTransformation), null, 4),
+          'utf8',
+        );
+      })(vdr.transformation);
+    })(vdrs);
+  } catch (error) {
+    throw error;
+  }
 };
 
 module.exports = {
