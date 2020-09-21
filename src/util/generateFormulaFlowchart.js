@@ -39,6 +39,9 @@ const objectToPrintOut = object => {
 }
 
 const parseTrigger = triggerStep => {
+    if (isNil(triggerStep)) {
+      return {};
+    }
     const triggerProperties = {
         ...triggerStep.properties, 
         type: triggerStep.type,
