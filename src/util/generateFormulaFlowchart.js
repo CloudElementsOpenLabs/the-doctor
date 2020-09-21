@@ -17,7 +17,7 @@ const sortSteps = (trigger, steps) => {
 
     const getStep = name => find(propEq('name', name))(steps)
 
-    let stepsToAdd = concat(trigger.onSuccess, trigger.onFailure)
+    let stepsToAdd = !isNil(trigger) ? concat(trigger.onSuccess, trigger.onFailure) : [];
     addSteps(stepsToAdd)
     //Go through sorted steps, cnt is pointer to current step name
     let cnt = 0
