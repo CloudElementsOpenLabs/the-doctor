@@ -28,6 +28,9 @@ module.exports = async (keys, jobId) => {
       ? {where: "private='true'"}
       : ''
     : {where: "private='true' AND key in (" + applyQuotes(privateElementsKey) + ')'};
-
-  return !isNilOrEmpty(private_qs) ? await getPrivateElements(private_qs) : [];
+  try {
+    return !isNilOrEmpty(private_qs) ? await getPrivateElements(private_qs) : [];    
+  } catch (error) {
+    throw error;
+  }
 };

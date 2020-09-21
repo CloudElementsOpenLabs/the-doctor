@@ -6,4 +6,6 @@ env:
 extends: 'eslint:recommended'
 parserOptions:
   ecmaVersion: 11
-rules: {}
+rules: {
+  no-useless-catch: 0
+}

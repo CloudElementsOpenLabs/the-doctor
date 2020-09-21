@@ -28,10 +28,12 @@ module.exports = async (keys, jobId) => {
       ? {where: "extended='true'"}
       : ''
     : {where: "extended='true' AND key in (" + applyQuotes(extendedElementsKey) + ')'};
-
-  const allExtendedElements = !isNilOrEmpty(extended_qs) ? await getExtendedElements(extended_qs) : [];
-
-  return !isNilOrEmpty(allExtendedElements)
-    ? allExtendedElements.filter((element) => element.extended && !element.private)
-    : [];
+  try {
+    const allExtendedElements = !isNilOrEmpty(extended_qs) ? await getExtendedElements(extended_qs) : [];
+    return !isNilOrEmpty(allExtendedElements)
+      ? allExtendedElements.filter((element) => element.extended && !element.private)
+      : []; 
+  } catch (error) {
+    throw error;
+  }
 };

@@ -1,14 +1,14 @@
 'use strict';
+const {type, curry} = require('ramda');
 
-const {type, filter, curry, toLower} = require('ramda');
-
-const filterData = curry((name, object) => toLower(object.name) === toLower(name))
-
-//(fileName)
 module.exports = curry(async (getData, objectName, jobId, processId) => {
-    if(objectName !== undefined && type(objectName) !== 'Function') {
-        return await getData(objectName, jobId, processId);
+  try {
+    if (objectName !== undefined && type(objectName) !== 'Function') {
+      return await getData(objectName, jobId, processId);
     } else {
-        return await getData()
+      return await getData();
     }
-})
+  } catch (error) {
+    throw error;
+  }
+});
