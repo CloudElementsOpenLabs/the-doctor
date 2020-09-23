@@ -35,8 +35,15 @@ const buildVdrV2FromDir = async (dirName, vdrname) => {
       if (isDirectory(elementTransformationDir) && existsSync(elementTransformationFile)) {
         elementTransformation = await readFile(elementTransformationFile);
       }
-
-      if (elementTransformation && elementTransformation.script) {
+      if (elementTransformation && elementTransformation.scripts) {
+        elementTransformation.scripts.forEach((script, index, scripts) => {
+          const elementTransformationScriptFile = join(elementTransformationDir, `${script.level}-script.js`);
+          scripts[index] = {
+            ...elementTransformation.script,
+            body: readFileSync(elementTransformationScriptFile).toString(),
+          };
+        });
+      } else if (elementTransformation && elementTransformation.script) {
         const elementTransformationScriptFile = join(elementTransformationDir, 'script.js');
         elementTransformation.script = {
           ...elementTransformation.script,

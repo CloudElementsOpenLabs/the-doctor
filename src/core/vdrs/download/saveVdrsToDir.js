@@ -62,7 +62,6 @@ const saveVdrsToDirNew = async (dir, data) => {
     const vdrs = await data;
     createDirIfNotExist(dir);
     moveOldFilestoBackup(dir);
-
     forEachObjIndexed((vdrNameObject, vdrName) => {
       const vdrDir = `${dir}/${vdrName}`;
       createDirIfNotExist(vdrDir);
@@ -80,7 +79,12 @@ const saveVdrsToDirNew = async (dir, data) => {
       forEachObjIndexed((elementTransformtaion, elementKey) => {
         const elementTransformtaionDir = `${transformationDir}/${elementKey}`;
         createDirIfNotExist(elementTransformtaionDir);
-        if (elementTransformtaion && elementTransformtaion.script) {
+        if (elementTransformtaion && elementTransformtaion.scripts) {
+          elementTransformtaion.scripts.forEach((script, index, scripts) => {
+            writeFileSync(`${elementTransformtaionDir}/${script.level}-script.js`, elementTransformtaion.script.body, 'utf8');
+            scripts[index] = dissoc('body', elementTransformtaion.script);
+          });
+        } else if (elementTransformtaion && elementTransformtaion.script) {
           writeFileSync(`${elementTransformtaionDir}/script.js`, elementTransformtaion.script.body, 'utf8');
           elementTransformtaion.script = dissoc('body', elementTransformtaion.script);
         }
