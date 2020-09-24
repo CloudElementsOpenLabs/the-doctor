@@ -81,8 +81,8 @@ const saveVdrsToDirNew = async (dir, data) => {
         createDirIfNotExist(elementTransformtaionDir);
         if (elementTransformtaion && elementTransformtaion.scripts) {
           elementTransformtaion.scripts.forEach((script, index, scripts) => {
-            writeFileSync(`${elementTransformtaionDir}/${script.level}-script.js`, elementTransformtaion.script.body, 'utf8');
-            scripts[index] = dissoc('body', elementTransformtaion.script);
+            writeFileSync(`${elementTransformtaionDir}/${script.level}-script.js`, script.body, 'utf8');
+            scripts[index] = dissoc('body', script);
           });
         } else if (elementTransformtaion && elementTransformtaion.script) {
           writeFileSync(`${elementTransformtaionDir}/script.js`, elementTransformtaion.script.body, 'utf8');

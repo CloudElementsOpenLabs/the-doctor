@@ -39,7 +39,7 @@ const buildVdrV2FromDir = async (dirName, vdrname) => {
         elementTransformation.scripts.forEach((script, index, scripts) => {
           const elementTransformationScriptFile = join(elementTransformationDir, `${script.level}-script.js`);
           scripts[index] = {
-            ...elementTransformation.script,
+            ...script,
             body: readFileSync(elementTransformationScriptFile).toString(),
           };
         });
