@@ -58,7 +58,8 @@ const importFormulas = curry(async (formulas, options) => {
           if (isNilOrEmpty(formulaToImport)) {
             console.log(`The doctor was unable to find the formula ${formulaName}.`);
           } else if (any((step) => step.type === 'formula')(formulaToImport.steps)) {
-            console.log('You are trying to import a formula that has a sub formula. Please import all formulas.');
+            console.log(`You are trying to import a formula (${formulaName}) that has a sub formula. Please make sure to import all formulas.`);
+            formulasToImport.push(formulaToImport);
           } else {
             formulasToImport.push(formulaToImport);
           }
