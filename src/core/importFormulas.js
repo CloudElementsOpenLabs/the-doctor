@@ -15,11 +15,7 @@ const {
   find,
   any,
   curry,
-  contains,
 } = require('ramda');
-const {emitter, EventTopic} = require('../events/emitter');
-const constructEvent = require('../events/construct-event');
-const {Assets, ArtifactStatus} = require('../constants/artifact');
 const readFile = require('../util/readFile');
 const applyVersion = require('../util/applyVersion');
 const buildFormulasFromDir = require('../util/buildFormulasFromDir');
@@ -37,23 +33,6 @@ const importFormulas = curry(async (formulas, options) => {
         : options.name.split(',');
       formulaNames &&
         formulaNames.forEach((formulaName) => {
-          if (contains(' ', formulaName)) {
-            const errorMessage = `You can't import a formula which has space in the name: ${formulaName}`;
-            options.jobId &&
-              options.processId &&
-              emitter.emit(
-                EventTopic.ASSET_STATUS,
-                constructEvent(
-                  options.processId,
-                  Assets.FORMULAS,
-                  formulaName,
-                  ArtifactStatus.FAILED,
-                  errorMessage,
-                  '',
-                ),
-              );
-            throw new Error(errorMessage);
-          }
           const formulaToImport = find((formula) => toLower(formula.name) === toLower(formulaName))(formulas);
           if (isNilOrEmpty(formulaToImport)) {
             console.log(`The doctor was unable to find the formula ${formulaName}.`);

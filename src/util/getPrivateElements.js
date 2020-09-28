@@ -14,7 +14,7 @@ module.exports = async (keys, jobId) => {
           filter((element) => element.private),
           map((element) => element.key),
           flatten,
-          join(', '),
+          join(','),
         )(keys)
       : type(keys) === 'String'
       ? keys

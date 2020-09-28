@@ -19,10 +19,10 @@ module.exports = async (keys, jobId, processId) => {
   let formulaNames = [];
   if (type(keys) === 'String') {
     formulaNames = keys.split(',');
-    param = { where: 'name in (' + applyQuotes(join(', ', formulaNames)) + ')' };
+    param = { where: 'name in (' + applyQuotes(join(',', formulaNames)) + ')' };
   } else if (Array.isArray(keys)) {
     formulaNames = keys.map((formula) => formula.name);
-    param = { where: 'name in (' + applyQuotes(join(', ', formulaNames)) + ')' };
+    param = { where: 'name in (' + applyQuotes(join(',', formulaNames)) + ')' };
   } else {
     return get('formulas', param);
   }
