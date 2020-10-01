@@ -11,14 +11,11 @@ module.exports = async (dir, dataPromise) => {
     }
     await saveElementsToDir(elementsFolder, data.elements)
 
-    const commonResourcesFolder = `${dir}/commonResources`
+    const commonResourcesFolder = `${dir}/vdrs`
     if (!existsSync(commonResourcesFolder)) {
         mkdirSync(commonResourcesFolder)
     }
-    await saveVdrsToDirOld(commonResourcesFolder, {
-        objectDefinitions: data.objectDefinitions,
-        transformations: data.transformations
-    })
+    await saveVdrsToDirOld(commonResourcesFolder, data.vdrs);
     
     const formulasFolder = `${dir}/formulas`
     if (!existsSync(formulasFolder)) {

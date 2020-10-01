@@ -1,7 +1,5 @@
 'use strict';
-
-const {pipeP, pipe, map, flatten, prop, filter, uniq, ap, pair, fromPairs} = require('ramda');
-const {resolveP} = require('ramda-adjunct');
+const {pipeP, pipe, map, flatten, prop, filter, uniq} = require('ramda');
 const mapP = require('./mapP');
 const get = require('./get');
 const getObjectDefinitions = require('./getObjectDefinitions');
