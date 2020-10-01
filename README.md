@@ -105,7 +105,10 @@ $ doctor upload formulas staging -d ~/formulas -n specific\ formula\ name
 $ doctor download formulas staging -f ~/formula.json -n myFormula -v 2
 
 # import a versioned object (example formula named myFormula, version 3)
-$ doctor upload formulas staging -f ~/formula.json -v 3 
+$ doctor upload formulas staging -f ~/formula.json -v 3
+
+# generate flow chart for the specified formula
+$ doctor graph formulas -f ~/Desktop/doctor/formula.json
 ```
 
 ## Limitations
