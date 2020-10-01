@@ -2,7 +2,6 @@ const {existsSync, mkdirSync, writeFileSync} = require('fs');
 const {forEach, map, dissoc, omit, when, dissocPath, pipe, tap} = require('ramda');
 const sortobject = require('deep-sort-object');
 const {toDirectoryName} = require('./regex');
-const generateFlowchart = require('./generateFormulaFlowchart');
 
 const addStep = (stepName, stepsMap, sortedSteps) => {
   const step = stepsMap[stepName];
@@ -61,7 +60,6 @@ module.exports = async (dir, data) => {
         if (!existsSync(formulaFolder)) {
           mkdirSync(formulaFolder);
         }
-        await generateFlowchart(formula, formulaFolder);
         sortSteps(formula);
         formula.steps = map(
           when(
