@@ -2,6 +2,8 @@
 const loadAccount = require('../util/loadAccount');
 const {startSpinner, stopSpinner} = require('../util/spinner');
 const eventListener = require('../events/event-listener');
+const {removeCancelledJobId} = require('../events/cancelled-job');
+const clearCancelledJobId = (jobId) => jobId && removeCancelledJobId(jobId);
 
 const functions = {
   vdrs: require('./vdrs/upload/uploadMultipleVdrs'),
@@ -23,8 +25,10 @@ module.exports = async (object, account, options) => {
     }
     eventListener.addListener();
     await functions[object](options);
+    clearCancelledJobId(options.jobId)
     await stopSpinner();
   } catch (err) {
+    clearCancelledJobId(options.jobId)
     await stopSpinner();
     throw err;
   }

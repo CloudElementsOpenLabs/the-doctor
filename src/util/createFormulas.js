@@ -1,8 +1,7 @@
 'use strict';
 const {map, find, propEq, mergeAll, curry, equals} = require('ramda');
 const {emitter, EventTopic} = require('../events/emitter');
-const constructEvent = require('../events/construct-event');
-const {isJobCancelled, removeCancelledJobId} = require('../events/cancelled-job');
+const {isJobCancelled} = require('../events/cancelled-job');
 const {Assets, ArtifactStatus} = require('../constants/artifact');
 const get = require('./get');
 const postFormula = require('./post')('formulas');
@@ -27,24 +26,41 @@ const createFormula = curry(async (endpointFormulas, formula) => {
 const updateFormula = curry(async (jobId, processId, formula) => {
   try {
     if (isJobCancelled(jobId)) {
-      removeCancelledJobId(jobId);
-      throw new Error('job is cancelled');
+      emitter.emit(EventTopic.ASSET_STATUS, {
+        processId,
+        assetType: Assets.FORMULAS,
+        assetName: formula.name,
+        assetStatus: ArtifactStatus.CANCELLED,
+        error: 'job is cancelled',
+        metadata: '',
+      });
+      return null;
     }
-    emitter.emit(
-      EventTopic.ASSET_STATUS,
-      constructEvent(processId, Assets.FORMULAS, formula.name, ArtifactStatus.INPROGRESS, '', ''),
-    );
+    emitter.emit(EventTopic.ASSET_STATUS, {
+      processId,
+      assetType: Assets.FORMULAS,
+      assetName: formula.name,
+      assetStatus: ArtifactStatus.INPROGRESS,
+      metadata: '',
+    });
     await update(makePath(formula), formula);
     console.log(`Updated Formula: ${formula.name}`);
-    emitter.emit(
-      EventTopic.ASSET_STATUS,
-      constructEvent(processId, Assets.FORMULAS, formula.name, ArtifactStatus.COMPLETED, '', ''),
-    );
+    emitter.emit(EventTopic.ASSET_STATUS, {
+      processId,
+      assetType: Assets.FORMULAS,
+      assetName: formula.name,
+      assetStatus: ArtifactStatus.COMPLETED,
+      metadata: '',
+    });
   } catch (error) {
-    emitter.emit(
-      EventTopic.ASSET_STATUS,
-      constructEvent(processId, Assets.FORMULAS, formula.name, ArtifactStatus.FAILED, error.toString(), ''),
-    );
+    emitter.emit(EventTopic.ASSET_STATUS, {
+      processId,
+      assetType: Assets.FORMULAS,
+      assetName: formula.name,
+      assetStatus: ArtifactStatus.FAILED,
+      error: error.toString(),
+      metadata: '',
+    });
     throw error;
   }
 });

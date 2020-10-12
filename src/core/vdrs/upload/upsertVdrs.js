@@ -2,34 +2,50 @@
 const {mapObjIndexed, values} = require('ramda');
 const update = require('../../../util/update');
 const {emitter, EventTopic} = require('../../../events/emitter');
-const constructEvent = require('../../../events/construct-event');
-const {isJobCancelled, removeCancelledJobId} = require('../../../events/cancelled-job');
+const {isJobCancelled} = require('../../../events/cancelled-job');
 const {Assets, ArtifactStatus} = require('../../../constants/artifact');
 
 module.exports = async (vdrs, jobId, processId) => {
-  const uploadPromis = mapObjIndexed(async (vdr, vdrName) => {
+  const uploadPromises = mapObjIndexed(async (vdr, vdrName) => {
     try {
       if (isJobCancelled(jobId)) {
-        removeCancelledJobId(jobId);
-        throw new Error('job is cancelled');
+        emitter.emit(EventTopic.ASSET_STATUS, {
+          processId,
+          assetType: Assets.VDRS,
+          assetName: vdrName,
+          assetStatus: ArtifactStatus.CANCELLED,
+          error: 'job is cancelled',
+          metadata: '',
+        });
+        return null;
       }
-      emitter.emit(
-        EventTopic.ASSET_STATUS,
-        constructEvent(processId, Assets.VDRS, vdrName, ArtifactStatus.INPROGRESS, '', ''),
-      );
+      emitter.emit(EventTopic.ASSET_STATUS, {
+        processId,
+        assetType: Assets.VDRS,
+        assetName: vdrName,
+        assetStatus: ArtifactStatus.INPROGRESS,
+        metadata: '',
+      });
       await update('vdrs/import', vdr);
-      console.log(`Upserted VDR: ${vdrName}`)
-      emitter.emit(
-        EventTopic.ASSET_STATUS,
-        constructEvent(processId, Assets.VDRS, vdrName, ArtifactStatus.COMPLETED, '', ''),
-      );
+      console.log(`Upserted VDR: ${vdrName}`);
+      emitter.emit(EventTopic.ASSET_STATUS, {
+        processId,
+        assetType: Assets.VDRS,
+        assetName: vdrName,
+        assetStatus: ArtifactStatus.COMPLETED,
+        metadata: '',
+      });
     } catch (error) {
-      emitter.emit(
-        EventTopic.ASSET_STATUS,
-        constructEvent(processId, Assets.VDRS, vdrName, ArtifactStatus.FAILED, error.toString(), ''),
-      );
+      emitter.emit(EventTopic.ASSET_STATUS, {
+        processId,
+        assetType: Assets.VDRS,
+        assetName: vdrName,
+        assetStatus: ArtifactStatus.FAILED,
+        error: error.toString(),
+        metadata: '',
+      });
       throw error;
     }
   }, vdrs);
-  return Promise.all(values(uploadPromis));
+  return Promise.all(values(uploadPromises));
 };
