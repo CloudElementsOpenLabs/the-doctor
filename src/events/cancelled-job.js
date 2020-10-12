@@ -19,7 +19,7 @@ const isJobCancelled = (jobId) => {
     return idSet.has(jobId);
   } else {
     // Job cancelled event is consumed by the doctor service through event listener
-    emitter.emit(EventTopic.JOB_CANCELLED_SERVICE, {jobId});
+    emitter.emit(EventTopic.JOB_CANCELLED_CORE, {jobId});
   }
 };
 
