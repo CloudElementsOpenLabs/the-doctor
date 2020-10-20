@@ -11,6 +11,7 @@ const isNilOrEmpty = (val) => isNil(val) || isEmpty(val);
 const clearNull = pipe(reject(isNil));
 
 const downloadElements = async (elements, query, jobId, processId, isPrivate) => {
+  console.log(`Initiating the download process for elements`);
   const downloadPromises = await elements.map(async (element) => {
     const elementMetadata = JSON.stringify({private: isPrivate});
     try {
@@ -25,14 +26,9 @@ const downloadElements = async (elements, query, jobId, processId, isPrivate) =>
         });
         return null;
       }
-      emitter.emit(EventTopic.ASSET_STATUS, {
-        processId,
-        assetType: Assets.ELEMENTS,
-        assetName: element.key,
-        assetStatus: ArtifactStatus.INPROGRESS,
-        metadata: elementMetadata,
-      });
+      console.log(`Downloading element for element key - ${element.key}`);
       const exportedElement = await get(makePath(element), query);
+      console.log(`Downloaded element for element key - ${element.key}`);
       emitter.emit(EventTopic.ASSET_STATUS, {
         processId,
         assetType: Assets.ELEMENTS,

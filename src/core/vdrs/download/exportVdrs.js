@@ -8,6 +8,7 @@ const isNilOrEmpty = (val) => isNil(val) || isEmpty(val);
 const transduceVdrs = (vdrs) => (!isNilOrEmpty(vdrs) ? pipe(reject(isNil), indexBy(prop('vdrName'))) : {});
 
 const downloadVdrs = async (vdrNames, jobId, processId) => {
+  console.log(`Initiating the download process for VDRs`);
   const downloadPromise = await vdrNames.map(async (vdrName) => {
     try {
       if (isJobCancelled(jobId)) {
@@ -21,14 +22,9 @@ const downloadVdrs = async (vdrNames, jobId, processId) => {
         });
         return null;
       }
-      emitter.emit(EventTopic.ASSET_STATUS, {
-        processId,
-        assetType: Assets.VDRS,
-        assetName: vdrName,
-        assetStatus: ArtifactStatus.INPROGRESS,
-        metadata: '',
-      });
+      console.log(`Downloading VDR for VDR name - ${vdrName}`);
       const exportedVdr = await get(`/vdrs/${vdrName}/export`, '');
+      console.log(`Downloaded VDR for VDR name - ${vdrName}`);
       emitter.emit(EventTopic.ASSET_STATUS, {
         processId,
         assetType: Assets.VDRS,

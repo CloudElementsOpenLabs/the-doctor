@@ -1,4 +1,5 @@
 'use strict';
+require('log-prefix')(() => `[${new Date().toISOString()}] Doctor-core: %s`);
 const loadAccount = require('../util/loadAccount');
 const {startSpinner, stopSpinner} = require('../util/spinner');
 const eventListener = require('../events/event-listener');

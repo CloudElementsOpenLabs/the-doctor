@@ -19,15 +19,9 @@ module.exports = async (vdrs, jobId, processId) => {
         });
         return null;
       }
-      emitter.emit(EventTopic.ASSET_STATUS, {
-        processId,
-        assetType: Assets.VDRS,
-        assetName: vdrName,
-        assetStatus: ArtifactStatus.INPROGRESS,
-        metadata: '',
-      });
+      console.log(`Uploading VDR for VDR name - ${vdrName}`);
       await update('vdrs/import', vdr);
-      console.log(`Upserted VDR: ${vdrName}`);
+      console.log(`Uploaded VDR for VDR name - ${vdrName}`);
       emitter.emit(EventTopic.ASSET_STATUS, {
         processId,
         assetType: Assets.VDRS,

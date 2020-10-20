@@ -14,6 +14,7 @@ module.exports = async (options) => {
     console.log(`The doctor was unable to find the element ${name}.`);
     return;
   }
+  console.log(`Initiating the delete process for elements`);
   const removePromises = await elements.map(async (element) => {
     try {
       if (isJobCancelled(jobId)) {
@@ -27,15 +28,9 @@ module.exports = async (options) => {
         });
         return null;
       }
-      emitter.emit(EventTopic.ASSET_STATUS, {
-        processId,
-        assetType: Assets.ELEMENTS,
-        assetName: element.key,
-        assetStatus: ArtifactStatus.INPROGRESS,
-        metadata: '',
-      });
+      console.log(`Deleting element for element key - ${element.key}`);
       await remove(makePath(element.id));
-      console.log(`Deleted Element: ${element.key}.`);
+      console.log(`Deleted element for element key - ${element.key}.`);
       emitter.emit(EventTopic.ASSET_STATUS, {
         processId,
         assetType: Assets.ELEMENTS,

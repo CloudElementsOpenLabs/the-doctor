@@ -14,6 +14,7 @@ module.exports = async (options) => {
     console.log(`The doctor was unable to find the vdrs ${name}.`);
     return;
   }
+  console.log(`Initiating the delete process for VDRs`);
   await forEachObjIndexed(async (vdr) => {
     try {
       if (isJobCancelled(jobId)) {
@@ -27,15 +28,9 @@ module.exports = async (options) => {
         });
         return null;
       }
-      emitter.emit(EventTopic.ASSET_STATUS, {
-        processId,
-        assetType: Assets.VDRS,
-        assetName: vdr.vdrName,
-        assetStatus: ArtifactStatus.INPROGRESS,
-        metadata: '',
-      });
+      console.log(`Deleting VDR for VDR name - ${vdr.vdrName}`);
       await remove(makePath(vdr.vdrName), {force: true});
-      console.log(`Deleted VDR: ${vdr.vdrName}.`);
+      console.log(`Deleted VDR for VDR name - ${vdr.vdrName}`);
       emitter.emit(EventTopic.ASSET_STATUS, {
         processId,
         assetType: Assets.VDRS,

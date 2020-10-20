@@ -36,15 +36,9 @@ const updateFormula = curry(async (jobId, processId, formula) => {
       });
       return null;
     }
-    emitter.emit(EventTopic.ASSET_STATUS, {
-      processId,
-      assetType: Assets.FORMULAS,
-      assetName: formula.name,
-      assetStatus: ArtifactStatus.INPROGRESS,
-      metadata: '',
-    });
+    console.log(`Uploading formula for formula name - ${formula.name}`);
     await update(makePath(formula), formula);
-    console.log(`Updated Formula: ${formula.name}`);
+    console.log(`Uploaded formula for formula name - ${formula.name}`);
     emitter.emit(EventTopic.ASSET_STATUS, {
       processId,
       assetType: Assets.FORMULAS,
@@ -86,6 +80,7 @@ module.exports = async (formulas, jobId, processId) => {
           }))(formula.subFormulas)
         : [],
     }))(formulas);
+    console.log(`Initiating the upload process for formulas`);
     return Promise.all(map(updateFormula(jobId, processId))(newFormulas));
   } catch (error) {
     throw error;

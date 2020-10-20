@@ -40,6 +40,7 @@ const fetchExtendedAndPrivateResources = async (existingElementId, elementKey) =
 };
 
 module.exports = async (elements, jobId, processId) => {
+  console.log(`Initiating the upload process for elements`);
   const allElements = await fetchAllElements(elements);
   let uploadPromise = await elements.map(async (element) => {
     // Here we need to identify whether the element is already present or not
@@ -68,18 +69,13 @@ module.exports = async (elements, jobId, processId) => {
         });
         return null;
       }
-      emitter.emit(EventTopic.ASSET_STATUS, {
-        processId,
-        assetType: Assets.ELEMENTS,
-        assetName: element.key,
-        assetStatus: ArtifactStatus.INPROGRESS,
-        metadata: elementMetadata,
-      });
+      console.log(`Uploading element for element key - ${element.key}`);
       if (isNilOrEmpty(existingElement)) {
         // Element doesn't exists in the db for given account
         if (element.private === true || element.actuallyExtended === false) {
           // Create non-extended element (Private element)
           const importedElement = await createElement(element);
+          console.log(`Uploaded element for element key - ${element.key}`);
           emitter.emit(EventTopic.ASSET_STATUS, {
             processId,
             assetType: Assets.ELEMENTS,
@@ -115,6 +111,7 @@ module.exports = async (elements, jobId, processId) => {
               });
             }
           }
+          console.log(`Uploaded element for element key - ${element.key}`);
           emitter.emit(EventTopic.ASSET_STATUS, {
             processId,
             assetType: Assets.ELEMENTS,
@@ -131,6 +128,7 @@ module.exports = async (elements, jobId, processId) => {
         if (element.private === true || element.actuallyExtended === false) {
           // Create non-extended element (Private element)
           const importedElement = await update(makePath(element), element);
+          console.log(`Uploaded element for element key - ${element.key}`);
           emitter.emit(EventTopic.ASSET_STATUS, {
             processId,
             assetType: Assets.ELEMENTS,
@@ -138,7 +136,6 @@ module.exports = async (elements, jobId, processId) => {
             assetStatus: ArtifactStatus.COMPLETED,
             metadata: elementMetadata,
           });
-          console.log(`Updated Element: ${element.key}`);
           return importedElement;
         } else {
           // Extend the element resources and element configurations (TODO)
@@ -163,6 +160,7 @@ module.exports = async (elements, jobId, processId) => {
               }
             });
           }
+          console.log(`Uploaded element for element key - ${element.key}`);
           emitter.emit(EventTopic.ASSET_STATUS, {
             processId,
             assetType: Assets.ELEMENTS,

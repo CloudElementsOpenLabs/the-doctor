@@ -14,6 +14,7 @@ module.exports = async (options) => {
     console.log(`The doctor was unable to find the formula ${name}.`);
     return;
   }
+  console.log(`Initiating the delete process for formulas`);
   const removePromises = await formulas.map(async (formula) => {
     try {
       if (isJobCancelled(jobId)) {
@@ -27,15 +28,9 @@ module.exports = async (options) => {
         });
         return null;
       }
-      emitter.emit(EventTopic.ASSET_STATUS, {
-        processId,
-        assetType: Assets.FORMULAS,
-        assetName: formula.name,
-        assetStatus: ArtifactStatus.INPROGRESS,
-        metadata: '',
-      });
+      console.log(`Deleting formula for formula name - ${formula.name}`);
       await remove(makePath(formula.name));
-      console.log(`Deleted Formula: ${formula.name}.`);
+      console.log(`Deleted formula for formula name - ${formula.name}`);
       emitter.emit(EventTopic.ASSET_STATUS, {
         processId,
         assetType: Assets.FORMULAS,

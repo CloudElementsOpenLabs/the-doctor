@@ -19,6 +19,7 @@ module.exports = async (formulaKeys, jobId, processId) => {
     return get('formulas', param);
   }
   try {
+    console.log(`Initiating the download process for formulas`);
     if (isJobCancelled(jobId)) {
       formulaNames.forEach((formulaName) =>
         emitter.emit(EventTopic.ASSET_STATUS, {
@@ -32,16 +33,9 @@ module.exports = async (formulaKeys, jobId, processId) => {
       );
       return [];
     }
-    formulaNames.forEach((formulaName) =>
-      emitter.emit(EventTopic.ASSET_STATUS, {
-        processId,
-        assetType: Assets.FORMULAS,
-        assetName: formulaName,
-        assetStatus: ArtifactStatus.INPROGRESS,
-        metadata: '',
-      }),
-    );
+    console.log(`Downloading formulas`);
     const exportedFormulas = await get('formulas', param);
+    console.log(`Downloaded formulas`);
     formulaNames.forEach((formulaName) =>
       emitter.emit(EventTopic.ASSET_STATUS, {
         processId,

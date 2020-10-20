@@ -1,4 +1,4 @@
-const {emitter, EventTopic} = require('./emitter');
+require('log-prefix')(() => `[${new Date().toISOString()}] Doctor-core: %s`);
 let set;
 
 const getIdSet = () => {
@@ -13,13 +13,16 @@ const addCancelledJobId = (jobId) => {
 };
 
 const isJobCancelled = (jobId) => {
+  if (!jobId) {
+    return;
+  }
   const idSet = getIdSet();
   console.log('isJobCancelled - Content of the Cancelled Job Id Queue', idSet);
   if (idSet.has(jobId)) {
     return idSet.has(jobId);
   } else {
     // Job cancelled event is consumed by the doctor service through event listener
-    emitter.emit(EventTopic.JOB_CANCELLED_CORE, {jobId});
+    // emitter.emit(EventTopic.JOB_CANCELLED_CORE, {jobId});
   }
 };
 
