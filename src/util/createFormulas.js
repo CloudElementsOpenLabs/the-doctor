@@ -1,8 +1,7 @@
 'use strict';
 const {map, find, propEq, mergeAll, curry, equals} = require('ramda');
 const {emitter, EventTopic} = require('../events/emitter');
-const constructEvent = require('../events/construct-event');
-const {isJobCancelled, removeCancelledJobId} = require('../events/cancelled-job');
+const {isJobCancelled} = require('../events/cancelled-job');
 const {Assets, ArtifactStatus} = require('../constants/artifact');
 const get = require('./get');
 const postFormula = require('./post')('formulas');
@@ -27,24 +26,35 @@ const createFormula = curry(async (endpointFormulas, formula) => {
 const updateFormula = curry(async (jobId, processId, formula) => {
   try {
     if (isJobCancelled(jobId)) {
-      removeCancelledJobId(jobId);
-      throw new Error('job is cancelled');
+      emitter.emit(EventTopic.ASSET_STATUS, {
+        processId,
+        assetType: Assets.FORMULAS,
+        assetName: formula.name,
+        assetStatus: ArtifactStatus.CANCELLED,
+        error: 'job is cancelled',
+        metadata: '',
+      });
+      return null;
     }
-    emitter.emit(
-      EventTopic.ASSET_STATUS,
-      constructEvent(processId, Assets.FORMULAS, formula.name, ArtifactStatus.INPROGRESS, '', ''),
-    );
+    console.log(`Uploading formula for formula name - ${formula.name}`);
     await update(makePath(formula), formula);
-    console.log(`Updated Formula: ${formula.name}`);
-    emitter.emit(
-      EventTopic.ASSET_STATUS,
-      constructEvent(processId, Assets.FORMULAS, formula.name, ArtifactStatus.COMPLETED, '', ''),
-    );
+    console.log(`Uploaded formula for formula name - ${formula.name}`);
+    emitter.emit(EventTopic.ASSET_STATUS, {
+      processId,
+      assetType: Assets.FORMULAS,
+      assetName: formula.name,
+      assetStatus: ArtifactStatus.COMPLETED,
+      metadata: '',
+    });
   } catch (error) {
-    emitter.emit(
-      EventTopic.ASSET_STATUS,
-      constructEvent(processId, Assets.FORMULAS, formula.name, ArtifactStatus.FAILED, error.toString(), ''),
-    );
+    emitter.emit(EventTopic.ASSET_STATUS, {
+      processId,
+      assetType: Assets.FORMULAS,
+      assetName: formula.name,
+      assetStatus: ArtifactStatus.FAILED,
+      error: error.toString(),
+      metadata: '',
+    });
     throw error;
   }
 });
@@ -70,6 +80,7 @@ module.exports = async (formulas, jobId, processId) => {
           }))(formula.subFormulas)
         : [],
     }))(formulas);
+    console.log(`Initiating the upload process for formulas`);
     return Promise.all(map(updateFormula(jobId, processId))(newFormulas));
   } catch (error) {
     throw error;

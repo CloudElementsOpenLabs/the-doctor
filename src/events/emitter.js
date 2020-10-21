@@ -11,8 +11,8 @@ const singleton = () => {
 
 const EventTopic = {
   ASSET_STATUS: 'ASSERT_STATUS',
-  JOB_CANCELLED: 'JOB_CANCELLED',
   JOB_CREATED: 'JOB_CREATED',
+  JOB_CANCELLED_SERVICE: 'JOB_CANCELLED_SERVICE',
 };
 
 module.exports = {

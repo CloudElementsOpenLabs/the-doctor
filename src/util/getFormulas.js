@@ -1,50 +1,75 @@
 'use strict';
-const { type, join } = require('ramda');
-const { emitter, EventTopic } = require('../events/emitter');
-const constructEvent = require('../events/construct-event');
-const { isJobCancelled, removeCancelledJobId } = require('../events/cancelled-job');
-const { Assets, ArtifactStatus } = require('../constants/artifact');
+const {type, join} = require('ramda');
+const {emitter, EventTopic} = require('../events/emitter');
+const {isJobCancelled} = require('../events/cancelled-job');
+const {Assets, ArtifactStatus} = require('../constants/artifact');
 const get = require('./get');
 const applyQuotes = require('./quoteString');
 
-
-// Unlike vdrs and formulas export, formulas download is a single call and we cant split the status update to each asset
-const updateFormulasStatus = (processId, formulaNames, status, error) => {
-  for (const index in formulaNames) {
-    emitter.emit(EventTopic.ASSET_STATUS, constructEvent(processId, Assets.FORMULAS, formulaNames[index], status, error, '', false));
-  }
-}
-module.exports = async (keys, jobId, processId) => {
+module.exports = async (formulaKeys, jobId, processId) => {
   let param = '';
   let formulaNames = [];
-  if (type(keys) === 'String') {
-    formulaNames = keys.split(',');
-    param = { where: 'name in (' + applyQuotes(join(',', formulaNames)) + ')' };
-  } else if (Array.isArray(keys)) {
-    formulaNames = keys.map((formula) => formula.name);
-    param = { where: 'name in (' + applyQuotes(join(',', formulaNames)) + ')' };
+  if (type(formulaKeys) === 'String') {
+    formulaNames = formulaKeys.split(',');
+    param = {where: 'name in (' + applyQuotes(join(',', formulaNames)) + ')'};
+  } else if (Array.isArray(formulaKeys)) {
+    formulaNames = formulaKeys.map((formula) => formula.name);
+    param = {where: 'name in (' + applyQuotes(join(',', formulaNames)) + ')'};
   } else {
     return get('formulas', param);
   }
   try {
+    console.log(`Initiating the download process for formulas`);
     if (isJobCancelled(jobId)) {
-      removeCancelledJobId(jobId);
-      throw new Error('job is cancelled');
+      formulaNames.forEach((formulaName) =>
+        emitter.emit(EventTopic.ASSET_STATUS, {
+          processId,
+          assetType: Assets.FORMULAS,
+          assetName: formulaName,
+          assetStatus: ArtifactStatus.CANCELLED,
+          error: 'job is cancelled',
+          metadata: '',
+        }),
+      );
+      return [];
     }
-    updateFormulasStatus(processId, formulaNames, ArtifactStatus.INPROGRESS, '');
-    const result = await get('formulas', param);
-    updateFormulasStatus(processId, formulaNames, ArtifactStatus.COMPLETED, '');
-
-    const newlyCreated = keys && Array.isArray(keys) ? keys.filter(key => {
-      return !result.some(formula => formula.name == key.name)
-    }) : [];
-    newlyCreated.forEach(formula => {
-      emitter.emit(EventTopic.ASSET_STATUS, constructEvent(processId, Assets.FORMULAS, formula.name, ArtifactStatus.COMPLETED, '', '', true));
-    })
-
-    return result;
+    console.log(`Downloading formulas`);
+    const exportedFormulas = await get('formulas', param);
+    console.log(`Downloaded formulas`);
+    formulaNames.forEach((formulaName) =>
+      emitter.emit(EventTopic.ASSET_STATUS, {
+        processId,
+        assetType: Assets.FORMULAS,
+        assetName: formulaName,
+        assetStatus: ArtifactStatus.COMPLETED,
+        metadata: '',
+      }),
+    );
+    const newlyCreatedFormulas =
+      formulaKeys && Array.isArray(formulaKeys)
+        ? formulaKeys.filter((key) => !exportedFormulas.some((formula) => formula.name == key.name))
+        : [];
+    newlyCreatedFormulas.forEach((formula) =>
+      emitter.emit(EventTopic.ASSET_STATUS, {
+        processId,
+        assetType: Assets.FORMULAS,
+        assetName: formula.name,
+        metadata: '',
+        isNew: true,
+      }),
+    );
+    return exportedFormulas;
   } catch (error) {
-    updateFormulasStatus(processId, formulaNames, ArtifactStatus.FAILED, error.toString());
+    formulaNames.forEach((formulaName) =>
+      emitter.emit(EventTopic.ASSET_STATUS, {
+        processId,
+        assetType: Assets.FORMULAS,
+        assetName: formulaName,
+        assetStatus: ArtifactStatus.FAILED,
+        error: error.toString(),
+        metadata: '',
+      }),
+    );
     throw error;
   }
-}
+};

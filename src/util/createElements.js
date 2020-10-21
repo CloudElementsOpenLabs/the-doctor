@@ -1,8 +1,7 @@
 'use strict';
 const {isNil, isEmpty, equals, concat, find, filter, propOr, pipe, pluck, uniq, join, has, toLower} = require('ramda');
 const {emitter, EventTopic} = require('../events/emitter');
-const constructEvent = require('../events/construct-event');
-const {isJobCancelled, removeCancelledJobId} = require('../events/cancelled-job');
+const {isJobCancelled} = require('../events/cancelled-job');
 const {Assets, ArtifactStatus} = require('../constants/artifact');
 const applyQuotes = require('./quoteString');
 const getExtendedElements = require('./getExtendedElements');
@@ -41,6 +40,7 @@ const fetchExtendedAndPrivateResources = async (existingElementId, elementKey) =
 };
 
 module.exports = async (elements, jobId, processId) => {
+  console.log(`Initiating the upload process for elements`);
   const allElements = await fetchAllElements(elements);
   let uploadPromise = await elements.map(async (element) => {
     // Here we need to identify whether the element is already present or not
@@ -59,36 +59,30 @@ module.exports = async (elements, jobId, processId) => {
       : JSON.stringify({private: false});
     try {
       if (isJobCancelled(jobId)) {
-        removeCancelledJobId(jobId);
-        throw new Error('job is cancelled');
-      }
-      emitter.emit(
-        EventTopic.ASSET_STATUS,
-        constructEvent(
+        emitter.emit(EventTopic.ASSET_STATUS, {
           processId,
-          Assets.ELEMENTS,
-          element.key,
-          ArtifactStatus.INPROGRESS,
-          '',
-          elementMetadata,
-        ),
-      );
+          assetType: Assets.ELEMENTS,
+          assetName: element.key,
+          assetStatus: ArtifactStatus.CANCELLED,
+          error: 'job is cancelled',
+          metadata: elementMetadata,
+        });
+        return null;
+      }
+      console.log(`Uploading element for element key - ${element.key}`);
       if (isNilOrEmpty(existingElement)) {
         // Element doesn't exists in the db for given account
         if (element.private === true || element.actuallyExtended === false) {
           // Create non-extended element (Private element)
           const importedElement = await createElement(element);
-          emitter.emit(
-            EventTopic.ASSET_STATUS,
-            constructEvent(
-              processId,
-              Assets.ELEMENTS,
-              element.key,
-              ArtifactStatus.COMPLETED,
-              '',
-              elementMetadata,
-            ),
-          );
+          console.log(`Uploaded element for element key - ${element.key}`);
+          emitter.emit(EventTopic.ASSET_STATUS, {
+            processId,
+            assetType: Assets.ELEMENTS,
+            assetName: element.key,
+            assetStatus: ArtifactStatus.COMPLETED,
+            metadata: elementMetadata,
+          });
           console.log(`Created Element: ${element.key}`);
           return importedElement;
         } else {
@@ -117,17 +111,14 @@ module.exports = async (elements, jobId, processId) => {
               });
             }
           }
-          emitter.emit(
-            EventTopic.ASSET_STATUS,
-            constructEvent(
-              processId,
-              Assets.ELEMENTS,
-              element.key,
-              ArtifactStatus.COMPLETED,
-              '',
-              elementMetadata,
-            ),
-          );
+          console.log(`Uploaded element for element key - ${element.key}`);
+          emitter.emit(EventTopic.ASSET_STATUS, {
+            processId,
+            assetType: Assets.ELEMENTS,
+            assetName: element.key,
+            assetStatus: ArtifactStatus.COMPLETED,
+            metadata: elementMetadata,
+          });
           // Combine both the promises list and resolve all
           const allPromisesToResolve = concat(promisesList.createdResources, promisesList.updatedResources);
           await Promise.all(allPromisesToResolve);
@@ -137,18 +128,14 @@ module.exports = async (elements, jobId, processId) => {
         if (element.private === true || element.actuallyExtended === false) {
           // Create non-extended element (Private element)
           const importedElement = await update(makePath(element), element);
-          emitter.emit(
-            EventTopic.ASSET_STATUS,
-            constructEvent(
-              processId,
-              Assets.ELEMENTS,
-              element.key,
-              ArtifactStatus.COMPLETED,
-              '',
-              elementMetadata,
-            ),
-          );
-          console.log(`Updated Element: ${element.key}`);
+          console.log(`Uploaded element for element key - ${element.key}`);
+          emitter.emit(EventTopic.ASSET_STATUS, {
+            processId,
+            assetType: Assets.ELEMENTS,
+            assetName: element.key,
+            assetStatus: ArtifactStatus.COMPLETED,
+            metadata: elementMetadata,
+          });
           return importedElement;
         } else {
           // Extend the element resources and element configurations (TODO)
@@ -173,34 +160,28 @@ module.exports = async (elements, jobId, processId) => {
               }
             });
           }
-          emitter.emit(
-            EventTopic.ASSET_STATUS,
-            constructEvent(
-              processId,
-              Assets.ELEMENTS,
-              element.key,
-              ArtifactStatus.COMPLETED,
-              '',
-              elementMetadata,
-            ),
-          );
+          console.log(`Uploaded element for element key - ${element.key}`);
+          emitter.emit(EventTopic.ASSET_STATUS, {
+            processId,
+            assetType: Assets.ELEMENTS,
+            assetName: element.key,
+            assetStatus: ArtifactStatus.COMPLETED,
+            metadata: elementMetadata,
+          });
           // Combine both the promises list and resolve all
           const allPromisesToResolve = concat(promisesList.createdResources, promisesList.updatedResources);
           await Promise.all(allPromisesToResolve);
         }
       }
     } catch (error) {
-      emitter.emit(
-        EventTopic.ASSET_STATUS,
-        constructEvent(
-          processId,
-          Assets.ELEMENTS,
-          element.key,
-          ArtifactStatus.FAILED,
-          error.toString(),
-          elementMetadata,
-        ),
-      );
+      emitter.emit(EventTopic.ASSET_STATUS, {
+        processId,
+        assetType: Assets.ELEMENTS,
+        assetName: element.key,
+        assetStatus: ArtifactStatus.FAILED,
+        error: error.toString(),
+        metadata: elementMetadata,
+      });
       throw error;
     }
   });

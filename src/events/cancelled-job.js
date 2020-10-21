@@ -1,30 +1,34 @@
+require('log-prefix')(() => `[${new Date().toISOString()}] Doctor-core: %s`);
 let set;
 
 const getIdSet = () => {
-    if (!set) {
-        set = new Set();
-    }
-    return set;
+  if (!set) set = new Set();
+  return set;
 };
 
 const addCancelledJobId = (jobId) => {
-    const idSet = getIdSet();
-    idSet.add(jobId);
-    console.log('set', idSet);
-}
+  const idSet = getIdSet();
+  !idSet.has(jobId) && idSet.add(jobId);
+  console.log('addCancelledJobId - Content of the Cancelled Job Id Queue', idSet);
+};
 
 const isJobCancelled = (jobId) => {
-    const idSet = getIdSet();
-    return idSet.has(jobId);
-}
+  if (!jobId) {
+    return;
+  }
+  const idSet = getIdSet();
+  console.log('isJobCancelled - Content of the Cancelled Job Id Queue', idSet);
+  return idSet && idSet.has(jobId)
+};
 
 const removeCancelledJobId = (jobId) => {
-    const idSet = getIdSet();
-    idSet.delete(jobId);
-}
+  const idSet = getIdSet();
+  idSet.delete(jobId);
+  console.log('removeCancelledJobId - Content of the Cancelled Job Id Queue', idSet);
+};
 
 module.exports = {
-    addCancelledJobId,
-    isJobCancelled,
-    removeCancelledJobId
+  addCancelledJobId,
+  isJobCancelled,
+  removeCancelledJobId,
 };
