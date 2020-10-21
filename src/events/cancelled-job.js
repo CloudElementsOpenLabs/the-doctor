@@ -18,12 +18,7 @@ const isJobCancelled = (jobId) => {
   }
   const idSet = getIdSet();
   console.log('isJobCancelled - Content of the Cancelled Job Id Queue', idSet);
-  if (idSet.has(jobId)) {
-    return idSet.has(jobId);
-  } else {
-    // Job cancelled event is consumed by the doctor service through event listener
-    // emitter.emit(EventTopic.JOB_CANCELLED_CORE, {jobId});
-  }
+  return idSet && idSet.has(jobId)
 };
 
 const removeCancelledJobId = (jobId) => {
