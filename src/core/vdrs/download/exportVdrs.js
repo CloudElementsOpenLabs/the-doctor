@@ -5,7 +5,7 @@ const {emitter, EventTopic} = require('../../../events/emitter');
 const {isJobCancelled} = require('../../../events/cancelled-job');
 const {Assets, ArtifactStatus} = require('../../../constants/artifact');
 const isNilOrEmpty = (val) => isNil(val) || isEmpty(val);
-const transduceVdrs = (vdrs) => (!isNilOrEmpty(vdrs) ? pipe(reject(isNil), indexBy(prop('vdrName'))) : {});
+const transduceVdrs = (vdrs) => (!isNilOrEmpty(vdrs) ? pipe(reject(isNil), indexBy(prop('vdrName')))(vdrs) : {});
 
 const downloadVdrs = async (vdrNames, jobId, processId) => {
   console.log(`Initiating the download process for VDRs`);
