@@ -8,17 +8,44 @@ const postFormula = require('./post')('formulas');
 const makePath = (formula) => `formulas/${formula.id}`;
 const update = require('./update');
 
-const createFormula = curry(async (endpointFormulas, formula) => {
+const createFormula = curry(async (endpointFormulas, jobId, processId, formula) => {
   try {
     const endpointFormula = find(propEq('name', formula.name))(endpointFormulas);
     if (endpointFormula) {
       return {[formula.id]: endpointFormula.id};
     } else {
+      if (isJobCancelled(jobId)) {
+        emitter.emit(EventTopic.ASSET_STATUS, {
+          processId,
+          assetType: Assets.FORMULAS,
+          assetName: formula.name,
+          assetStatus: ArtifactStatus.CANCELLED,
+          error: 'job is cancelled',
+          metadata: '',
+        });
+        return null;
+      }
+      console.log(`Creating formula for formula name - ${formula.name}`);
       const result = await postFormula(formula);
-      console.log(`Created Formula: ${formula.name}`);
+      console.log(`Created formula for formula name - ${formula.name}`);
+      emitter.emit(EventTopic.ASSET_STATUS, {
+        processId,
+        assetType: Assets.FORMULAS,
+        assetName: formula.name,
+        assetStatus: ArtifactStatus.COMPLETED,
+        metadata: '',
+      });
       return {[formula.id]: result.id};
     }
   } catch (error) {
+    emitter.emit(EventTopic.ASSET_STATUS, {
+      processId,
+      assetType: Assets.FORMULAS,
+      assetName: formula.name,
+      assetStatus: ArtifactStatus.FAILED,
+      error: error.toString(),
+      metadata: '',
+    });
     throw error;
   }
 });
@@ -62,7 +89,7 @@ const updateFormula = curry(async (jobId, processId, formula) => {
 module.exports = async (formulas, jobId, processId) => {
   try {
     const endpointFormulas = await get('formulas', '');
-    let formulaIds = mergeAll(await Promise.all(map(createFormula(endpointFormulas))(formulas)));
+    let formulaIds = mergeAll(await Promise.all(map(createFormula(endpointFormulas, jobId, processId))(formulas)));
     const fixSteps = map((step) =>
       equals(step.type, 'formula')
         ? {...step, properties: {formulaId: formulaIds[step.properties.formulaId] || -1}}
