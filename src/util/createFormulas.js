@@ -1,5 +1,5 @@
 'use strict';
-const {map, find, propEq, mergeAll, curry, equals} = require('ramda');
+const {map, find, propEq, mergeAll, curry, equals, assocPath} = require('ramda');
 const {emitter, EventTopic} = require('../events/emitter');
 const {isJobCancelled} = require('../events/cancelled-job');
 const {Assets, ArtifactStatus} = require('../constants/artifact');
@@ -92,7 +92,7 @@ module.exports = async (formulas, jobId, processId) => {
     let formulaIds = mergeAll(await Promise.all(map(createFormula(endpointFormulas, jobId, processId))(formulas)));
     const fixSteps = map((step) =>
       equals(step.type, 'formula')
-        ? {...step, properties: {formulaId: formulaIds[step.properties.formulaId] || -1}}
+        ? assocPath(['properties', 'formulaId'], formulaIds[step.properties.formulaId] || -1, step)
         : step,
     );
     const newFormulas = map((formula) => ({
