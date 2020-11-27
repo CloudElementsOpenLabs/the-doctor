@@ -1,6 +1,6 @@
 'use strict';
-const {converge, pipe, pipeP, tap, prop, cond, isNil, not} = require('ramda');
-const saveTo = (getData, log, save, property) =>
+const {converge, pipe, pipeP, prop, cond, isNil, not} = require('ramda');
+const saveTo = (getData, save, property) =>
   converge(save, [
     pipe(prop('options'), prop(property)),
     pipeP(
@@ -9,12 +9,11 @@ const saveTo = (getData, log, save, property) =>
         pipe(prop('options'), prop('jobId')),
         pipe(prop('options'), prop('processId')),
       ]),
-      tap(log),
     ),
   ]);
 
-module.exports = (getData, log, saveToFile, saveToDir) =>
+module.exports = (getData, saveToFile, saveToDir) =>
   cond([
-    [pipe(prop('options'), prop('file'), isNil, not), saveTo(getData, log, saveToFile, 'file')],
-    [pipe(prop('options'), prop('dir'), isNil, not), saveTo(getData, log, saveToDir, 'dir')],
+    [pipe(prop('options'), prop('file'), isNil, not), saveTo(getData, saveToFile, 'file')],
+    [pipe(prop('options'), prop('dir'), isNil, not), saveTo(getData, saveToDir, 'dir')],
   ]);
