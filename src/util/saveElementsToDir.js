@@ -65,7 +65,6 @@ module.exports = async (dir, data) => {
         return omit(['createdDate', 'updatedDate'], resource);
       })(element.resources).sort((a, b) => a.path.localeCompare(b.path) || a.method.localeCompare(b.method));
     }
-
     writeFileSync(`${elementFolder}/element.json`, JSON.stringify(sortobject(element), null, 4), 'utf8');
   })(elements);
 };
