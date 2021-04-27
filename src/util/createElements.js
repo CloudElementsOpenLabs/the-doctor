@@ -138,8 +138,8 @@ module.exports = async (elements, jobId, processId) => {
           });
           return importedElement;
         } else {
-          // Extend the element resources and element configurations (TODO)
-          let promisesList = {createdResources: [], updatedResources: []};
+          // Extend the element resources and element configurations
+          let promisesList = {createdResources: [], updatedResources: [], updatedConfiguration: []};
           const extendedResources = await fetchExtendedAndPrivateResources(existingElement.id, element.key);
           if (!isNilOrEmpty(element.resources)) {
             element.resources.forEach((resource) => {
@@ -160,6 +160,13 @@ module.exports = async (elements, jobId, processId) => {
               }
             });
           }
+          if (!isNilOrEmpty(element.configuration) && !isNilOrEmpty(existingElement.id)) {
+            element.id = existingElement.id;
+            promisesList.updatedConfiguration.push(
+              update(`elements/${existingElement.id}/configurations`, element)
+            );
+            console.log(`Configuration Updated for element key - ${element.key}`);
+          }
           console.log(`Uploaded element for element key - ${element.key}`);
           emitter.emit(EventTopic.ASSET_STATUS, {
             processId,
@@ -168,8 +175,8 @@ module.exports = async (elements, jobId, processId) => {
             assetStatus: ArtifactStatus.COMPLETED,
             metadata: elementMetadata,
           });
-          // Combine both the promises list and resolve all
-          const allPromisesToResolve = concat(promisesList.createdResources, promisesList.updatedResources);
+          // Combine the promises list and resolve all
+          const allPromisesToResolve = concat(promisesList.createdResources, promisesList.updatedResources, promisesList.updatedConfiguration);
           await Promise.all(allPromisesToResolve);
         }
       }
