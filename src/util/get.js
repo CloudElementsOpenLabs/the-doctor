@@ -19,7 +19,8 @@ module.exports = curry(async (path,qs) => {
   try {
     return await rp(options);
   } catch (err) {
-    if (test(/^No (.*) found$/, err.error.message)) {
+    if (pathSatisfies(res => !isNil(res), ['error', 'message'], err)
+      && test(/^No (.*) found$/, err.error.message)) {
       return {}
     } else {
       throw err
