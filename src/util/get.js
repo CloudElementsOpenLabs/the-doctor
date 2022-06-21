@@ -1,6 +1,6 @@
 'use strict';
 
-const {curry, pathSatisfies, test} = require('ramda');
+const {curry, isNil, pathSatisfies, test} = require('ramda');
 const rp = require('request-promise');
 const authHeader = require('./authHeader');
 const baseUrl = require('./baseUrl');
