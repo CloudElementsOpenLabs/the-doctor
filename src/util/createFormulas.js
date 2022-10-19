@@ -88,24 +88,32 @@ const updateFormula = curry(async (jobId, processId, formula) => {
 
 module.exports = async (formulas, jobId, processId) => {
   try {
-    const endpointFormulas = await get('formulas', '');
+    let nextPageToken
+    let endpointFormulas = []
+    do {
+      console.log('fetching formulas')
+      const response = await get('formulas', nextPageToken ? {nextPage:nextPageToken}:'');
+      nextPageToken = response.headers['elements-next-page-token']
+      endpointFormulas = endpointFormulas.concat(response.body)
+    } while (nextPageToken)
+
     let formulaIds = mergeAll(await Promise.all(map(createFormula(endpointFormulas, jobId, processId))(formulas)));
     const fixSteps = map((step) =>
-      equals(step.type, 'formula')
-        ? assocPath(['properties', 'formulaId'], formulaIds[step.properties.formulaId] || -1, step)
-        : step,
+        equals(step.type, 'formula')
+            ? assocPath(['properties', 'formulaId'], formulaIds[step.properties.formulaId] || -1, step)
+            : step,
     );
     const newFormulas = map((formula) => ({
       ...formula,
       id: formulaIds[formula.id],
       steps: fixSteps(formula.steps),
       subFormulas: formula.subFormulas
-        ? map((step) => ({
+          ? map((step) => ({
             ...step,
             id: formulaIds[step.id],
             steps: fixSteps(step.steps),
           }))(formula.subFormulas)
-        : [],
+          : [],
     }))(formulas);
     console.log(`Initiating the upload process for formulas`);
     return Promise.all(map(updateFormula(jobId, processId))(newFormulas));
