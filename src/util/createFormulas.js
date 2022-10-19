@@ -3,7 +3,7 @@ const {map, find, propEq, mergeAll, curry, equals, assocPath} = require('ramda')
 const {emitter, EventTopic} = require('../events/emitter');
 const {isJobCancelled} = require('../events/cancelled-job');
 const {Assets, ArtifactStatus} = require('../constants/artifact');
-const get = require('./get');
+const get = require('./getWithFullResponse');
 const postFormula = require('./post')('formulas');
 const makePath = (formula) => `formulas/${formula.id}`;
 const update = require('./update');
